@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>퍼플 유니버스 — 멤버쉽 전용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08050F;
+    --bg-alt:#0F0A1E;
+    --bg-alt2:#140D26;
+    --surface:rgba(255,255,255,.045);
+    --surface-2:rgba(255,255,255,.07);
+    --border:rgba(184,155,255,.16);
+    --border-strong:rgba(184,155,255,.32);
+    --purple:#7C4DFF;
+    --purple-deep:#5626C4;
+    --purple-bright:#A98BFF;
+    --purple-pale:#C9B6FF;
+    --gold:#E8B85E;
+    --gold-soft:#F3D89A;
+    --text:#F4F1FC;
+    --text-dim:#B7ACD1;
+    --text-faint:#756A94;
+    --radius:20px;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans KR', sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+  .eyebrow{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:15px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--purple-bright);
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:14px 26px; border-radius:100px;
+    font-weight:600; font-size:16.5px; cursor:pointer; border:none; font-family:inherit;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff;
+    box-shadow:0 8px 30px rgba(124,77,255,.4);
+  }
+
+  /* ---------- PASSWORD GATE ---------- */
+  .gate{
+    position:fixed; inset:0; z-index:500; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 50% 20%, #1a1030, #08050F 70%); padding:24px;
+  }
+  .gate-box{
+    max-width:380px; width:100%; text-align:center;
+    background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:44px 32px;
+  }
+  .gate-logo{font-size:15px; color:var(--text-faint); margin-bottom:18px;}
+  .gate-box h2{font-size:24px; margin-bottom:10px;}
+  .gate-box p{color:var(--text-dim); font-size:15px; margin-bottom:24px;}
+  .gate-box input{
+    width:100%; padding:14px 16px; border-radius:12px; border:1px solid var(--border);
+    background:var(--bg-alt); color:var(--text); font-size:16px; font-family:inherit; margin-bottom:14px;
+  }
+  .gate-box input:focus{outline:none; border-color:var(--purple-bright);}
+  .gate-box .btn{width:100%; justify-content:center;}
+  .gate-error{color:#FF8A8A; font-size:14px; margin-top:14px; min-height:18px;}
+
+  /* ---------- WEEKLY POPUP ---------- */
+  .popup-overlay{
+    position:fixed; inset:0; z-index:400; display:none; align-items:center; justify-content:center;
+    background:rgba(5,3,10,.72); backdrop-filter:blur(6px); padding:24px;
+  }
+  .popup-overlay.show{display:flex;}
+  .popup-box{
+    max-width:480px; width:100%; background:var(--bg-alt2); border:1px solid var(--border-strong);
+    border-radius:22px; padding:34px 30px; position:relative;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.7);
+  }
+  .popup-close{
+    position:absolute; top:16px; right:18px; background:none; border:none; color:var(--text-faint);
+    font-size:20px; cursor:pointer;
+  }
+  .popup-box h3{font-size:21px; margin-top:10px; margin-bottom:18px;}
+  .popup-box ul{display:flex; flex-direction:column; gap:12px; margin-bottom:18px;}
+  .popup-box li{font-size:15px; color:var(--text-dim); line-height:1.55;}
+  .popup-box li b{color:var(--gold-soft);}
+  .popup-note{font-size:13.5px; color:var(--text-faint);}
+
+  /* ---------- HEADER ---------- */
+  .m-header{border-bottom:1px solid var(--border); padding:18px 0; background:var(--bg-alt);}
+  .m-nav{display:flex; align-items:center; justify-content:space-between;}
+  .m-back{font-weight:600; font-size:16px; color:var(--text-dim); display:flex; align-items:center; gap:6px;}
+  .m-back:hover{color:var(--text);}
+  .m-tag{
+    font-family:'Space Grotesk'; font-size:12.5px; letter-spacing:.1em; font-weight:600;
+    color:var(--gold-soft); border:1px solid rgba(243,216,154,.35); padding:6px 14px; border-radius:100px;
+  }
+
+  /* ---------- HERO ---------- */
+  .m-hero{padding:64px 0 20px; text-align:center;}
+  .m-hero h1{font-size:clamp(30px,4.5vw,44px); font-weight:700; margin-top:14px;}
+  .m-hero p{color:var(--text-dim); margin-top:14px; font-size:17px; max-width:520px; margin-left:auto; margin-right:auto;}
+  .m-search{
+    max-width:560px; margin:28px auto 0; display:flex; gap:10px;
+  }
+  .m-search input{
+    flex:1; padding:14px 20px; border-radius:100px; border:1px solid var(--border);
+    background:var(--surface); color:var(--text); font-size:15.5px; font-family:inherit;
+  }
+  .m-search input:focus{outline:none; border-color:var(--purple-bright);}
+  .m-search .btn{padding:14px 26px; font-size:15px; flex:0 0 auto;}
+  @media(max-width:520px){ .m-search{flex-direction:column;} .m-search .btn{width:100%; justify-content:center;} }
+  .no-result{display:none; color:var(--text-faint); font-size:15px; padding:12px 4px;}
+
+  /* ---------- SECTIONS ---------- */
+  .m-section{padding:56px 0;}
+  .m-section .eyebrow{display:block; margin-bottom:12px;}
+  .m-section h2{font-size:clamp(24px,3vw,32px); font-weight:700; margin-bottom:12px;}
+  .m-section > .wrap > p{color:var(--text-dim); font-size:16px; max-width:640px; margin-bottom:28px;}
+  .m-divider{border-top:1px solid var(--border);}
+
+  /* ---------- AI AGENT ---------- */
+  .agent-box{
+    max-width:720px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-top:8px;
+  }
+  .agent-messages{display:flex; flex-direction:column; gap:12px; margin-bottom:18px; max-height:320px; overflow-y:auto;}
+  .agent-msg{padding:12px 16px; border-radius:14px; font-size:15px; line-height:1.5; max-width:85%;}
+  .agent-msg.bot{background:var(--bg-alt2); color:var(--text-dim); align-self:flex-start;}
+  .agent-msg.user{background:linear-gradient(135deg,var(--purple),var(--purple-deep)); color:#fff; align-self:flex-end;}
+  .agent-input-row{display:flex; gap:10px;}
+  .agent-input-row input{
+    flex:1; padding:13px 16px; border-radius:12px; border:1px solid var(--border);
+    background:var(--bg-alt); color:var(--text); font-size:15px; font-family:inherit;
+  }
+  .agent-input-row input:focus{outline:none; border-color:var(--purple-bright);}
+  .agent-input-row .btn{padding:13px 22px; font-size:15px;}
+  .agent-note{font-size:13.5px; color:var(--text-faint); margin-top:12px;}
+
+  /* ---------- RESOURCE GRID ---------- */
+  .resource-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media(max-width:900px){ .resource-grid{grid-template-columns:1fr 1fr;} }
+  @media(max-width:600px){ .resource-grid{grid-template-columns:1fr;} }
+  .resource-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .resource-date, .resource-tag{
+    font-family:'Space Grotesk'; font-size:12.5px; font-weight:600; letter-spacing:.05em;
+    color:var(--purple-bright); text-transform:uppercase;
+  }
+  .resource-embed{
+    position:relative; width:100%; aspect-ratio:16/9; border-radius:12px; overflow:hidden;
+    background:var(--bg-alt); border:1px solid var(--border); margin-bottom:14px;
+  }
+  .resource-embed iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+  .resource-embed .embed-empty{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:0 14px; font-size:13.5px; color:var(--text-faint); line-height:1.5;
+  }
+  .resource-card h4{font-size:17px; font-weight:700; margin-top:2px;}
+  .resource-card p{font-size:14.5px; color:var(--text-dim); line-height:1.5;}
+  .resource-link{font-size:14px; color:var(--gold-soft); font-weight:600; margin-top:6px;}
+  .resource-link:hover{text-decoration:underline;}
+
+  footer.m-footer{padding:40px 0; text-align:center; color:var(--text-faint); font-size:13.5px; border-top:1px solid var(--border); margin-top:20px;}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">🔒 PURPLE UNIVERSE</div>
+    <h2>멤버쉽 전용 공간</h2>
+    <p>가입하신 멤버쉽 전용 비밀번호를 입력해주세요.</p>
+    <input type="password" id="gateInput" placeholder="비밀번호">
+    <button class="btn btn-primary" id="gateBtn">입장하기</button>
+    <p class="gate-error" id="gateError"></p>
+  </div>
+</div>
+
+<!-- WEEKLY POPUP -->
+<div class="popup-overlay" id="weeklyPopup">
+  <div class="popup-box">
+    <button class="popup-close" id="popupClose">✕</button>
+    <span class="eyebrow">🔔 이번 주 멤버 알림 🔔</span>
+    <h3>이번 주, 우리 멤버들은 이런 연결을 찾고 있어요!!</h3>
+    <ul id="weeklyList">
+      <!-- ↓ 매주 이 부분만 새 내용으로 바꿔주면 돼요 -->
+      <li><b>윤정하 대표님</b>이 굿숨 신제품을 시범 도입할 병원과 요양원을 연결해 주세요.</li>
+      <li><b>김미경 대표님</b>이 림프 순환이 잘 안 되는 50대 여성 고객을 연결해 주세요.</li>
+      <li><b>신유진 대표님</b>이 육아 크리에이터 혹은 최근 아이를 출산한 엄마들을 연결해 주세요.</li>
+    </ul>
+    <p class="popup-note">소개해 주고 싶은 분이 있다면, 서로 편하게 개인톡으로 연락을 주고 받으시길 바랍니다.</p>
+  </div>
+</div>
+
+<!-- MAIN CONTENT (gated) -->
+<div id="mainContent" style="display:none;">
+
+  <header class="m-header">
+    <div class="wrap m-nav">
+      <a href="index.html" class="m-back">← 퍼플 유니버스</a>
+      <span class="m-tag">MEMBERS ONLY</span>
+    </div>
+  </header>
+
+  <section class="m-hero">
+    <div class="wrap">
+      <span class="eyebrow">MEMBERSHIP ONLY</span>
+      <h1>멤버쉽 전용 공간</h1>
+      <p>멤버들만을 위한 알림, AI 기획 도구, 학습 자료가 모여있는 공간이에요.</p>
+      <div class="m-search">
+        <input type="text" id="searchInput" placeholder="영상이나 자료를 검색해보세요 (예: 콘텐츠 심리학, 줌미팅)">
+        <button class="btn btn-primary" id="searchBtn">검색</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="m-section">
+    <div class="wrap">
+      <span class="eyebrow">AI AGENT</span>
+      <h2>콘텐츠 기획 AI 에이전트</h2>
+      <p>내 비즈니스에 맞는 콘텐츠 아이디어와 기획을 도와주는 전용 에이전트예요. (현재 UI만 먼저 준비된 상태이고, 실제 AI 연결은 곧 추가될 예정이에요.)</p>
+      <div class="agent-box">
+        <div class="agent-messages" id="agentMessages">
+          <div class="agent-msg bot">안녕하세요! 콘텐츠 기획을 도와드릴 에이전트예요. 어떤 걸 도와드릴까요? (지금은 준비 중이라 실제 답변은 아직 연결되지 않았어요)</div>
+        </div>
+        <div class="agent-input-row">
+          <input type="text" id="agentInput" placeholder="예: 이번 주 인스타 릴스 아이디어 추천해줘">
+          <button class="btn btn-primary" id="agentSend">보내기</button>
+        </div>
+      </div>
+      <p class="agent-note">* 지금은 화면만 완성된 상태예요. 실제 AI 응답이 연결되면 안내드릴게요.</p>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <section class="m-section">
+    <div class="wrap">
+      <span class="eyebrow">ZOOM ARCHIVE</span>
+      <h2>전체 줌미팅 다시보기</h2>
+      <p>매주 일요일 밤 진행하는 전체 줌미팅 녹화본을 여기서 다시 볼 수 있어요.</p>
+      <!--
+        ▼ 영상 넣는 법
+        유튜브 영상 주소가 https://www.youtube.com/watch?v=ABC123 이면
+        data-yt="ABC123"  ← v= 뒤의 값만 넣어주세요. (일부공개 영상도 그대로 됩니다)
+        새 회차를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하세요.
+      -->
+      <div class="resource-grid" id="zoomGrid">
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-date">2026.08.02</span>
+          <h4>8월 첫째 주 전체 줌미팅</h4>
+          <p>8월 콘텐츠 트렌드, 멤버 비즈니스 업데이트 공유</p>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-date">2026.07.26</span>
+          <h4>7월 넷째 주 전체 줌미팅</h4>
+          <p>여름 시즌 숏폼 기획 브레인스토밍</p>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-date">2026.07.19</span>
+          <h4>7월 셋째 주 전체 줌미팅</h4>
+          <p>신규 멤버 소개 및 사업 카테고리별 스터디</p>
+        </div>
+      </div>
+      <p class="no-result" id="zoomNoResult">검색 결과가 없어요.</p>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <section class="m-section">
+    <div class="wrap">
+      <span class="eyebrow">CURATED</span>
+      <h2>비즈니스에 도움되는 콘텐츠</h2>
+      <p>멤버들의 비즈니스에 실질적으로 도움이 될 유튜브 영상과 정리 노트예요.</p>
+      <div class="resource-grid" id="curatedGrid">
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-tag">유튜브</span>
+          <h4>콘텐츠 심리학으로 전환율 높이는 법</h4>
+          <p>핵심 요약: 구매 전환을 만드는 3가지 심리 트리거와 적용 사례</p>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-tag">유튜브</span>
+          <h4>해외 비즈니스 모델 탐색 EP.1</h4>
+          <p>핵심 요약: 국내에 아직 없는 해외 수익화 구조 3가지</p>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-tag">유튜브</span>
+          <h4>행동경제학으로 보는 가격 설계</h4>
+          <p>핵심 요약: 앵커링 효과를 활용한 가격표 설계 방법</p>
+        </div>
+      </div>
+      <p class="no-result" id="curatedNoResult">검색 결과가 없어요.</p>
+    </div>
+  </section>
+
+  <footer class="m-footer">퍼플 유니버스 멤버쉽 전용 페이지 · 외부 공유는 삼가주세요.</footer>
+
+</div>
+
+<script>
+  // ===== 비밀번호 설정 =====
+  // 아래 값을 원하는 비밀번호로 바꿔주세요.
+  const SITE_PASSWORD = "purple2026";
+
+  const gate = document.getElementById('gate');
+  const gateInput = document.getElementById('gateInput');
+  const gateBtn = document.getElementById('gateBtn');
+  const gateError = document.getElementById('gateError');
+  const mainContent = document.getElementById('mainContent');
+  const weeklyPopup = document.getElementById('weeklyPopup');
+  const popupClose = document.getElementById('popupClose');
+
+  function unlock(){
+    gate.style.display = 'none';
+    mainContent.style.display = 'block';
+    sessionStorage.setItem('pu_members_unlocked', '1');
+    // 세션당 한 번만 이번 주 알림 팝업 표시
+    if(!sessionStorage.getItem('pu_weekly_popup_seen')){
+      weeklyPopup.classList.add('show');
+      sessionStorage.setItem('pu_weekly_popup_seen', '1');
+    }
+  }
+
+  function tryUnlock(){
+    if(gateInput.value === SITE_PASSWORD){
+      unlock();
+    } else {
+      gateError.textContent = '비밀번호가 올바르지 않아요. 다시 시도해주세요.';
+    }
+  }
+
+  gateBtn.addEventListener('click', tryUnlock);
+  gateInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') tryUnlock();
+  });
+
+  popupClose.addEventListener('click', function(){
+    weeklyPopup.classList.remove('show');
+  });
+
+  if(sessionStorage.getItem('pu_members_unlocked') === '1'){
+    unlock();
+  }
+
+  // ===== AI 에이전트 (UI만, 실제 연결 전) =====
+  const agentMessages = document.getElementById('agentMessages');
+  const agentInput = document.getElementById('agentInput');
+  const agentSend = document.getElementById('agentSend');
+
+  function sendAgentMessage(){
+    const text = agentInput.value.trim();
+    if(!text) return;
+    const userMsg = document.createElement('div');
+    userMsg.className = 'agent-msg user';
+    userMsg.textContent = text;
+    agentMessages.appendChild(userMsg);
+    agentInput.value = '';
+
+    setTimeout(function(){
+      const botMsg = document.createElement('div');
+      botMsg.className = 'agent-msg bot';
+      botMsg.textContent = '아직 실제 AI 연결 전이라 답변을 드릴 수 없어요. 곧 연결될 예정이니 조금만 기다려주세요!';
+      agentMessages.appendChild(botMsg);
+      agentMessages.scrollTop = agentMessages.scrollHeight;
+    }, 400);
+
+    agentMessages.scrollTop = agentMessages.scrollHeight;
+  }
+
+  agentSend.addEventListener('click', sendAgentMessage);
+  agentInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') sendAgentMessage();
+  });
+
+  // ===== 유튜브 임베드 =====
+  // data-yt 에 영상 ID를 넣으면 자동으로 플레이어가 만들어져요.
+  // 전체 주소(https://youtu.be/... 등)를 붙여넣어도 ID를 알아서 찾아냅니다.
+  function ytId(v){
+    if(!v) return '';
+    v = v.trim();
+    if(!/[\/?=]/.test(v)) return v;               // 이미 ID만 들어온 경우
+    var m = v.match(/(?:v=|youtu\.be\/|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : '';
+  }
+
+  document.querySelectorAll('.resource-embed').forEach(function(box){
+    var id = ytId(box.getAttribute('data-yt'));
+    if(id){
+      var f = document.createElement('iframe');
+      f.src = 'https://www.youtube.com/embed/' + id;
+      f.title = '전체 줌미팅 녹화본';
+      f.loading = 'lazy';
+      f.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      f.allowFullscreen = true;
+      box.appendChild(f);
+    } else {
+      var p = document.createElement('div');
+      p.className = 'embed-empty';
+      p.textContent = '영상 준비 중';
+      box.appendChild(p);
+    }
+  });
+
+  // ===== 자료 검색 =====
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const searchGrids = [
+    { grid: document.getElementById('zoomGrid'), noResult: document.getElementById('zoomNoResult') },
+    { grid: document.getElementById('curatedGrid'), noResult: document.getElementById('curatedNoResult') }
+  ];
+
+  function performSearch(){
+    const q = searchInput.value.trim().toLowerCase();
+    let firstMatchEl = null;
+
+    searchGrids.forEach(function(section){
+      const cards = section.grid.querySelectorAll('.resource-card');
+      let anyMatch = false;
+      cards.forEach(function(card){
+        const text = card.textContent.toLowerCase();
+        const match = q === '' || text.includes(q);
+        card.style.display = match ? '' : 'none';
+        if(match){
+          anyMatch = true;
+          if(!firstMatchEl) firstMatchEl = card;
+        }
+      });
+      section.noResult.style.display = (q !== '' && !anyMatch) ? 'block' : 'none';
+    });
+
+    if(q !== '' && firstMatchEl){
+      firstMatchEl.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  }
+
+  searchBtn.addEventListener('click', performSearch);
+  searchInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') performSearch();
+  });
+  searchInput.addEventListener('input', performSearch);
+</script>
+</body>
+</html>
