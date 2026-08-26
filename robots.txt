@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Disallow: /manage-a13l742d7a.html

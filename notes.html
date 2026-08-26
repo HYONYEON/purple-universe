@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>비즈니스 노트 — 퍼플 유니버스</title>
+<meta name="description" content="마케팅 요약, 비즈니스 인사이트, 웨비나 녹화본을 모아둔 퍼플 유니버스 비즈니스 노트.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<style>
+  :root{
+    --bg:#08050F; --bg-alt:#0F0A1E; --bg-alt2:#140D26;
+    --surface:rgba(255,255,255,.045); --surface-2:rgba(255,255,255,.07);
+    --border:rgba(184,155,255,.16); --border-strong:rgba(184,155,255,.32);
+    --purple:#7C4DFF; --purple-deep:#5626C4; --purple-bright:#A98BFF; --purple-pale:#C9B6FF;
+    --gold:#E8B85E; --gold-soft:#F3D89A;
+    --text:#F4F1FC; --text-dim:#B7ACD1; --text-faint:#756A94;
+    --radius:20px; --maxw:1180px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans KR', sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  body::before{
+    content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:
+      radial-gradient(1.6px 1.6px at 40px 60px, rgba(232,225,255,.4), transparent),
+      radial-gradient(1.2px 1.2px at 140px 20px, rgba(255,255,255,.3), transparent),
+      radial-gradient(1.8px 1.8px at 230px 130px, rgba(184,155,255,.35), transparent),
+      radial-gradient(1px 1px at 70px 170px, rgba(255,255,255,.25), transparent),
+      radial-gradient(1.4px 1.4px at 310px 90px, rgba(232,184,94,.28), transparent),
+      radial-gradient(1.6px 1.6px at 360px 270px, rgba(184,155,255,.3), transparent);
+    background-repeat:repeat; background-size:420px 420px;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+  .eyebrow{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:15px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--purple-bright);
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(8,5,15,.72); backdrop-filter:blur(14px);
+    border-bottom:1px solid transparent; transition:border-color .3s ease;
+  }
+  header.scrolled{border-bottom-color:var(--border);}
+  nav{
+    max-width:var(--maxw); margin:0 auto; padding:14px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:700; font-size:19px;}
+  .navlinks{display:flex; align-items:center; gap:28px; font-size:17.5px; color:var(--text-dim);}
+  .navlinks a:hover{color:var(--text);}
+  .nav-sep{width:1px; height:18px; background:var(--border-strong); display:inline-block;}
+  .navlinks a.nav-here{color:var(--purple-bright); font-weight:600;}
+  .navcta{
+    background:linear-gradient(135deg,var(--purple),var(--purple-deep));
+    color:#fff; padding:10px 20px; border-radius:100px;
+    font-size:17px; font-weight:600; box-shadow:0 4px 20px rgba(124,77,255,.35);
+  }
+  @media(max-width:860px){ .navlinks{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .n-hero{padding:170px 0 46px; text-align:center;}
+  .n-hero h1{font-size:clamp(34px,5vw,54px); font-weight:700; margin-top:16px;}
+  .n-hero p{color:var(--text-dim); margin-top:16px; font-size:18px; max-width:640px; margin-left:auto; margin-right:auto;}
+  .n-search{max-width:420px; margin:30px auto 0;}
+  .n-search input{
+    width:100%; padding:13px 22px; border-radius:100px; border:1px solid var(--border);
+    background:var(--surface); color:var(--text); font-size:15.5px; font-family:inherit; text-align:center;
+  }
+  .n-search input:focus{outline:none; border-color:var(--purple-bright);}
+
+  /* ---------- SECTION HEAD ---------- */
+  .sec{margin-top:74px;}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:20px; flex-wrap:wrap;}
+  .sec-head h2{font-size:clamp(23px,2.6vw,30px); font-weight:700;}
+  .sec-head .count{font-size:14.5px; color:var(--text-faint); font-family:'Pretendard','IBM Plex Sans KR',sans-serif;}
+  .sec-head .navbtns{margin-left:auto; display:flex; gap:8px;}
+  .navbtns button{
+    width:38px; height:38px; border-radius:50%; cursor:pointer;
+    background:var(--surface); border:1px solid var(--border); color:var(--text-dim);
+    display:flex; align-items:center; justify-content:center; transition:all .18s ease;
+  }
+  .navbtns button:hover{background:var(--surface-2); color:var(--text); border-color:var(--border-strong);}
+  .navbtns button svg{width:17px; height:17px;}
+
+  /* ---------- CARD ---------- */
+  .note-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:18px;
+    overflow:hidden; display:flex; flex-direction:column;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .note-card:hover{border-color:var(--border-strong); transform:translateY(-3px);}
+  .note-thumb{
+    position:relative; width:100%; aspect-ratio:16/9; background:var(--bg-alt2);
+    border-bottom:1px solid var(--border); overflow:hidden;
+  }
+  .note-thumb iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+  .note-thumb img{width:100%; height:100%; object-fit:cover;}
+  .note-thumb .ph{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:13.5px; color:var(--text-faint);
+    background:linear-gradient(150deg, rgba(124,77,255,.18), rgba(124,77,255,.04));
+  }
+  /* 추천 픽 뱃지 — 카드 왼쪽 상단 */
+  .pick-badge{
+    position:absolute; top:12px; left:12px; z-index:3;
+    display:inline-flex; align-items:center; gap:6px;
+    background:linear-gradient(135deg, var(--gold), var(--gold-soft));
+    color:#2A1A06; font-weight:700; font-size:13px;
+    padding:6px 13px 6px 10px; border-radius:100px;
+    box-shadow:0 6px 18px rgba(232,184,94,.35);
+  }
+  .pick-badge svg{width:14px; height:14px; flex-shrink:0;}
+  .note-body{padding:20px 20px 22px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .note-meta{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .tag{
+    font-family:'Space Grotesk'; font-size:12px; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; padding:4px 11px; border-radius:100px;
+  }
+  .tag.marketing{background:rgba(124,77,255,.18); color:var(--purple-bright);}
+  .tag.insight{background:rgba(232,184,94,.16); color:var(--gold-soft);}
+  .tag.webinar{background:rgba(88,200,140,.16); color:#7FD8A8;}
+  .note-date{font-size:13.5px; color:var(--text-faint); font-family:'Pretendard','IBM Plex Sans KR',sans-serif;}
+  .note-card h3{font-size:18.5px; font-weight:700; line-height:1.45;}
+  .note-card p{font-size:14.5px; color:var(--text-dim); line-height:1.6;}
+  .note-link{margin-top:auto; padding-top:12px; font-size:14.5px; color:var(--gold-soft); font-weight:600;}
+  .note-link:hover{text-decoration:underline;}
+
+  /* ---------- 추천 픽 그리드 ---------- */
+  .pick-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media(max-width:960px){ .pick-grid{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:620px){ .pick-grid{grid-template-columns:1fr;} }
+  .pick-card{border-color:rgba(232,184,94,.34);}
+
+  /* ---------- 가로 슬라이드 ---------- */
+  .slider{
+    display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding-bottom:8px; scrollbar-width:none;
+  }
+  .slider::-webkit-scrollbar{display:none;}
+  .slider .note-card{
+    flex:0 0 300px; scroll-snap-align:start;
+  }
+  @media(max-width:520px){ .slider .note-card{flex:0 0 82%;} }
+
+  .empty-msg{color:var(--text-faint); font-size:15px; padding:26px 0;}
+  .no-result{display:none; text-align:center; color:var(--text-faint); font-size:16px; padding:70px 0;}
+
+  /* ---------- 팝업 뷰 (자료 상세) ---------- */
+  .note-card.clickable{cursor:pointer;}
+  .modal-back{
+    position:fixed; inset:0; z-index:300; display:none;
+    background:rgba(4,2,10,.78); backdrop-filter:blur(6px);
+    align-items:center; justify-content:center; padding:24px;
+  }
+  .modal-back.open{display:flex;}
+  .modal{
+    position:relative; width:min(1000px, 78vw); height:82vh;
+    background:var(--bg-alt); border:1px solid var(--border-strong);
+    border-radius:22px; overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 40px 90px rgba(0,0,0,.6);
+    animation:modalIn .22s ease;
+  }
+  @keyframes modalIn{ from{opacity:0; transform:translateY(14px) scale(.985);} to{opacity:1; transform:none;} }
+  @media(max-width:860px){ .modal{width:100%; height:88vh;} }
+  .modal-head{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    padding:20px 60px 18px 26px; border-bottom:1px solid var(--border); flex-shrink:0;
+  }
+  .modal-head h3{font-size:21px; font-weight:700; line-height:1.4; width:100%; order:2;}
+  .modal-close{
+    position:absolute; top:16px; right:18px; z-index:4;
+    width:38px; height:38px; border-radius:50%; cursor:pointer;
+    background:var(--surface); border:1px solid var(--border); color:var(--text-dim);
+    font-size:19px; line-height:1; display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{background:var(--surface-2); color:var(--text);}
+  .modal-scroll{overflow-y:auto; padding:26px 30px 40px;}
+  .modal-scroll .m-video{
+    width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden;
+    border:1px solid var(--border); margin-bottom:24px; background:#000;
+  }
+  .modal-scroll .m-video iframe{width:100%; height:100%; border:0; display:block;}
+  .modal-scroll .m-embed{width:100%; height:66vh; border:0; border-radius:14px; background:#fff;}
+  .modal-scroll p{font-size:16.5px; color:var(--text-dim); line-height:1.85; margin-bottom:18px;}
+  .modal-scroll h4{font-size:19px; font-weight:700; color:var(--text); margin:30px 0 12px;}
+  .modal-scroll figure{margin:22px 0;}
+  .modal-scroll figure img{width:100%; border-radius:14px; border:1px solid var(--border);}
+  .modal-scroll figcaption{font-size:14px; color:var(--text-faint); text-align:center; margin-top:10px;}
+  .modal-scroll ul.m-list{margin:0 0 20px 2px; list-style:none;}
+  .modal-scroll ul.m-list li{
+    font-size:16.5px; color:var(--text-dim); line-height:1.8; padding-left:20px; position:relative;
+  }
+  .modal-scroll ul.m-list li::before{
+    content:''; position:absolute; left:2px; top:13px; width:6px; height:6px;
+    border-radius:50%; background:var(--purple-bright);
+  }
+  .modal-scroll blockquote{
+    border-left:3px solid var(--purple); padding:6px 0 6px 18px; margin:22px 0;
+    color:var(--text); font-size:17px; line-height:1.8;
+  }
+  .modal-foot{padding:0 30px 34px;}
+  .modal-foot a{
+    display:inline-block; font-size:15px; color:var(--gold-soft); font-weight:600;
+  }
+  .modal-foot a:hover{text-decoration:underline;}
+
+  footer{padding:70px 0 50px; margin-top:90px; border-top:1px solid var(--border); text-align:center;}
+  .foot-links{display:flex; gap:22px; justify-content:center; font-size:16px; color:var(--text-faint); flex-wrap:wrap;}
+  .foot-links a:hover{color:var(--text);}
+  .foot-note{margin-top:26px; font-size:14.5px; color:var(--text-faint);}
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav>
+    <a href="index.html" class="brand">퍼플 유니버스</a>
+    <div class="navlinks">
+      <a href="index.html#philosophy">플랫폼 소개</a>
+      <a href="index.html#curriculum">커리큘럼</a>
+      <a href="index.html#trust">멤버쉽</a>
+      <a href="index.html#faq">FAQ</a>
+      <span class="nav-sep" aria-hidden="true"></span>
+      <a href="notes.html" class="nav-here">비즈니스 노트</a>
+    </div>
+    <a href="members.html" class="navcta">멤버쉽 전용</a>
+  </nav>
+</header>
+
+<section class="n-hero">
+  <div class="wrap">
+    <span class="eyebrow">BUSINESS NOTE</span>
+    <h1>비즈니스 노트</h1>
+    <p>마케팅 요약, 비즈니스 인사이트, 웨비나 녹화본을 한곳에 모았어요.</p>
+    <div class="n-search"><input type="text" id="noteSearch" placeholder="제목·내용으로 검색"></div>
+  </div>
+</section>
+
+<div class="wrap" id="content"></div>
+<p class="no-result" id="noResult">검색 결과가 없어요.</p>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="닫기">✕</button>
+    <div class="modal-head" id="modalHead"></div>
+    <div class="modal-scroll" id="modalScroll"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="index.html">홈</a>
+      <a href="https://www.youtube.com/@purple-universe-kk" target="_blank" rel="noopener">YouTube</a>
+      <a href="index.html#pricing">멤버십 안내</a>
+      <a href="https://mapa365.notion.site/3b49279ab8ee80d78de2f94557c32423?pvs=105" target="_blank" rel="noopener">사전 신청</a>
+    </div>
+    <p class="foot-note">© 2026 Purple Universe · HYONSLAB &amp; JuInSEE FILM. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="notes-data.js"></script>
+<script>
+/* 자료 목록은 notes-data.js 에서 불러옵니다.
+   관리자 페이지에서 글을 쓰면 그 파일이 자동으로 갱신돼요. */
+const NOTES = Array.isArray(window.NOTES) ? window.NOTES.slice() : [];
+
+const CATS = [
+  { key:'marketing', label:'마케팅 요약',      tagText:'마케팅 요약' },
+  { key:'insight',   label:'비즈니스 인사이트', tagText:'인사이트' },
+  { key:'webinar',   label:'웨비나 녹화본',    tagText:'웨비나' },
+];
+
+const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.6l2.7 5.9 6.4.7-4.8 4.3 1.3 6.3L12 16.6 6.4 19.8l1.3-6.3L2.9 9.2l6.4-.7z"/></svg>';
+
+function ytId(v){
+  if(!v) return '';
+  v = String(v).trim();
+  if(!/[\/?=]/.test(v)) return v;
+  const m = v.match(/(?:v=|youtu\.be\/|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+function fmtDate(d){ return (d || '').replace(/-/g, '.'); }
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function thumbHTML(n, isPick){
+  const id = ytId(n.yt);
+  let inner;
+  if(id){
+    inner = '<iframe src="https://www.youtube.com/embed/' + id + '" title="' + esc(n.title) +
+            '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen ' +
+            'allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>';
+  } else if(n.img){
+    inner = '<img src="' + esc(n.img) + '" alt="" loading="lazy">';
+  } else {
+    inner = '<div class="ph">자료 준비 중</div>';
+  }
+  const badge = isPick ? '<span class="pick-badge">' + STAR + '추천 픽</span>' : '';
+  return '<div class="note-thumb">' + badge + inner + '</div>';
+}
+
+function hasDetail(n){
+  return (Array.isArray(n.body) && n.body.length) || n.embed || ytId(n.yt);
+}
+
+function cardHTML(n, isPick){
+  const cat = CATS.find(c => c.key === n.cat) || CATS[0];
+  const idx = NOTES.indexOf(n);
+  const openable = hasDetail(n);
+  const link = openable
+    ? '<span class="note-link">자세히 보기 →</span>'
+    : (n.link ? '<a class="note-link" href="' + esc(n.link) + '" target="_blank" rel="noopener">자세히 보기 →</a>' : '');
+  return '<article class="note-card' + (isPick ? ' pick-card' : '') + (openable ? ' clickable' : '') +
+    '" data-idx="' + idx + '">' +
+    thumbHTML(n, isPick) +
+    '<div class="note-body">' +
+      '<div class="note-meta"><span class="tag ' + n.cat + '">' + esc(cat.tagText) + '</span>' +
+      '<span class="note-date">' + fmtDate(n.date) + '</span></div>' +
+      '<h3>' + esc(n.title) + '</h3><p>' + esc(n.desc) + '</p>' + link +
+    '</div></article>';
+}
+
+const ARROW_L = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>';
+const ARROW_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+
+function render(query){
+  const q = (query || '').trim().toLowerCase();
+  const match = n => !q || (n.title + ' ' + n.desc).toLowerCase().includes(q);
+
+  // 최신순 정렬
+  const sorted = NOTES.slice().sort((a,b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  const hits = sorted.filter(match);
+  const box = document.getElementById('content');
+  const noResult = document.getElementById('noResult');
+
+  if(hits.length === 0){
+    box.innerHTML = '';
+    noResult.style.display = 'block';
+    return;
+  }
+  noResult.style.display = 'none';
+
+  let html = '';
+
+  // 검색 중이 아닐 때만 '추천 픽' 노출 (분류별 최신 1개씩)
+  const picks = [];
+  if(!q){
+    CATS.forEach(c => {
+      const latest = sorted.find(n => n.cat === c.key);
+      if(latest) picks.push(latest);
+    });
+    if(picks.length){
+      html += '<section class="sec" style="margin-top:10px;">' +
+        '<div class="sec-head"><h2>금주의 추천 픽</h2>' +
+        '<span class="count">분류별 최신 자료</span></div>' +
+        '<div class="pick-grid">' + picks.map(n => cardHTML(n, true)).join('') + '</div></section>';
+    }
+  }
+
+  // 분류별 가로 슬라이드 (최신 → 오래된 순)
+  CATS.forEach((c, i) => {
+    const list = hits.filter(n => n.cat === c.key);
+    if(!list.length) return;
+    const sid = 'slider-' + c.key;
+    html += '<section class="sec">' +
+      '<div class="sec-head"><h2>' + c.label + '</h2>' +
+      '<span class="count">' + list.length + '개 · 최신순</span>' +
+      '<div class="navbtns">' +
+        '<button type="button" data-slider="' + sid + '" data-dir="-1" aria-label="이전">' + ARROW_L + '</button>' +
+        '<button type="button" data-slider="' + sid + '" data-dir="1" aria-label="다음">' + ARROW_R + '</button>' +
+      '</div></div>' +
+      '<div class="slider" id="' + sid + '">' + list.map(n => cardHTML(n, false)).join('') + '</div>' +
+      '</section>';
+  });
+
+  box.innerHTML = html;
+
+  // 카드 클릭 → 팝업 뷰
+  box.querySelectorAll('.note-card.clickable').forEach(card => {
+    card.addEventListener('click', e => {
+      if(e.target.closest('a')) return;          // 외부 링크는 그대로
+      if(e.target.closest('iframe')) return;     // 카드 안 영상 재생은 방해하지 않기
+      openModal(NOTES[Number(card.dataset.idx)]);
+    });
+  });
+
+  // 화살표 동작
+  box.querySelectorAll('.navbtns button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sl = document.getElementById(btn.dataset.slider);
+      if(!sl) return;
+      const card = sl.querySelector('.note-card');
+      const step = card ? card.offsetWidth + 18 : 320;
+      sl.scrollBy({ left: step * Number(btn.dataset.dir), behavior:'smooth' });
+    });
+  });
+}
+
+/* ---------- 팝업 뷰 ---------- */
+const modalBack   = document.getElementById('modalBack');
+const modalHead   = document.getElementById('modalHead');
+const modalScroll = document.getElementById('modalScroll');
+const modalFoot   = document.getElementById('modalFoot');
+
+// 본문 블록 → HTML
+function blockHTML(b){
+  if(typeof b === 'string') return '<p>' + esc(b) + '</p>';
+  switch(b.t){
+    case 'h':     return '<h4>' + esc(b.v) + '</h4>';
+    case 'img':   return '<figure><img src="' + esc(b.v) + '" alt="" loading="lazy">' +
+                         (b.cap ? '<figcaption>' + esc(b.cap) + '</figcaption>' : '') + '</figure>';
+    case 'quote': return '<blockquote>' + esc(b.v) + '</blockquote>';
+    case 'list':  return '<ul class="m-list">' + (b.v || []).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+    default:      return '<p>' + esc(b.v) + '</p>';
+  }
+}
+
+function openModal(n){
+  if(!n) return;
+  const cat = CATS.find(c => c.key === n.cat) || CATS[0];
+  modalHead.innerHTML =
+    '<span class="tag ' + n.cat + '">' + esc(cat.tagText) + '</span>' +
+    '<span class="note-date">' + fmtDate(n.date) + '</span>' +
+    '<h3 id="modalTitle">' + esc(n.title) + '</h3>';
+
+  let html = '';
+  const id = ytId(n.yt);
+  if(id){
+    html += '<div class="m-video"><iframe src="https://www.youtube.com/embed/' + id +
+            '" title="' + esc(n.title) + '" allowfullscreen ' +
+            'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
+            'referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
+  }
+  if(Array.isArray(n.body) && n.body.length){
+    html += n.body.map(blockHTML).join('');
+  } else if(!id && !n.embed){
+    html += '<p>' + esc(n.desc || '') + '</p>';
+  }
+  if(n.embed){
+    html += '<iframe class="m-embed" src="' + esc(n.embed) + '" title="' + esc(n.title) + '" loading="lazy"></iframe>' +
+            '<p style="font-size:14px;color:var(--text-faint);margin-top:12px;">' +
+            '화면이 비어 있다면 해당 사이트가 외부 삽입을 막아둔 경우예요. 아래 버튼으로 새 탭에서 열어주세요.</p>';
+  }
+  modalScroll.innerHTML = html;
+  modalScroll.scrollTop = 0;
+
+  modalFoot.innerHTML = n.link
+    ? '<a href="' + esc(n.link) + '" target="_blank" rel="noopener">원문 새 탭에서 열기 ↗</a>' : '';
+
+  modalBack.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  modalBack.classList.remove('open');
+  modalScroll.innerHTML = '';   // 영상 재생 정지
+  document.body.style.overflow = '';
+}
+
+modalBack.addEventListener('click', e => { if(e.target === modalBack) closeModal(); });
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+document.getElementById('noteSearch').addEventListener('input', e => render(e.target.value));
+render('');
+
+const header = document.getElementById('siteHeader');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 10);
+});
+</script>
+</body>
+</html>
