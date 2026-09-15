@@ -195,9 +195,9 @@
         <div class="field">
           <label>분류</label>
           <select id="fCat">
+            <option value="webinar">웨비나 &amp; LIVE 녹화본</option>
             <option value="marketing">마케팅 요약</option>
             <option value="insight">비즈니스 인사이트</option>
-            <option value="webinar">웨비나 녹화본</option>
           </select>
         </div>
         <div class="field">
@@ -268,7 +268,7 @@
 /* ===================== 설정 ===================== */
 const DATA_FILE = 'notes-data.js';
 const IMG_DIR   = 'images';
-const CATS = { marketing:'마케팅 요약', insight:'비즈니스 인사이트', webinar:'웨비나 녹화본' };
+const CATS = { webinar:'웨비나 & LIVE 녹화본', marketing:'마케팅 요약', insight:'비즈니스 인사이트' };
 
 let TOKEN='', OWNER='', REPO='', BRANCH='main';
 let NOTES=[], dataSha=null, editIndex=-1, thumbData=null;
