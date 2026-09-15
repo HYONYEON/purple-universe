@@ -1,3 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /manage-a13l742d7a.html
+Disallow: /manage-a13l742d7a
+Disallow: /members.html
+Disallow: /members
+
+Sitemap: https://purpleuniverse.net/sitemap.xml
