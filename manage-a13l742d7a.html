@@ -119,6 +119,7 @@
   .pill.marketing{background:rgba(124,77,255,.18); color:var(--purple-bright);}
   .pill.insight{background:rgba(232,184,94,.16); color:var(--gold-soft);}
   .pill.webinar{background:rgba(88,200,140,.16); color:#7FD8A8;}
+  .pill.live{background:rgba(255,90,120,.16); color:#FF9AAE;}
 
   .toast{
     position:fixed; left:50%; bottom:30px; transform:translateX(-50%);
@@ -195,7 +196,8 @@
         <div class="field">
           <label>분류</label>
           <select id="fCat">
-            <option value="webinar">웨비나 &amp; LIVE 녹화본</option>
+            <option value="webinar">웨비나</option>
+            <option value="live">무물보 LIVE</option>
             <option value="marketing">마케팅 요약</option>
             <option value="insight">비즈니스 인사이트</option>
           </select>
@@ -268,7 +270,7 @@
 /* ===================== 설정 ===================== */
 const DATA_FILE = 'notes-data.js';
 const IMG_DIR   = 'images';
-const CATS = { webinar:'웨비나 & LIVE 녹화본', marketing:'마케팅 요약', insight:'비즈니스 인사이트' };
+const CATS = { webinar:'웨비나', live:'무물보 LIVE', marketing:'마케팅 요약', insight:'비즈니스 인사이트' };
 
 let TOKEN='', OWNER='', REPO='', BRANCH='main';
 let NOTES=[], dataSha=null, editIndex=-1, thumbData=null;
