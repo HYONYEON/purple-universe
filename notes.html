@@ -40,6 +40,9 @@
     background:var(--bg); color:var(--text);
     font-family:'IBM Plex Sans KR', sans-serif; line-height:1.6;
     -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  
+    /* 한글은 단어 중간에서 자르지 않음 */
+    word-break:keep-all; overflow-wrap:break-word;
   }
   body::before{
     content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
