@@ -5,6 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>퍼플 유니버스 — 멤버쉽 전용</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="퍼플 유니버스">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="퍼플 유니버스 멤버십 전용">
+<meta property="og:description" content="퍼플 유니버스 멤버 전용 페이지입니다.">
+<meta property="og:url" content="https://purpleuniverse.net/members.html">
+<meta property="og:image" content="https://purpleuniverse.net/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="퍼플 유니버스 4기 — 콘텐츠를 잘 쓰는 사업가들의 멤버십">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="퍼플 유니버스 멤버십 전용">
+<meta name="twitter:description" content="퍼플 유니버스 멤버 전용 페이지입니다.">
+<meta name="twitter:image" content="https://purpleuniverse.net/og-image.png">
+<link rel="canonical" href="https://purpleuniverse.net/members.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -212,7 +227,7 @@
     <div class="wrap m-nav">
       <a href="index.html" class="m-back">← 퍼플 유니버스</a>
       <div style="display:flex; align-items:center; gap:18px;">
-        <a href="notes.html" class="m-back" style="color:var(--purple-bright);">비즈니스 노트</a>
+        <a href="notes.html" class="m-back" style="color:var(--purple-bright);">30X 퍼플 노트</a>
         <span class="m-tag">MEMBERS ONLY</span>
       </div>
     </div>
@@ -229,26 +244,6 @@
       </div>
     </div>
   </section>
-
-  <section class="m-section">
-    <div class="wrap">
-      <span class="eyebrow">AI AGENT</span>
-      <h2>콘텐츠 기획 AI 에이전트</h2>
-      <p>내 비즈니스에 맞는 콘텐츠 아이디어와 기획을 도와주는 전용 에이전트예요. (현재 UI만 먼저 준비된 상태이고, 실제 AI 연결은 곧 추가될 예정이에요.)</p>
-      <div class="agent-box">
-        <div class="agent-messages" id="agentMessages">
-          <div class="agent-msg bot">안녕하세요! 콘텐츠 기획을 도와드릴 에이전트예요. 어떤 걸 도와드릴까요? (지금은 준비 중이라 실제 답변은 아직 연결되지 않았어요)</div>
-        </div>
-        <div class="agent-input-row">
-          <input type="text" id="agentInput" placeholder="예: 이번 주 인스타 릴스 아이디어 추천해줘">
-          <button class="btn btn-primary" id="agentSend">보내기</button>
-        </div>
-      </div>
-      <p class="agent-note">* 지금은 화면만 완성된 상태예요. 실제 AI 응답이 연결되면 안내드릴게요.</p>
-    </div>
-  </section>
-
-  <div class="wrap"><div class="m-divider"></div></div>
 
   <section class="m-section">
     <div class="wrap">
@@ -313,6 +308,26 @@
         </div>
       </div>
       <p class="no-result" id="curatedNoResult">검색 결과가 없어요.</p>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <section class="m-section">
+    <div class="wrap">
+      <span class="eyebrow">AI AGENT</span>
+      <h2>콘텐츠 기획 AI 에이전트</h2>
+      <p>내 비즈니스에 맞는 콘텐츠 아이디어와 기획을 도와주는 전용 에이전트예요. (현재 UI만 먼저 준비된 상태이고, 실제 AI 연결은 곧 추가될 예정이에요.)</p>
+      <div class="agent-box">
+        <div class="agent-messages" id="agentMessages">
+          <div class="agent-msg bot">안녕하세요! 콘텐츠 기획을 도와드릴 에이전트예요. 어떤 걸 도와드릴까요? (지금은 준비 중이라 실제 답변은 아직 연결되지 않았어요)</div>
+        </div>
+        <div class="agent-input-row">
+          <input type="text" id="agentInput" placeholder="예: 이번 주 인스타 릴스 아이디어 추천해줘">
+          <button class="btn btn-primary" id="agentSend">보내기</button>
+        </div>
+      </div>
+      <p class="agent-note">* 지금은 화면만 완성된 상태예요. 실제 AI 응답이 연결되면 안내드릴게요.</p>
     </div>
   </section>
 
