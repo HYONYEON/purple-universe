@@ -100,6 +100,52 @@
   }
   @media(max-width:860px){ .navlinks{display:none;} }
 
+  /* ---------- 모바일 메뉴 (햄버거) ---------- */
+  .navtoggle{
+    display:none; flex:0 0 auto;
+    width:42px; height:42px; margin-left:10px;
+    align-items:center; justify-content:center;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; cursor:pointer; color:var(--text);
+  }
+  .navtoggle span{
+    display:block; position:relative;
+    width:19px; height:2px; border-radius:2px; background:currentColor;
+    transition:transform .28s ease, opacity .2s ease;
+  }
+  .navtoggle span::before,
+  .navtoggle span::after{
+    content:''; position:absolute; left:0;
+    width:19px; height:2px; border-radius:2px; background:currentColor;
+    transition:transform .28s ease;
+  }
+  .navtoggle span::before{top:-6px;}
+  .navtoggle span::after{top:6px;}
+  .navtoggle.open span{background:transparent;}
+  .navtoggle.open span::before{transform:translateY(6px) rotate(45deg);}
+  .navtoggle.open span::after{transform:translateY(-6px) rotate(-45deg);}
+
+  .mobmenu{
+    display:none;
+    border-top:1px solid var(--border);
+    background:rgba(8,5,15,.97); backdrop-filter:blur(14px);
+  }
+  .mobmenu.open{display:block;}
+  .mobmenu-inner{padding:10px 28px 22px;}
+  .mobmenu a{
+    display:block; padding:15px 2px;
+    font-size:18.5px; color:var(--text-dim);
+    border-bottom:1px solid rgba(184,155,255,.10);
+  }
+  .mobmenu a:last-child{border-bottom:none;}
+  .mobmenu a.mm-page{color:var(--purple-pale); font-weight:600;}
+  .mobmenu .mm-divider{height:1px; margin:8px 0; background:var(--border-strong); opacity:.5;}
+  @media(max-width:860px){ .navtoggle{display:flex;} }
+  @media(min-width:861px){ .mobmenu{display:none !important;} }
+  @media (prefers-reduced-motion: reduce){
+    .navtoggle span, .navtoggle span::before, .navtoggle span::after{transition:none;}
+  }
+
   /* ---------- HERO ---------- */
   .n-hero{padding:170px 0 46px; text-align:center;}
   /* 한글 eyebrow — 자간·서체 보정 */
@@ -276,7 +322,20 @@
       <a href="/notes" class="nav-here">30X 퍼플 노트</a>
     </div>
     <a href="/members" class="navcta">멤버쉽 전용</a>
+    <button class="navtoggle" id="navToggle" type="button"
+            aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobMenu"><span></span></button>
   </nav>
+  <div class="mobmenu" id="mobMenu">
+    <div class="mobmenu-inner">
+      <a href="/">플랫폼 소개</a>
+      <a href="/#curriculum">커리큘럼</a>
+      <a href="/#trust">멤버쉽</a>
+      <a href="/#faq">FAQ</a>
+      <div class="mm-divider"></div>
+      <a href="/notes" class="mm-page">30X 퍼플 노트</a>
+      <a href="/members" class="mm-page">멤버쉽 전용</a>
+    </div>
+  </div>
 </header>
 
 <section class="n-hero">
@@ -533,6 +592,28 @@ const header = document.getElementById('siteHeader');
 window.addEventListener('scroll', () => {
   header.classList.toggle('scrolled', window.scrollY > 10);
 });
+
+/* ---------- 모바일 햄버거 메뉴 ---------- */
+(function(){
+  const btn  = document.getElementById('navToggle');
+  const menu = document.getElementById('mobMenu');
+  if(!btn || !menu) return;
+  function setOpen(on){
+    menu.classList.toggle('open', on);
+    btn.classList.toggle('open', on);
+    btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+    btn.setAttribute('aria-label', on ? '메뉴 닫기' : '메뉴 열기');
+  }
+  btn.addEventListener('click', e => { e.stopPropagation(); setOpen(!menu.classList.contains('open')); });
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('click', e => {
+    if(!menu.classList.contains('open')) return;
+    if(menu.contains(e.target) || btn.contains(e.target)) return;
+    setOpen(false);
+  });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') setOpen(false); });
+  window.addEventListener('resize', () => { if(window.innerWidth > 860) setOpen(false); });
+})();
 </script>
 </body>
 </html>

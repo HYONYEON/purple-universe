@@ -118,6 +118,11 @@
   .m-nav{display:flex; align-items:center; justify-content:space-between;}
   .m-back{font-weight:600; font-size:16px; color:var(--text-dim); display:flex; align-items:center; gap:6px;}
   .m-back:hover{color:var(--text);}
+  /* 좁은 화면에서는 MEMBERS ONLY 표시를 숨겨 줄바꿈 방지 */
+  @media(max-width:520px){
+    .m-nav .m-tag{display:none;}
+    .m-back{font-size:15px;}
+  }
   .m-tag{
     font-family:'Space Grotesk'; font-size:12.5px; letter-spacing:.1em; font-weight:600;
     color:var(--gold-soft); border:1px solid rgba(243,216,154,.35); padding:6px 14px; border-radius:100px;

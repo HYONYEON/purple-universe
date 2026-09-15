@@ -203,6 +203,58 @@
   .navlinks, .navcta{display:flex;}
   @media(max-width:760px){ .navlinks{display:none;} }
 
+  /* ---------- 모바일 메뉴 (햄버거) ---------- */
+  .navtoggle{
+    display:none; flex:0 0 auto;
+    width:42px; height:42px; margin-left:10px;
+    align-items:center; justify-content:center;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; cursor:pointer; color:var(--text);
+    transition:background .2s ease, border-color .2s ease;
+  }
+  .navtoggle:hover{background:var(--surface-2); border-color:var(--border-strong);}
+  .navtoggle span{
+    display:block; position:relative;
+    width:19px; height:2px; border-radius:2px; background:currentColor;
+    transition:transform .28s ease, opacity .2s ease;
+  }
+  .navtoggle span::before,
+  .navtoggle span::after{
+    content:''; position:absolute; left:0;
+    width:19px; height:2px; border-radius:2px; background:currentColor;
+    transition:transform .28s ease;
+  }
+  .navtoggle span::before{top:-6px;}
+  .navtoggle span::after{top:6px;}
+  /* 열렸을 때 X 모양 */
+  .navtoggle.open span{background:transparent;}
+  .navtoggle.open span::before{transform:translateY(6px) rotate(45deg);}
+  .navtoggle.open span::after{transform:translateY(-6px) rotate(-45deg);}
+
+  .mobmenu{
+    display:none;
+    border-top:1px solid var(--border);
+    background:rgba(8,5,15,.97); backdrop-filter:blur(14px);
+  }
+  .mobmenu.open{display:block;}
+  .mobmenu-inner{padding:10px 28px 22px;}
+  .mobmenu a{
+    display:block; padding:15px 2px;
+    font-size:18.5px; color:var(--text-dim);
+    border-bottom:1px solid rgba(184,155,255,.10);
+  }
+  .mobmenu a:last-child{border-bottom:none;}
+  .mobmenu a.mm-page{color:var(--purple-pale); font-weight:600;}
+  .mobmenu .mm-divider{
+    height:1px; margin:8px 0;
+    background:var(--border-strong); opacity:.5;
+  }
+  @media(max-width:760px){ .navtoggle{display:flex;} }
+  @media(min-width:761px){ .mobmenu{display:none !important;} }
+  @media (prefers-reduced-motion: reduce){
+    .navtoggle span, .navtoggle span::before, .navtoggle span::after{transition:none;}
+  }
+
   /* ---------- HERO ---------- */
   .hero{
     position:relative;
@@ -902,7 +954,20 @@
       <a href="/members" class="nav-out">멤버쉽 전용</a>
     </div>
     <a href="https://mapa365.notion.site/3b49279ab8ee80d78de2f94557c32423?pvs=105" class="navcta" target="_blank" rel="noopener">사전 신청</a>
+    <button class="navtoggle" id="navToggle" type="button"
+            aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobMenu"><span></span></button>
   </nav>
+  <div class="mobmenu" id="mobMenu">
+    <div class="mobmenu-inner">
+      <a href="#top" class="mm-top">플랫폼 소개</a>
+      <a href="#curriculum">커리큘럼</a>
+      <a href="#trust">멤버쉽</a>
+      <a href="#faq">FAQ</a>
+      <div class="mm-divider"></div>
+      <a href="/notes" class="mm-page">30X 퍼플 노트</a>
+      <a href="/members" class="mm-page">멤버쉽 전용</a>
+    </div>
+  </div>
 </header>
 
 <!-- HERO -->
@@ -1532,6 +1597,7 @@
       <div class="foot-links">
         <a href="https://www.youtube.com/@purple-universe-kk" target="_blank" rel="noopener">YouTube</a>
         <a href="#pricing">멤버십 안내</a>
+        <a href="/notes">30X 퍼플 노트</a>
         <a href="/members">멤버쉽 전용</a>
         <a href="https://mapa365.notion.site/3b49279ab8ee80d78de2f94557c32423?pvs=105" target="_blank" rel="noopener">사전 신청</a>
       </div>
@@ -1715,8 +1781,47 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   update();
 })();
 
+// 모바일 햄버거 메뉴
+(function(){
+  const btn  = document.getElementById('navToggle');
+  const menu = document.getElementById('mobMenu');
+  if(!btn || !menu) return;
+
+  function setOpen(on){
+    menu.classList.toggle('open', on);
+    btn.classList.toggle('open', on);
+    btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+    btn.setAttribute('aria-label', on ? '메뉴 닫기' : '메뉴 열기');
+  }
+
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    setOpen(!menu.classList.contains('open'));
+  });
+
+  // 항목을 누르면 닫기
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+
+  // 바깥을 누르면 닫기
+  document.addEventListener('click', e => {
+    if(!menu.classList.contains('open')) return;
+    if(menu.contains(e.target) || btn.contains(e.target)) return;
+    setOpen(false);
+  });
+
+  // ESC 로 닫기
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') setOpen(false);
+  });
+
+  // PC 폭으로 넓어지면 닫기
+  window.addEventListener('resize', () => {
+    if(window.innerWidth > 760) setOpen(false);
+  });
+})();
+
 // '플랫폼 소개' → 페이지 최상단으로
-document.querySelectorAll('.nav-top').forEach(a => {
+document.querySelectorAll('.nav-top, .mm-top').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
