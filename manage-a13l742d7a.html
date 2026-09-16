@@ -535,10 +535,45 @@ function ytIdOf(v){
   return m ? m[1] : (/^[\w-]{11}$/.test(String(v||'').trim()) ? String(v).trim() : '');
 }
 function ogImageOf(n){
-  if(n.img)  return SITE + '/' + String(n.img).replace(/^\//,'');
+  if(n.ogimg) return SITE + '/' + String(n.ogimg).replace(/^\//,'');
+  if(n.img)   return SITE + '/' + String(n.img).replace(/^\//,'');
   const id = ytIdOf(n.yt);
-  if(id)     return 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
+  if(id)      return 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
   return SITE + '/og-image.png';
+}
+
+/* 세로로 긴 카드뉴스 이미지를 카톡 띠(1200×630)에 맞게 잘라 만들기
+   ─ 제목이 들어있는 위쪽을 살리고, 맨 위 라벨은 걷어냄 */
+const OG_W = 1200, OG_H = 630, OG_TOP = 0.08;   // 위에서 8% 지점부터
+
+async function makeOgCrop(n){
+  if(!n.img) return null;                       // 올린 이미지가 없으면 만들 것 없음
+  try{
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    await new Promise((ok, no) => {
+      img.onload = ok; img.onerror = no;
+      img.src = SITE + '/' + String(n.img).replace(/^\//,'') + '?b=' + Date.now();
+    });
+    const W = img.naturalWidth, H = img.naturalHeight;
+    if(!W || !H) return null;
+    if(W / H > 1.5) return null;                // 이미 가로형이면 그대로 써도 됨
+
+    const bandH = Math.round(W / (OG_W / OG_H));            // 띠 높이
+    let top = Math.round(H * OG_TOP);
+    if(top + bandH > H) top = Math.max(0, H - bandH);       // 넘치면 끌어올림
+
+    const c = document.createElement('canvas');
+    c.width = OG_W; c.height = OG_H;
+    const x = c.getContext('2d');
+    x.fillStyle = '#08050F'; x.fillRect(0, 0, OG_W, OG_H);
+    x.drawImage(img, 0, top, W, bandH, 0, 0, OG_W, OG_H);
+
+    const dataUrl = c.toDataURL('image/jpeg', 0.92);
+    return { dataUrl, b64: dataUrl.split(',')[1], name: 'og-' + n.no + '.jpg' };
+  }catch(e){
+    return null;                                // 실패하면 원본 이미지로 대체
+  }
 }
 function attr(v){
   return String(v == null ? '' : v)
@@ -586,6 +621,13 @@ function ogPageHTML(n){
 
 // 공유용 페이지 한 개 올리기
 async function putOgPage(n){
+  // 공유용 잘린 이미지 준비 (세로 이미지일 때만)
+  if(n.img && !n.yt){
+    const crop = await makeOgCrop(n);
+    if(crop){
+      try{ n.ogimg = await uploadImage(crop); }catch(e){ /* 실패 시 원본 사용 */ }
+    }
+  }
   const path = 'n/' + n.no + '.html';
   let sha = null;
   try{
