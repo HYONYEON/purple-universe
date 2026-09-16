@@ -574,6 +574,12 @@ function slugOf(n){
 function findBySlug(slug){
   if(!slug) return null;
   const want = decodeURIComponent(slug);
+  // 번호 주소 (#3) — 짧은 공유 주소
+  if(/^\d+$/.test(want)){
+    const byNo = NOTES.find(n => String(n.no) === want);
+    if(byNo) return byNo;
+  }
+  // 예전 방식(날짜-제목)도 계속 열리게
   return NOTES.find(n => slugOf(n) === want) || null;
 }
 function copyLink(url, btn){
@@ -625,8 +631,11 @@ function openModal(n){
   modalScroll.innerHTML = html;
   modalScroll.scrollTop = 0;
 
-  const slug = slugOf(n);
-  const shareUrl = location.origin + location.pathname + '#' + slug;   // 한글 그대로 (붙여넣으면 자동 변환)
+  // 번호가 있으면 짧은 주소(/n/3), 없으면 예전 방식
+  const slug     = n.no ? String(n.no) : slugOf(n);
+  const shareUrl = n.no
+    ? location.origin + '/n/' + n.no
+    : location.origin + location.pathname + '#' + slug;
 
   modalFoot.innerHTML =
     (n.link ? '<a href="' + esc(n.link) + '" target="_blank" rel="noopener">원문 새 탭에서 열기 ↗</a>' : '<span></span>') +

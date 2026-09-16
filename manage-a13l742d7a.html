@@ -441,6 +441,87 @@ async function uploadImage(img){
 }
 
 /* ===================== 저장 ===================== */
+/* ===================== 글 번호 & 공유용 페이지 ===================== */
+const SITE = 'https://purpleuniverse.net';
+
+function maxNo(){
+  return NOTES.reduce((m, n) => Math.max(m, Number(n.no) || 0), 0);
+}
+// 번호 없는 기존 글에 오래된 순으로 번호 부여
+function backfillNos(){
+  const missing = NOTES.filter(n => !n.no);
+  if(!missing.length) return [];
+  missing.sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  let next = maxNo();
+  missing.forEach(n => { n.no = ++next; });
+  return missing;
+}
+
+function ytIdOf(v){
+  const m = String(v||'').match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/);
+  return m ? m[1] : (/^[\w-]{11}$/.test(String(v||'').trim()) ? String(v).trim() : '');
+}
+function ogImageOf(n){
+  if(n.img)  return SITE + '/' + String(n.img).replace(/^\//,'');
+  const id = ytIdOf(n.yt);
+  if(id)     return 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
+  return SITE + '/og-image.png';
+}
+function attr(v){
+  return String(v == null ? '' : v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+// 본문에서 설명문 뽑기 (desc 가 비었을 때 대비)
+function summaryOf(n){
+  if(n.desc) return n.desc;
+  const first = (n.body||[]).find(b => b && (b.t==='p' || b.t==='quote') && b.v);
+  const raw = first ? String(first.v) : '';
+  return raw.replace(/\s+/g,' ').slice(0, 90);
+}
+
+function ogPageHTML(n){
+  const url  = SITE + '/n/' + n.no;
+  const hash = '/notes#' + n.no;
+  const cat  = CATS[n.cat] || '';
+  const title = n.title + (cat ? ' — ' + cat : '') + ' | 30X 퍼플 노트';
+  const desc  = summaryOf(n);
+  return '<!DOCTYPE html>\n'
+   + '<html lang="ko">\n<head>\n<meta charset="UTF-8">\n'
+   + '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+   + '<title>' + attr(title) + '</title>\n'
+   + '<meta name="description" content="' + attr(desc) + '">\n'
+   + '<meta property="og:type" content="article">\n'
+   + '<meta property="og:site_name" content="퍼플 유니버스">\n'
+   + '<meta property="og:locale" content="ko_KR">\n'
+   + '<meta property="og:title" content="' + attr(title) + '">\n'
+   + '<meta property="og:description" content="' + attr(desc) + '">\n'
+   + '<meta property="og:url" content="' + attr(url) + '">\n'
+   + '<meta property="og:image" content="' + attr(ogImageOf(n)) + '">\n'
+   + '<meta name="twitter:card" content="summary_large_image">\n'
+   + '<meta name="twitter:title" content="' + attr(title) + '">\n'
+   + '<meta name="twitter:description" content="' + attr(desc) + '">\n'
+   + '<meta name="twitter:image" content="' + attr(ogImageOf(n)) + '">\n'
+   + '<link rel="canonical" href="' + attr(SITE + hash) + '">\n'
+   + '<meta http-equiv="refresh" content="0;url=' + attr(hash) + '">\n'
+   + '<scr' + 'ipt>location.replace(' + JSON.stringify(hash) + ');<\/scr' + 'ipt>\n'
+   + '</head>\n'
+   + '<body style="background:#08050F;color:#B7ACD1;font-family:sans-serif;'
+   + 'display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;">\n'
+   + '<p>자료를 여는 중…<br><a href="' + attr(hash) + '" style="color:#A98BFF;">바로 열기</a></p>\n'
+   + '</body>\n</html>\n';
+}
+
+// 공유용 페이지 한 개 올리기
+async function putOgPage(n){
+  const path = 'n/' + n.no + '.html';
+  let sha = null;
+  try{
+    const f = await gh('/contents/' + path + '?ref=' + BRANCH);
+    sha = f.sha;
+  }catch(e){ /* 없으면 새로 만듦 */ }
+  await putFile(path, b64encode(ogPageHTML(n)), sha, '공유 페이지: ' + n.title);
+}
+
 async function save(){
   const btn=document.getElementById('saveBtn');
   const title=document.getElementById('fTitle').value.trim();
@@ -476,6 +557,10 @@ async function save(){
       body : blocks
     };
 
+    // 글 번호 — 수정이면 기존 번호 유지, 새 글이면 다음 번호
+    const filled = backfillNos();                       // 번호 없는 옛 글 보정
+    item.no = (editIndex>-1 && NOTES[editIndex].no) ? NOTES[editIndex].no : maxNo()+1;
+
     if(editIndex>-1) NOTES[editIndex]=item; else NOTES.unshift(item);
     NOTES.sort((a,b)=> a.date<b.date?1 : a.date>b.date?-1 : 0);
 
@@ -483,7 +568,12 @@ async function save(){
                               (editIndex>-1?'글 수정: ':'글 등록: ')+title);
     dataSha = res.content.sha;
 
-    toast('발행 완료 — 1분 안에 사이트에 반영됩니다');
+    // 공유용 페이지 (카톡 미리보기가 이 글 내용으로 뜨게)
+    btn.textContent='공유 페이지 만드는 중…';
+    await putOgPage(item);
+    for(const n of filled){ if(n !== item) await putOgPage(n); }
+
+    toast('발행 완료 — 공유 주소: ' + SITE + '/n/' + item.no);
     resetForm(); renderList();
   }catch(e){
     toast('실패: '+e.message, false);
