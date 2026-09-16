@@ -253,7 +253,7 @@
   }
   .modal-back.open{display:flex;}
   .modal{
-    position:relative; width:min(1000px, 78vw); height:82vh;
+    position:relative; width:min(1000px, 78vw); height:88vh;
     background:var(--bg-alt); border:1px solid var(--border-strong);
     border-radius:22px; overflow:hidden; display:flex; flex-direction:column;
     box-shadow:0 40px 90px rgba(0,0,0,.6);
@@ -301,6 +301,12 @@
     width:100%; height:auto; display:block;
     border-radius:14px; border:1px solid var(--border);
   }
+  /* 세로로 긴 카드뉴스는 남은 높이에 맞춰 통째로 (높이는 스크립트가 계산) */
+  .gallery-track figure{
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  .gallery-track img.fitted{ width:auto; max-width:100%; margin:0 auto; }
   .gallery-track figcaption{
     margin-top:10px; font-size:14px; color:var(--text-faint); text-align:center;
   }
@@ -694,6 +700,42 @@ function wireGalleries(root){
     );
     sync();
   });
+
+  fitGalleries(root);
+  // 창 크기가 바뀌면 다시 계산
+  if(!root._fitBound){
+    root._fitBound = true;
+    window.addEventListener('resize', () => fitGalleries(root));
+  }
+}
+
+/* 글 전체가 카드뉴스뿐이면, 스크롤 없이 한 화면에 들어오도록 높이를 맞춤
+   ─ 여백·점 표시·안내문까지 포함해 실제 넘침을 보고 줄이므로 화면 크기와 무관하게 맞음 */
+function fitGalleries(root){
+  const gals = [...root.querySelectorAll('.gallery')];
+  if(gals.length !== 1) return;                 // 묶음이 여럿이면 자연스럽게 흐르도록 둠
+  const gal = gals[0];
+
+  // 카드뉴스 외에 다른 내용(문단·영상 등)이 있으면 건드리지 않음
+  const others = [...root.children].filter(el => el !== gal);
+  const otherH = others.reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
+  if(otherH > 60) return;
+
+  const imgs = [...gal.querySelectorAll('img')];
+  if(!imgs.length) return;
+
+  imgs.forEach(im => { im.classList.add('fitted'); im.style.maxHeight = 'none'; });
+  void root.scrollHeight;                        // 원래 크기로 되돌린 뒤 다시 측정
+
+  for(let i = 0; i < 4; i++){
+    const over = root.scrollHeight - root.clientHeight;
+    if(over <= 0) break;
+    const cur  = imgs[0].getBoundingClientRect().height;
+    const next = Math.max(200, Math.floor(cur - over - 4));
+    if(next >= cur) break;
+    imgs.forEach(im => { im.style.maxHeight = next + 'px'; });
+    void root.scrollHeight;
+  }
 }
 
 /* ---------- 글마다 개별 주소 ---------- */
