@@ -253,7 +253,7 @@
   }
   .modal-back.open{display:flex;}
   .modal{
-    position:relative; width:min(1000px, 78vw); height:88vh;
+    position:relative; width:min(1100px, 82vw); height:93vh;
     background:var(--bg-alt); border:1px solid var(--border-strong);
     border-radius:22px; overflow:hidden; display:flex; flex-direction:column;
     box-shadow:0 40px 90px rgba(0,0,0,.6);
@@ -307,6 +307,39 @@
     align-items:center; justify-content:center;
   }
   .gallery-track img.fitted{ width:auto; max-width:100%; margin:0 auto; }
+
+  /* ---------- 카드뉴스만 있는 글 : 여백을 줄여 카드를 최대한 크게 ---------- */
+  .modal.media-fit .modal-head{ padding:10px 60px 8px 26px; }
+  .modal.media-fit .gallery-hint{ display:none; }
+  /* 본문 영역이 남은 높이를 전부 차지하고, 그 안에서 이미지가 높이를 채운다
+     아래 46px은 점 표시·주소 복사 버튼이 겹쳐 놓일 자리 */
+  .modal.media-fit .modal-scroll{
+    flex:1 1 auto; min-height:0; overflow:hidden;
+    display:flex; flex-direction:column;
+    padding:4px 18px 46px;
+  }
+  .modal.media-fit .gallery{
+    flex:1; min-height:0; margin:0;
+    display:flex; flex-direction:column;
+  }
+  .modal.media-fit .gallery-track{ flex:1; min-height:0; }
+  .modal.media-fit .gallery-track figure{ height:100%; justify-content:center; }
+  .modal.media-fit .gallery-track img{
+    max-height:100%; max-width:100%;
+    width:auto; height:auto; object-fit:contain; margin:0 auto;
+  }
+  /* 주소 복사 버튼은 오른쪽 아래에 겹쳐 올려 높이를 아낀다 */
+  .modal.media-fit .modal-foot{
+    position:absolute; right:26px; bottom:14px; left:auto;
+    padding:0; margin:0; width:auto; z-index:3;
+  }
+  /* 점 표시를 카드 위에 겹쳐 올려 자리를 아낌 */
+  .modal.media-fit .gallery-dots{
+    position:absolute; left:50%; bottom:12px; transform:translateX(-50%);
+    margin:0; padding:7px 14px; border-radius:100px;
+    background:rgba(8,5,15,.72); backdrop-filter:blur(8px);
+    border:1px solid var(--border); z-index:3;
+  }
   .gallery-track figcaption{
     margin-top:10px; font-size:14px; color:var(--text-faint); text-align:center;
   }
@@ -710,45 +743,26 @@ function wireGalleries(root){
   }
 }
 
-/* 글 전체가 카드뉴스뿐이면, 스크롤 없이 한 화면에 들어오도록 높이를 맞춤
-   ─ 여백·점 표시·안내문까지 포함해 실제 넘침을 보고 줄이므로 화면 크기와 무관하게 맞음 */
+/* 글 전체가 카드뉴스뿐이면 '카드 크게 보기' 모드를 켠다
+   ─ 실제 크기 조절은 CSS(.modal.media-fit)가 남은 높이를 카드에 그대로 넘겨주는 방식.
+     이미지 로딩을 기다릴 필요도, 픽셀을 계산할 필요도 없어 화면 크기와 무관하게 맞음 */
 function fitGalleries(root){
+  const modal = root.closest('.modal');
+  const off = () => { if(modal) modal.classList.remove('media-fit'); };
+
+  // 모바일은 폭을 꽉 채우는 게 더 크게 보임 → 손대지 않음
+  if(window.innerWidth < 861){ off(); return; }
+
   const gals = [...root.querySelectorAll('.gallery')];
-  if(gals.length !== 1) return;                 // 묶음이 여럿이면 자연스럽게 흐르도록 둠
+  if(gals.length !== 1){ off(); return; }       // 묶음이 여럿이면 자연스럽게 흐르도록 둠
   const gal = gals[0];
 
   // 카드뉴스 외에 다른 내용(문단·영상 등)이 있으면 건드리지 않음
   const others = [...root.children].filter(el => el !== gal);
   const otherH = others.reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
-  if(otherH > 60) return;
+  if(otherH > 60){ off(); return; }
 
-  const imgs = [...gal.querySelectorAll('img')];
-  if(!imgs.length) return;
-
-  // 크기 기준은 첫 장 하나 (뒤 장들은 지연 로딩이라 기다리면 안 됨)
-  const lead = imgs[0];
-  if(!lead.complete || !lead.naturalHeight){
-    if(!lead._fitWait){
-      lead._fitWait = true;
-      const again = () => { lead._fitWait = false; fitGalleries(root); };
-      lead.addEventListener('load',  again, { once:true });
-      lead.addEventListener('error', again, { once:true });
-    }
-    return;
-  }
-
-  imgs.forEach(im => { im.classList.add('fitted'); im.style.maxHeight = 'none'; });
-  void root.scrollHeight;                        // 원래 크기로 되돌린 뒤 다시 측정
-
-  for(let i = 0; i < 4; i++){
-    const over = root.scrollHeight - root.clientHeight;
-    if(over <= 0) break;
-    const cur  = imgs[0].getBoundingClientRect().height;
-    const next = Math.max(200, Math.floor(cur - over - 4));
-    if(next >= cur) break;
-    imgs.forEach(im => { im.style.maxHeight = next + 'px'; });
-    void root.scrollHeight;
-  }
+  if(modal) modal.classList.add('media-fit');
 }
 
 /* ---------- 글마다 개별 주소 ---------- */
