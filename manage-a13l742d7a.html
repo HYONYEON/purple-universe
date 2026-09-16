@@ -121,6 +121,47 @@
   .pill.webinar{background:rgba(88,200,140,.16); color:#7FD8A8;}
   .pill.live{background:rgba(255,90,120,.16); color:#FF9AAE;}
 
+  /* ---------- 2단 배치 (왼쪽 목록 / 오른쪽 편집) ---------- */
+  .admin-grid{
+    display:grid; grid-template-columns:320px minmax(0,1fr);
+    gap:24px; align-items:start;
+  }
+  .side{position:sticky; top:96px;}
+  .side .card{margin-top:0;}
+  .side-list{
+    max-height:calc(100vh - 220px); overflow-y:auto;
+    margin:0 -8px; padding:0 8px;
+  }
+  .side-list::-webkit-scrollbar{width:6px;}
+  .side-list::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:3px;}
+
+  /* 사이드바용 목록 항목 — 세로로 쌓이는 형태 */
+  .side .list-item{
+    display:block; padding:12px 14px; margin-bottom:8px; cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .side .list-item:hover{border-color:var(--border-strong); background:var(--surface);}
+  .side .list-item.editing{border-color:var(--purple-bright); background:rgba(124,77,255,.10);}
+  .side .li-top{display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;}
+  .side .li-no{
+    font-size:12px; font-weight:700; color:var(--text-faint);
+    font-family:'Space Grotesk', sans-serif;
+  }
+  .side .list-item .t{min-width:0;}
+  .side .list-item .t b{
+    display:block; font-size:14.5px; line-height:1.45; font-weight:600;
+    word-break:keep-all;
+  }
+  .side .list-item .t span{font-size:12.5px;}
+  .side .li-btns{display:flex; gap:6px; margin-top:10px;}
+  .side .li-btns .btn{padding:5px 12px; font-size:12.5px;}
+
+  @media(max-width:1100px){
+    .admin-grid{grid-template-columns:1fr;}
+    .side{position:static;}
+    .side-list{max-height:none;}
+  }
+
   .toast{
     position:fixed; left:50%; bottom:30px; transform:translateX(-50%);
     background:var(--bg-alt2); border:1px solid var(--border-strong); color:var(--text);
@@ -187,10 +228,22 @@
     </div>
   </header>
 
-  <div class="wrap" style="padding-bottom:80px;">
+  <div class="wrap" style="padding-bottom:80px; max-width:1360px;">
 
     <!-- 글쓰기 -->
-    <section class="card">
+    <div class="admin-grid">
+
+    <!-- 왼쪽 : 올라간 글 목록 -->
+    <aside class="side">
+      <section class="card">
+        <h2>올라간 글 <span style="color:var(--text-faint); font-size:15px; font-weight:400;" id="cnt"></span></h2>
+        <div class="side-list" id="list"></div>
+      </section>
+    </aside>
+
+    <!-- 오른쪽 : 편집 -->
+    <div>
+    <section class="card" style="margin-top:0;">
       <h2 id="formTitle">새 글 쓰기</h2>
 
       <div class="row">
@@ -259,11 +312,8 @@
       <p class="hint" id="saveHint">발행하면 사이트에 1분 안에 반영됩니다.</p>
     </section>
 
-    <!-- 목록 -->
-    <section class="card">
-      <h2>올라간 글 <span style="color:var(--text-faint); font-size:15px; font-weight:400;" id="cnt"></span></h2>
-      <div id="list"></div>
-    </section>
+    </div><!-- /오른쪽 -->
+    </div><!-- /2단 -->
   </div>
 </div>
 
@@ -634,6 +684,7 @@ function editItem(i){
   thumbData=null;
   document.getElementById('blocks').innerHTML='';
   (n.body||[]).forEach(b=> addBlock(b.t||'p', b.v, b.cap));
+  renderList();                                  // 선택 표시 갱신
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
@@ -646,21 +697,31 @@ function resetForm(){
   document.getElementById('thumbPrev').style.display='none';
   document.getElementById('thumbDrop').textContent='클릭하거나 이미지를 여기로 끌어다 놓으세요';
   addBlock('p');
+  if(typeof NOTES !== 'undefined' && NOTES.length) renderList();   // 선택 표시 해제
 }
 
 function renderList(){
   const box=document.getElementById('list');
   document.getElementById('cnt').textContent = NOTES.length ? '· '+NOTES.length+'개' : '';
   if(!NOTES.length){ box.innerHTML='<p class="hint">아직 올린 글이 없습니다.</p>'; return; }
+
   box.innerHTML = NOTES.map((n,i)=>
-    '<div class="list-item">'+
-      '<span class="pill '+n.cat+'">'+(CATS[n.cat]||n.cat)+'</span>'+
+    '<div class="list-item' + (i===editIndex ? ' editing' : '') + '" data-open="'+i+'">'+
+      '<div class="li-top">'+
+        '<span class="pill '+n.cat+'">'+(CATS[n.cat]||n.cat)+'</span>'+
+        (n.no ? '<span class="li-no">/n/'+n.no+'</span>' : '')+
+      '</div>'+
       '<div class="t"><b>'+escapeHtml(n.title)+'</b><span>'+n.date+'</span></div>'+
-      '<button class="btn btn-ghost btn-sm" data-edit="'+i+'">수정</button>'+
-      '<button class="btn btn-danger btn-sm" data-del="'+i+'">삭제</button>'+
+      '<div class="li-btns">'+
+        '<button class="btn btn-ghost btn-sm" data-edit="'+i+'">수정</button>'+
+        '<button class="btn btn-danger btn-sm" data-del="'+i+'">삭제</button>'+
+      '</div>'+
     '</div>').join('');
-  box.querySelectorAll('[data-edit]').forEach(b=> b.onclick=()=>editItem(+b.dataset.edit));
-  box.querySelectorAll('[data-del]').forEach(b=> b.onclick=()=>removeItem(+b.dataset.del));
+
+  box.querySelectorAll('[data-edit]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); editItem(+b.dataset.edit); });
+  box.querySelectorAll('[data-del]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); removeItem(+b.dataset.del); });
+  // 항목 아무 곳이나 눌러도 수정으로 들어감
+  box.querySelectorAll('[data-open]').forEach(el=> el.onclick=()=>editItem(+el.dataset.open));
 }
 function escapeHtml(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
