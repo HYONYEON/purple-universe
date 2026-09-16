@@ -331,15 +331,37 @@ async function connect(){
 }
 
 /* ===================== 데이터 읽기/쓰기 ===================== */
+let loadOk = false;   // 목록을 제대로 읽었는지 (실패 시 저장 금지 — 덮어쓰기 사고 방지)
+
 async function loadData(){
+  loadOk = false;
+  let f = null;
   try{
-    const f = await gh('/contents/'+DATA_FILE+'?ref='+BRANCH);
-    dataSha = f.sha;
-    const txt = b64decode(f.content.replace(/\n/g,''));
-    const m = txt.match(/window\.NOTES\s*=\s*([\s\S]*);?\s*$/);
-    NOTES = m ? JSON.parse(toJson(m[1])) : [];
+    f = await gh('/contents/'+DATA_FILE+'?ref='+BRANCH);
   }catch(e){
-    NOTES=[]; dataSha=null;      // 파일이 아직 없으면 새로 만든다
+    NOTES=[]; dataSha=null; loadOk=true;   // 파일이 아직 없으면 새로 시작
+    renderList(); return;
+  }
+
+  dataSha = f.sha;
+  const txt = b64decode(f.content.replace(/\n/g,''));
+  const m = txt.match(/window\.NOTES\s*=\s*([\s\S]*?);?\s*$/);
+  const raw = m ? m[1].trim().replace(/;$/,'') : '';
+
+  // 지금 형식은 순수 JSON → 그대로 읽는다 (따옴표 변환 안 함)
+  try{
+    NOTES = JSON.parse(raw);
+    loadOk = true;
+  }catch(e1){
+    // 예전 손글씨 형식(홑따옴표 등)일 때만 변환해서 재시도
+    try{
+      NOTES = JSON.parse(toJson(raw));
+      loadOk = true;
+    }catch(e2){
+      NOTES = [];
+      loadOk = false;
+      toast('기존 글 목록을 읽지 못했어요. 덮어쓰기를 막기 위해 저장이 잠겼습니다.', false);
+    }
   }
   renderList();
 }
@@ -526,6 +548,10 @@ async function save(){
   const btn=document.getElementById('saveBtn');
   const title=document.getElementById('fTitle').value.trim();
   const date =document.getElementById('fDate').value;
+  if(!loadOk){
+    toast('기존 글 목록을 읽지 못한 상태예요. 새로고침 후 다시 시도해주세요.', false);
+    return;
+  }
   if(!title){ toast('제목을 입력해주세요.', false); return; }
   if(!date){  toast('날짜를 선택해주세요.', false); return; }
 
