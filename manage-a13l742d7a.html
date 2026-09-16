@@ -180,6 +180,7 @@
         <h1>30X 퍼플 노트 글 관리</h1>
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" id="fixShareBtn" title="번호가 없는 글에 번호를 붙이고, 공유용 페이지를 다시 만듭니다">공유 주소 정리</button>
         <a class="btn btn-ghost btn-sm" href="https://purpleuniverse.net/notes" target="_blank" rel="noopener">사이트 보기 ↗</a>
         <button class="btn btn-ghost btn-sm" id="logoutBtn">연결 해제</button>
       </div>
@@ -668,6 +669,40 @@ function escapeHtml(s){
 /* ===================== 이벤트 ===================== */
 document.getElementById('loginBtn').onclick=connect;
 document.getElementById('tokenInput').addEventListener('keydown', e=>{ if(e.key==='Enter') connect(); });
+/* ---------- 공유 주소 정리 (번호 부여 + 공유 페이지 일괄 생성) ---------- */
+document.getElementById('fixShareBtn').onclick = async () => {
+  const btn = document.getElementById('fixShareBtn');
+  if(!loadOk){ toast('목록을 읽지 못한 상태예요. 새로고침 후 다시 시도해주세요.', false); return; }
+  if(!NOTES.length){ toast('정리할 글이 없어요.', false); return; }
+
+  btn.disabled = true;
+  const before = btn.textContent;
+  try{
+    const filled = backfillNos();          // 번호 없는 글에 번호 부여
+
+    if(filled.length){
+      btn.textContent = '번호 저장 중…';
+      const res = await putFile(DATA_FILE, b64encode(dataFileText()), dataSha, '글 번호 부여');
+      dataSha = res.content.sha;
+    }
+
+    // 모든 글의 공유 페이지 생성 (내용이 바뀌었을 수 있으니 전부 다시)
+    let done = 0;
+    for(const n of NOTES){
+      btn.textContent = '공유 페이지 ' + (++done) + '/' + NOTES.length;
+      await putOgPage(n);
+    }
+
+    renderList();
+    toast('정리 완료 — ' + NOTES.length + '개 글의 공유 주소가 준비됐어요');
+  }catch(e){
+    toast('실패: ' + e.message, false);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = before;
+  }
+};
+
 document.getElementById('logoutBtn').onclick=()=>{
   localStorage.removeItem('pu_admin'); location.reload();
 };
