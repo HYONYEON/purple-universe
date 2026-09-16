@@ -638,8 +638,9 @@ function bodyHTML(body){
         out.push(blockHTML(group[0]));       // 한 장이면 그대로
       }else{
         const gid = 'gal' + (++galleryId);
-        const figs = group.map(g =>
-          '<figure><img src="' + esc(g.v) + '" alt="" loading="lazy">' +
+        const figs = group.map((g, k) =>
+          '<figure><img src="' + esc(g.v) + '" alt=""' +
+          (k === 0 ? '' : ' loading="lazy"') + '>' +      // 첫 장은 바로 불러옴
           (g.cap ? '<figcaption>' + esc(g.cap) + '</figcaption>' : '') + '</figure>'
         ).join('');
         const dots = group.map((g, k) =>
@@ -723,6 +724,18 @@ function fitGalleries(root){
 
   const imgs = [...gal.querySelectorAll('img')];
   if(!imgs.length) return;
+
+  // 크기 기준은 첫 장 하나 (뒤 장들은 지연 로딩이라 기다리면 안 됨)
+  const lead = imgs[0];
+  if(!lead.complete || !lead.naturalHeight){
+    if(!lead._fitWait){
+      lead._fitWait = true;
+      const again = () => { lead._fitWait = false; fitGalleries(root); };
+      lead.addEventListener('load',  again, { once:true });
+      lead.addEventListener('error', again, { once:true });
+    }
+    return;
+  }
 
   imgs.forEach(im => { im.classList.add('fitted'); im.style.maxHeight = 'none'; });
   void root.scrollHeight;                        // 원래 크기로 되돌린 뒤 다시 측정
