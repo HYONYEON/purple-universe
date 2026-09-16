@@ -283,6 +283,59 @@
   .modal-scroll p{font-size:16.5px; color:var(--text-dim); line-height:1.85; margin-bottom:18px;}
   .modal-scroll h4{font-size:19px; font-weight:700; color:var(--text); margin:30px 0 12px;}
   .modal-scroll figure{margin:22px 0;}
+
+  /* 카드뉴스 — 좌우로 넘겨 보기 */
+  .gallery{position:relative; margin:22px 0;}
+  .gallery-track{
+    display:flex; gap:12px;
+    overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; padding-bottom:4px;
+  }
+  .gallery-track::-webkit-scrollbar{display:none;}
+  .gallery-track figure{
+    flex:0 0 100%; margin:0; scroll-snap-align:center;
+  }
+  .gallery-track img{
+    width:100%; height:auto; display:block;
+    border-radius:14px; border:1px solid var(--border);
+  }
+  .gallery-track figcaption{
+    margin-top:10px; font-size:14px; color:var(--text-faint); text-align:center;
+  }
+  /* 아래 점 표시 */
+  .gallery-dots{
+    display:flex; justify-content:center; align-items:center; gap:7px; margin-top:14px;
+  }
+  .gallery-dots button{
+    width:8px; height:8px; padding:0; border:none; border-radius:50%;
+    background:var(--border-strong); cursor:pointer;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .gallery-dots button.on{background:var(--purple-bright); transform:scale(1.35);}
+  .gallery-count{
+    font-size:13.5px; color:var(--text-faint); margin-left:10px;
+    font-family:'Pretendard','IBM Plex Sans KR',sans-serif;
+  }
+  /* 좌우 화살표 (마우스 쓰는 화면에서만) */
+  .gallery-arrow{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:40px; height:40px; border-radius:50%; cursor:pointer;
+    background:rgba(10,7,18,.78); border:1px solid var(--border-strong);
+    color:var(--text); display:none; align-items:center; justify-content:center;
+    backdrop-filter:blur(6px); z-index:2;
+  }
+  .gallery-arrow:hover{background:rgba(10,7,18,.95);}
+  .gallery-arrow.prev{left:10px;}
+  .gallery-arrow.next{right:10px;}
+  @media (hover:hover) and (min-width:761px){
+    .gallery:hover .gallery-arrow{display:flex;}
+  }
+  .gallery-hint{
+    text-align:center; font-size:13.5px; color:var(--text-faint); margin-top:8px;
+  }
+  @media(min-width:761px){ .gallery-hint{display:none;} }
   .modal-scroll figure img{width:100%; border-radius:14px; border:1px solid var(--border);}
   .modal-scroll figcaption{font-size:14px; color:var(--text-faint); text-align:center; margin-top:10px;}
   .modal-scroll ul.m-list{margin:0 0 20px 2px; list-style:none;}
@@ -563,6 +616,86 @@ function blockHTML(b){
   }
 }
 
+/* 본문 조립 — 연속된 이미지는 좌우로 넘기는 묶음으로 */
+let galleryId = 0;
+function bodyHTML(body){
+  const out = [];
+  let i = 0;
+  while(i < body.length){
+    const b = body[i];
+    if(b && b.t === 'img'){
+      // 이어지는 이미지 모으기
+      const group = [];
+      while(i < body.length && body[i] && body[i].t === 'img'){ group.push(body[i]); i++; }
+
+      if(group.length === 1){
+        out.push(blockHTML(group[0]));       // 한 장이면 그대로
+      }else{
+        const gid = 'gal' + (++galleryId);
+        const figs = group.map(g =>
+          '<figure><img src="' + esc(g.v) + '" alt="" loading="lazy">' +
+          (g.cap ? '<figcaption>' + esc(g.cap) + '</figcaption>' : '') + '</figure>'
+        ).join('');
+        const dots = group.map((g, k) =>
+          '<button type="button" class="' + (k===0?'on':'') + '" data-gal="' + gid + '" data-idx="' + k + '"' +
+          ' aria-label="' + (k+1) + '번째 카드"></button>'
+        ).join('');
+        out.push(
+          '<div class="gallery" data-gid="' + gid + '">' +
+            '<button type="button" class="gallery-arrow prev" data-gal="' + gid + '" data-dir="-1" aria-label="이전 카드">' + ARROW_L + '</button>' +
+            '<div class="gallery-track" id="' + gid + '">' + figs + '</div>' +
+            '<button type="button" class="gallery-arrow next" data-gal="' + gid + '" data-dir="1" aria-label="다음 카드">' + ARROW_R + '</button>' +
+            '<div class="gallery-dots">' + dots +
+              '<span class="gallery-count" id="' + gid + '-cnt">1 / ' + group.length + '</span>' +
+            '</div>' +
+            '<p class="gallery-hint">좌우로 넘겨서 보세요</p>' +
+          '</div>'
+        );
+      }
+    }else{
+      out.push(blockHTML(b));
+      i++;
+    }
+  }
+  return out.join('');
+}
+
+// 묶음 동작 연결 (팝업을 열 때마다 호출)
+function wireGalleries(root){
+  root.querySelectorAll('.gallery').forEach(gal => {
+    const gid   = gal.dataset.gid;
+    const track = gal.querySelector('.gallery-track');
+    const dots  = [...gal.querySelectorAll('.gallery-dots button')];
+    const cnt   = gal.querySelector('.gallery-count');
+    const total = dots.length;
+
+    function cur(){
+      const w = track.clientWidth + 12;
+      return Math.min(total - 1, Math.max(0, Math.round(track.scrollLeft / w)));
+    }
+    function sync(){
+      const c = cur();
+      dots.forEach((d, k) => d.classList.toggle('on', k === c));
+      if(cnt) cnt.textContent = (c + 1) + ' / ' + total;
+    }
+    function goTo(k){
+      const w = track.clientWidth + 12;
+      track.scrollTo({ left: Math.max(0, Math.min(total-1, k)) * w, behavior:'smooth' });
+    }
+
+    track.addEventListener('scroll', () => {
+      clearTimeout(track._t);
+      track._t = setTimeout(sync, 60);
+    }, { passive:true });
+
+    dots.forEach(d => d.addEventListener('click', () => goTo(Number(d.dataset.idx))));
+    gal.querySelectorAll('.gallery-arrow').forEach(a =>
+      a.addEventListener('click', () => goTo(cur() + Number(a.dataset.dir)))
+    );
+    sync();
+  });
+}
+
 /* ---------- 글마다 개별 주소 ---------- */
 function slugOf(n){
   // 날짜 + 제목 → 주소에 쓸 이름 (읽기 쉽게, 중복 없이)
@@ -620,7 +753,7 @@ function openModal(n){
             'referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
   }
   if(Array.isArray(n.body) && n.body.length){
-    html += n.body.map(blockHTML).join('');
+    html += bodyHTML(n.body);
   } else if(!id && !n.embed){
     html += '<p>' + esc(n.desc || '') + '</p>';
   }
@@ -631,6 +764,7 @@ function openModal(n){
   }
   modalScroll.innerHTML = html;
   modalScroll.scrollTop = 0;
+  wireGalleries(modalScroll);
 
   // 번호가 있으면 짧은 주소(/n/3), 없으면 예전 방식
   const slug     = n.no ? String(n.no) : slugOf(n);
