@@ -146,7 +146,7 @@
       1. github.com 로그인 → 오른쪽 위 프로필 → <b>Settings</b><br>
       2. 맨 아래 <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Tokens (classic)</b><br>
       3. <b>Generate new token (classic)</b> 클릭<br>
-      4. Note에 아무 이름, Expiration은 <b>No expiration</b><br>
+      4. Note에 아무 이름, Expiration은 <b>90 days</b> 권장 (만료되면 다시 발급)<br>
       5. 체크박스 중 <b>repo</b> 하나만 체크<br>
       6. 아래 초록 버튼 → 생성된 <b>ghp_로 시작하는 문자열</b>을 복사
     </div>
@@ -246,6 +246,8 @@
           <button class="btn btn-ghost btn-sm" data-add="list">+ 목록</button>
           <button class="btn btn-ghost btn-sm" data-add="quote">+ 인용</button>
           <button class="btn btn-ghost btn-sm" data-add="img">+ 이미지</button>
+          <button class="btn btn-primary btn-sm" id="addImgs">+ 이미지 여러 장</button>
+          <input type="file" id="multiImgFile" accept="image/*" multiple style="display:none;">
         </div>
       </div>
 
@@ -556,6 +558,58 @@ document.getElementById('logoutBtn').onclick=()=>{
 document.getElementById('saveBtn').onclick=save;
 document.getElementById('resetBtn').onclick=resetForm;
 document.querySelectorAll('[data-add]').forEach(b=> b.onclick=()=>addBlock(b.dataset.add));
+
+/* ---------- 이미지 여러 장 한 번에 ---------- */
+(function(){
+  const btn  = document.getElementById('addImgs');
+  const file = document.getElementById('multiImgFile');
+  if(!btn || !file) return;
+
+  btn.onclick = () => { file.value = ''; file.click(); };
+
+  file.onchange = e => addManyImages(Array.from(e.target.files));
+
+  function addManyImages(files){
+    if(!files.length) return;
+    // 파일 이름 순서대로 (01, 02, 03 … 순서 보장)
+    files.sort((a,b) => a.name.localeCompare(b.name, 'ko', { numeric:true }));
+
+    const tooBig = files.filter(f => f.size > 4*1024*1024);
+    const ok     = files.filter(f => f.size <= 4*1024*1024);
+
+    let done = 0;
+    ok.forEach(f => {
+      const el = addBlock('img');                       // 블록을 먼저 순서대로 만들고
+      pickImage(f, d => {                               // 읽힌 뒤 해당 블록에 채움
+        el._img = d;
+        const prev = el.querySelector('img'), drop = el.querySelector('.bimg');
+        prev.src = d.dataUrl; prev.style.display = 'block';
+        drop.textContent = '이미지 선택됨 — 바꾸려면 클릭';
+        done++;
+        if(done === ok.length){
+          let msg = ok.length + '장을 순서대로 넣었어요';
+          if(tooBig.length) msg += ' (4MB 초과 ' + tooBig.length + '장 제외)';
+          toast(msg, true);
+        }
+      });
+    });
+    if(!ok.length && tooBig.length){
+      toast('모두 4MB를 넘어서 넣지 못했어요', false);
+    }
+  }
+
+  // 본문 영역에 여러 장을 한꺼번에 끌어다 놓기
+  const blocks = document.getElementById('blocks');
+  if(blocks){
+    blocks.addEventListener('dragover', e => { e.preventDefault(); });
+    blocks.addEventListener('drop', e => {
+      const fs = Array.from(e.dataTransfer.files || []).filter(f => f.type.startsWith('image/'));
+      if(fs.length < 2) return;        // 1장은 기존 블록 동작에 맡김
+      e.preventDefault(); e.stopPropagation();
+      addManyImages(fs);
+    });
+  }
+})();
 
 const tDrop=document.getElementById('thumbDrop'), tFile=document.getElementById('thumbFile');
 tDrop.onclick=()=>tFile.click();
