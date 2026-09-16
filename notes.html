@@ -389,14 +389,14 @@ const NOTES = Array.isArray(window.NOTES) ? window.NOTES.slice() : [];
 // 분류(태그) — 카드에 붙는 이름
 const CATS = [
   { key:'webinar',   label:'웨비나',          tagText:'웨비나' },
-  { key:'live',      label:'무물보 LIVE',     tagText:'무물보 LIVE' },
+  { key:'live',      label:'LIVE',           tagText:'LIVE' },
   { key:'marketing', label:'마케팅 요약',      tagText:'마케팅 요약' },
   { key:'insight',   label:'비즈니스 인사이트', tagText:'인사이트' },
 ];
 
 // 섹션 묶음 — 태그 여러 개를 한 섹션에 모을 수 있음
 const SECTIONS = [
-  { id:'rec',      title:'웨비나 · 무물보 LIVE 녹화본', cats:['webinar','live'] },
+  { id:'rec',      title:'웨비나 · LIVE 녹화본', cats:['webinar','live'] },
   { id:'marketing',title:'마케팅 요약',                cats:['marketing'] },
   { id:'insight',  title:'비즈니스 인사이트',           cats:['insight'] },
 ];
@@ -536,15 +536,29 @@ const modalScroll = document.getElementById('modalScroll');
 const modalFoot   = document.getElementById('modalFoot');
 
 // 본문 블록 → HTML
+/* 줄바꿈 살리기
+   ─ 빈 줄(엔터 두 번) → 단락 분리
+   ─ 한 번 엔터      → 줄바꿈 */
+function paras(v, tag){
+  const t = tag || 'p';
+  return String(v == null ? '' : v)
+    .replace(/\r\n?/g, '\n')
+    .split(/\n{2,}/)                       // 빈 줄 기준으로 단락 나누기
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map(part => '<' + t + '>' + esc(part).replace(/\n/g, '<br>') + '</' + t + '>')
+    .join('');
+}
+
 function blockHTML(b){
-  if(typeof b === 'string') return '<p>' + esc(b) + '</p>';
+  if(typeof b === 'string') return paras(b);
   switch(b.t){
     case 'h':     return '<h4>' + esc(b.v) + '</h4>';
     case 'img':   return '<figure><img src="' + esc(b.v) + '" alt="" loading="lazy">' +
                          (b.cap ? '<figcaption>' + esc(b.cap) + '</figcaption>' : '') + '</figure>';
-    case 'quote': return '<blockquote>' + esc(b.v) + '</blockquote>';
+    case 'quote': return paras(b.v, 'blockquote');
     case 'list':  return '<ul class="m-list">' + (b.v || []).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
-    default:      return '<p>' + esc(b.v) + '</p>';
+    default:      return paras(b.v);
   }
 }
 
