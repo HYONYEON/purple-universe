@@ -509,15 +509,24 @@ function esc(s){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* 썸네일로 쓸 이미지
+   ─ 썸네일 칸을 비워둬도 본문 첫 이미지(카드뉴스 1번)를 자동으로 씀 */
+function coverOf(n){
+  if(n.img) return n.img;
+  const first = (Array.isArray(n.body) ? n.body : []).find(b => b && b.t === 'img' && b.v);
+  return first ? first.v : '';
+}
+
 function thumbHTML(n, isPick){
   const id = ytId(n.yt);
+  const cover = coverOf(n);
   let inner;
   if(id){
     inner = '<iframe src="https://www.youtube.com/embed/' + id + '" title="' + esc(n.title) +
             '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen ' +
             'allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>';
-  } else if(n.img){
-    inner = '<img src="' + esc(n.img) + '" alt="" loading="lazy">';
+  } else if(cover){
+    inner = '<img src="' + esc(cover) + '" alt="" loading="lazy">';
   } else {
     inner = '<div class="ph">자료 준비 중</div>';
   }

@@ -534,9 +534,16 @@ function ytIdOf(v){
   const m = String(v||'').match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/);
   return m ? m[1] : (/^[\w-]{11}$/.test(String(v||'').trim()) ? String(v).trim() : '');
 }
+/* 대표 이미지 : 썸네일 칸이 비어 있으면 본문 첫 이미지(카드뉴스 1번)를 자동으로 씀 */
+function coverOf(n){
+  if(n.img) return n.img;
+  const first = (Array.isArray(n.body) ? n.body : []).find(b => b && b.t === 'img' && b.v);
+  return first ? first.v : '';
+}
 function ogImageOf(n){
   if(n.ogimg) return SITE + '/' + String(n.ogimg).replace(/^\//,'');
-  if(n.img)   return SITE + '/' + String(n.img).replace(/^\//,'');
+  const cover = coverOf(n);
+  if(cover)   return SITE + '/' + String(cover).replace(/^\//,'');
   const id = ytIdOf(n.yt);
   if(id)      return 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
   return SITE + '/og-image.png';
@@ -547,13 +554,14 @@ function ogImageOf(n){
 const OG_W = 1200, OG_H = 630, OG_TOP = 0.08;   // 위에서 8% 지점부터
 
 async function makeOgCrop(n){
-  if(!n.img) return null;                       // 올린 이미지가 없으면 만들 것 없음
+  const cover = coverOf(n);
+  if(!cover) return null;                       // 올린 이미지가 없으면 만들 것 없음
   try{
     const img = new Image();
     img.crossOrigin = 'anonymous';
     await new Promise((ok, no) => {
       img.onload = ok; img.onerror = no;
-      img.src = SITE + '/' + String(n.img).replace(/^\//,'') + '?b=' + Date.now();
+      img.src = SITE + '/' + String(cover).replace(/^\//,'') + '?b=' + Date.now();
     });
     const W = img.naturalWidth, H = img.naturalHeight;
     if(!W || !H) return null;
@@ -622,7 +630,7 @@ function ogPageHTML(n){
 // 공유용 페이지 한 개 올리기
 async function putOgPage(n){
   // 공유용 잘린 이미지 준비 (세로 이미지일 때만)
-  if(n.img && !n.yt){
+  if(coverOf(n) && !n.yt){
     const crop = await makeOgCrop(n);
     if(crop){
       try{ n.ogimg = await uploadImage(crop); }catch(e){ /* 실패 시 원본 사용 */ }
