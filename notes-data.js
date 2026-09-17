@@ -3,6 +3,35 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "marketing",
+    "date": "2026-09-17",
+    "title": "시장 떡집 하루 판매가 200개에서 6,000개가 됐습니다",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1789608615610_vns49_0916b_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789608617959_alcuy_0916b_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789608620316_awgux_0916b_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789608622655_f1bgn_0916b_04_news3.png"
+      }
+    ],
+    "no": 4
+  },
+  {
     "cat": "insight",
     "date": "2026-09-16",
     "title": "차원이 다른 마케팅 성과, '1%의 법칙'과 'FREE 전략'ㅣ일헥타르 컴퍼니",
