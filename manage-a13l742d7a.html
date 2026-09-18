@@ -252,7 +252,7 @@
           <select id="fCat">
             <option value="webinar">웨비나</option>
             <option value="live">LIVE</option>
-            <option value="marketing">마케팅 요약</option>
+            <option value="marketing">마케팅 뉴스클리핑</option>
             <option value="insight">비즈니스 인사이트</option>
           </select>
         </div>
@@ -323,7 +323,7 @@
 /* ===================== 설정 ===================== */
 const DATA_FILE = 'notes-data.js';
 const IMG_DIR   = 'images';
-const CATS = { webinar:'웨비나', live:'LIVE', marketing:'마케팅 요약', insight:'비즈니스 인사이트' };
+const CATS = { webinar:'웨비나', live:'LIVE', marketing:'마케팅 뉴스클리핑', insight:'비즈니스 인사이트' };
 
 let TOKEN='', OWNER='', REPO='', BRANCH='main';
 let NOTES=[], dataSha=null, editIndex=-1, thumbData=null;
@@ -588,11 +588,14 @@ function attr(v){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 // 본문에서 설명문 뽑기 (desc 가 비었을 때 대비)
+// ─ 카톡은 설명이 비면 카드를 아예 안 띄우기도 해서, 마지막엔 기본 문구를 넣음
 function summaryOf(n){
   if(n.desc) return n.desc;
   const first = (n.body||[]).find(b => b && (b.t==='p' || b.t==='quote') && b.v);
-  const raw = first ? String(first.v) : '';
-  return raw.replace(/\s+/g,' ').slice(0, 90);
+  const raw = first ? String(first.v).replace(/\s+/g,' ').trim() : '';
+  if(raw) return raw.slice(0, 90);
+  const cat = CATS[n.cat] || '';
+  return (cat ? cat + ' · ' : '') + '30X 퍼플 노트에서 전체 내용을 확인하세요.';
 }
 
 function ogPageHTML(n){
@@ -613,12 +616,17 @@ function ogPageHTML(n){
    + '<meta property="og:description" content="' + attr(desc) + '">\n'
    + '<meta property="og:url" content="' + attr(url) + '">\n'
    + '<meta property="og:image" content="' + attr(ogImageOf(n)) + '">\n'
+   + '<meta property="og:image:secure_url" content="' + attr(ogImageOf(n)) + '">\n'
+   + '<meta property="og:image:width" content="1200">\n'
+   + '<meta property="og:image:height" content="630">\n'
+   + '<meta property="og:image:alt" content="' + attr(n.title) + '">\n'
    + '<meta name="twitter:card" content="summary_large_image">\n'
    + '<meta name="twitter:title" content="' + attr(title) + '">\n'
    + '<meta name="twitter:description" content="' + attr(desc) + '">\n'
    + '<meta name="twitter:image" content="' + attr(ogImageOf(n)) + '">\n'
    + '<link rel="canonical" href="' + attr(SITE + hash) + '">\n'
-   + '<meta http-equiv="refresh" content="0;url=' + attr(hash) + '">\n'
+   /* 카톡 미리보기 수집기는 meta refresh를 따라가 버려서 미리보기가 사라짐.
+      자바스크립트로만 넘겨야 수집기는 이 페이지의 태그를 읽고, 사람은 바로 이동됨. */
    + '<scr' + 'ipt>location.replace(' + JSON.stringify(hash) + ');<\/scr' + 'ipt>\n'
    + '</head>\n'
    + '<body style="background:#08050F;color:#B7ACD1;font-family:sans-serif;'

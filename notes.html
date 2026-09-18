@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>30X 퍼플 노트 — 퍼플 유니버스</title>
-<meta name="description" content="웨비나·LIVE 녹화본, 마케팅 요약, 비즈니스 인사이트를 모아둔 퍼플 유니버스 30X 퍼플 노트.">
+<meta name="description" content="웨비나·LIVE 녹화본, 마케팅 뉴스클리핑, 비즈니스 인사이트를 모아둔 퍼플 유니버스 30X 퍼플 노트.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="퍼플 유니버스">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:title" content="30X 퍼플 노트 — 퍼플 유니버스">
-<meta property="og:description" content="당신의 비즈니스 성장을 위한 지식 보관소. 웨비나·LIVE 녹화본, 마케팅 요약, 비즈니스 인사이트를 한곳에.">
+<meta property="og:description" content="당신의 비즈니스 성장을 위한 지식 보관소. 웨비나·LIVE 녹화본, 마케팅 뉴스클리핑, 비즈니스 인사이트를 한곳에.">
 <meta property="og:url" content="https://purpleuniverse.net/notes">
 <meta property="og:image" content="https://purpleuniverse.net/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -17,7 +17,7 @@
 <meta property="og:image:alt" content="퍼플 유니버스 4기 — 콘텐츠를 잘 쓰는 사업가들의 멤버십">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="30X 퍼플 노트 — 퍼플 유니버스">
-<meta name="twitter:description" content="당신의 비즈니스 성장을 위한 지식 보관소. 웨비나·LIVE 녹화본, 마케팅 요약, 비즈니스 인사이트를 한곳에.">
+<meta name="twitter:description" content="당신의 비즈니스 성장을 위한 지식 보관소. 웨비나·LIVE 녹화본, 마케팅 뉴스클리핑, 비즈니스 인사이트를 한곳에.">
 <meta name="twitter:image" content="https://purpleuniverse.net/og-image.png">
 <link rel="canonical" href="https://purpleuniverse.net/notes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -444,7 +444,7 @@
   <div class="wrap">
     <span class="eyebrow eyebrow-ko">30X 퍼플 노트</span>
     <h1>당신의 비즈니스 성장을<br class="mo-br"> 위한 지식 보관소</h1>
-    <p>웨비나·LIVE 녹화본, 마케팅 요약, 비즈니스 인사이트를 한곳에 모았어요.</p>
+    <p>웨비나·LIVE 녹화본, 마케팅 뉴스클리핑, 비즈니스 인사이트를 한곳에 모았어요.</p>
     <div class="n-search"><input type="text" id="noteSearch" placeholder="제목·내용으로 검색"></div>
   </div>
 </section>
@@ -483,14 +483,14 @@ const NOTES = Array.isArray(window.NOTES) ? window.NOTES.slice() : [];
 const CATS = [
   { key:'webinar',   label:'웨비나',          tagText:'웨비나' },
   { key:'live',      label:'LIVE',           tagText:'LIVE' },
-  { key:'marketing', label:'마케팅 요약',      tagText:'마케팅 요약' },
+  { key:'marketing', label:'마케팅 뉴스클리핑',      tagText:'마케팅 뉴스클리핑' },
   { key:'insight',   label:'비즈니스 인사이트', tagText:'인사이트' },
 ];
 
 // 섹션 묶음 — 태그 여러 개를 한 섹션에 모을 수 있음
 const SECTIONS = [
   { id:'rec',      title:'웨비나 · LIVE 녹화본', cats:['webinar','live'] },
-  { id:'marketing',title:'마케팅 요약',                cats:['marketing'] },
+  { id:'marketing',title:'마케팅 뉴스클리핑',                cats:['marketing'] },
   { id:'insight',  title:'비즈니스 인사이트',           cats:['insight'] },
 ];
 
