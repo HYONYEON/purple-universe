@@ -4,6 +4,35 @@
 window.NOTES = [
   {
     "cat": "marketing",
+    "date": "2026-09-18",
+    "title": "매출 80%를 만들던 히트 상품을 일부러 줄였습니다",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1789766688668_h7l7q_0918_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789766690953_jqd2a_0918_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789766693641_qi592_0918_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789766696047_2numn_0918_04_news3.png"
+      }
+    ],
+    "no": 5
+  },
+  {
+    "cat": "marketing",
     "date": "2026-09-17",
     "title": "시장 떡집 하루 판매가 200개에서 6,000개가 됐습니다",
     "desc": "",
