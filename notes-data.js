@@ -4,7 +4,7 @@
 window.NOTES = [
   {
     "cat": "marketing",
-    "date": "2026-09-18",
+    "date": "2026-09-19",
     "title": "매출 80%를 만들던 히트 상품을 일부러 줄였습니다",
     "desc": "",
     "yt": "",
