@@ -4,6 +4,35 @@
 window.NOTES = [
   {
     "cat": "marketing",
+    "date": "2026-09-20",
+    "title": "이번 주 이긴 브랜드는 첫 판매가 아니라 재구매를 봤습니다",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1789856799189_wxdkd_0919W_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789856801543_ko7q6_0919W_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789856803704_232a7_0919W_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789856805601_rs687_0919W_04_news3.png"
+      }
+    ],
+    "no": 6
+  },
+  {
+    "cat": "marketing",
     "date": "2026-09-19",
     "title": "매출 80%를 만들던 히트 상품을 일부러 줄였습니다",
     "desc": "",
