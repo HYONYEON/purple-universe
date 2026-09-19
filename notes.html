@@ -525,12 +525,36 @@ function thumbHTML(n, isPick){
             '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen ' +
             'allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>';
   } else if(cover){
-    inner = '<img src="' + esc(cover) + '" alt="" loading="lazy">';
+    // data-top : 제목이 시작되는 위치(원본 높이의 비율). 잘리지 않게 맞추는 데 씀
+    const top = (typeof n.imgtop === 'number' && n.imgtop > 0)
+      ? ' data-top="' + n.imgtop.toFixed(4) + '"' : '';
+    inner = '<img src="' + esc(cover) + '" alt="" loading="lazy"' + top + '>';
   } else {
     inner = '<div class="ph">자료 준비 중</div>';
   }
   const badge = isPick ? '<span class="pick-badge">' + STAR + '추천 픽</span>' : '';
   return '<div class="note-thumb">' + badge + inner + '</div>';
+}
+
+/* 카드뉴스 썸네일 위치 맞추기
+   ─ data-top 은 "제목 덩어리가 시작되는 지점"(원본 높이의 비율).
+     썸네일 칸에 보이는 띠가 원본의 몇 %인지 계산해, 제목이 통째로 들어오게 맞춘다.
+     주간 카드처럼 제목이 아래에서 시작하고 줄이 많아도 잘리지 않음. */
+function placeCovers(root){
+  (root || document).querySelectorAll('.note-thumb img[data-top]').forEach(im => {
+    const put = () => {
+      const f  = parseFloat(im.dataset.top);
+      const iw = im.naturalWidth,  ih = im.naturalHeight;
+      const bw = im.clientWidth,   bh = im.clientHeight;
+      if(!(f > 0) || !iw || !ih || !bw || !bh) return;
+      const band = (bh / bw) * (iw / ih);          // 보이는 띠 = 원본 높이의 band 배
+      if(band >= 1) return;                        // 통째로 보이면 손댈 것 없음
+      const p = Math.min(1, Math.max(0, f / (1 - band)));
+      im.style.objectPosition = 'center ' + (p * 100).toFixed(1) + '%';
+    };
+    if(im.complete && im.naturalHeight) put();
+    else im.addEventListener('load', put, { once:true });
+  });
 }
 
 function hasDetail(n){
@@ -608,6 +632,7 @@ function render(query){
   });
 
   box.innerHTML = html;
+  placeCovers(box);
 
   // 카드 클릭 → 팝업 뷰
   box.querySelectorAll('.note-card.clickable').forEach(card => {

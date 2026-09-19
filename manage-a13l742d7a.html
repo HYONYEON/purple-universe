@@ -221,7 +221,7 @@
         <h1>30X 퍼플 노트 글 관리</h1>
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn btn-primary btn-sm" id="fixShareBtn" title="번호가 없는 글에 번호를 붙이고, 공유용 페이지를 다시 만듭니다">공유 주소 정리</button>
+        <button class="btn btn-primary btn-sm" id="fixShareBtn" title="아직 정리 안 된 글만 처리합니다. Shift 누르고 클릭하면 전부 다시 만듭니다">공유 주소 정리</button>
         <a class="btn btn-ghost btn-sm" href="https://purpleuniverse.net/notes" target="_blank" rel="noopener">사이트 보기 ↗</a>
         <button class="btn btn-ghost btn-sm" id="logoutBtn">연결 해제</button>
       </div>
@@ -550,8 +550,63 @@ function ogImageOf(n){
 }
 
 /* 세로로 긴 카드뉴스 이미지를 카톡 띠(1200×630)에 맞게 잘라 만들기
-   ─ 제목이 들어있는 위쪽을 살리고, 맨 위 라벨은 걷어냄 */
-const OG_W = 1200, OG_H = 630, OG_TOP = 0.08;   // 위에서 8% 지점부터
+   ─ 제목이 들어있는 구간을 직접 찾아 가운데 맞춤. 일간·주간 카드 형식이 달라도 안 잘림 */
+const OG_W = 1200, OG_H = 630, OG_TOP = 0.08;   // 못 찾았을 때 쓰는 기본값
+/* 공유 페이지 형식 판 번호.
+   ─ 글마다 ogv 에 이 번호가 찍히고, '공유 주소 정리'는 번호가 다른 글만 다시 만든다.
+   ─ 형식을 바꿀 때만 이 숫자를 올리면 전체가 한 번 다시 만들어진다. */
+const OG_VER = 2;
+
+/* 제목 덩어리가 시작되는 지점을 찾는다 (원본 높이의 비율)
+   ① 가로 200px로 줄여 줄마다 밝은 글자 픽셀을 센다
+   ② 글자 줄들을 묶되, 맨 위 라벨(DAILY CLIPPING 등, 상단 10% 안)은 건너뛴다
+   ③ 크게 벌어지는 곳에서 끊어 '제목 덩어리'만 잡고, 띠 가운데에 놓는다 */
+function detectTopFrac(img, bandFrac){
+  try{
+    const W = 200, H = Math.round(img.naturalHeight / img.naturalWidth * W);
+    if(!H) return OG_TOP;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0, W, H);
+    const d = x.getImageData(0, 0, W, H).data;
+
+    const lit = [];
+    for(let y = 0; y < H; y++){
+      let cnt = 0;
+      for(let i = 0; i < W; i++){
+        const o = (y * W + i) * 4;
+        if(d[o]*0.299 + d[o+1]*0.587 + d[o+2]*0.114 > 150) cnt++;
+      }
+      lit.push(cnt);
+    }
+
+    const th = W * 0.03;                       // 한 줄에 3% 이상 밝으면 글자 줄
+    const rows = [];
+    let s = -1;
+    for(let y = 0; y <= H; y++){
+      const on = y < H && lit[y] > th;
+      if(on){ if(s < 0) s = y; }
+      else if(s >= 0){ if(y - s >= 2) rows.push([s, y - 1]); s = -1; }
+    }
+
+    const cand = rows.filter(r => r[0] / H > 0.10);   // 상단 라벨 제외
+    if(!cand.length) return OG_TOP;
+
+    const gap = H * 0.06;                      // 이보다 벌어지면 다른 덩어리
+    let bot = cand[0][1];
+    for(let i = 1; i < cand.length; i++){
+      if(cand[i][0] - bot > gap) break;
+      bot = cand[i][1];
+    }
+    const f0 = cand[0][0] / H, f1 = bot / H, blockH = f1 - f0, pad = 0.02;
+
+    if(blockH + pad * 2 >= bandFrac) return Math.max(0, f0 - pad);  // 띠보다 크면 위부터
+    const f = f0 - (bandFrac - blockH) / 2;                         // 가운데 맞춤
+    return Math.min(Math.max(0, f), Math.max(0, 1 - bandFrac));
+  }catch(e){
+    return OG_TOP;
+  }
+}
 
 async function makeOgCrop(n){
   const cover = coverOf(n);
@@ -568,7 +623,9 @@ async function makeOgCrop(n){
     if(W / H > 1.5) return null;                // 이미 가로형이면 그대로 써도 됨
 
     const bandH = Math.round(W / (OG_W / OG_H));            // 띠 높이
-    let top = Math.round(H * OG_TOP);
+    const frac  = detectTopFrac(img, bandH / H);
+    n.imgtop = Math.round(frac * 10000) / 10000;            // 사이트 썸네일도 같은 값을 씀
+    let top = Math.round(H * frac);
     if(top + bandH > H) top = Math.max(0, H - bandH);       // 넘치면 끌어올림
 
     const c = document.createElement('canvas');
@@ -651,6 +708,7 @@ async function putOgPage(n){
     sha = f.sha;
   }catch(e){ /* 없으면 새로 만듦 */ }
   await putFile(path, b64encode(ogPageHTML(n)), sha, '공유 페이지: ' + n.title);
+  n.ogv = OG_VER;                 // 이 판으로 만들어졌다는 표시 → 다음엔 건너뜀
 }
 
 async function save(){
@@ -699,14 +757,16 @@ async function save(){
     if(editIndex>-1) NOTES[editIndex]=item; else NOTES.unshift(item);
     NOTES.sort((a,b)=> a.date<b.date?1 : a.date>b.date?-1 : 0);
 
-    const res = await putFile(DATA_FILE, b64encode(dataFileText()), dataSha,
-                              (editIndex>-1?'글 수정: ':'글 등록: ')+title);
-    dataSha = res.content.sha;
-
-    // 공유용 페이지 (카톡 미리보기가 이 글 내용으로 뜨게)
+    // 공유용 페이지 먼저 (카톡 미리보기가 이 글 내용으로 뜨게)
+    // ─ 여기서 만들어지는 썸네일 위치·판 번호를 아래 저장에 함께 담아야 한다
     btn.textContent='공유 페이지 만드는 중…';
     await putOgPage(item);
     for(const n of filled){ if(n !== item) await putOgPage(n); }
+
+    btn.textContent='저장 중…';
+    const res = await putFile(DATA_FILE, b64encode(dataFileText()), dataSha,
+                              (editIndex>-1?'글 수정: ':'글 등록: ')+title);
+    dataSha = res.content.sha;
 
     toast('발행 완료 — 공유 주소: ' + SITE + '/n/' + item.no);
     resetForm(); renderList();
@@ -789,31 +849,39 @@ function escapeHtml(s){
 document.getElementById('loginBtn').onclick=connect;
 document.getElementById('tokenInput').addEventListener('keydown', e=>{ if(e.key==='Enter') connect(); });
 /* ---------- 공유 주소 정리 (번호 부여 + 공유 페이지 일괄 생성) ---------- */
-document.getElementById('fixShareBtn').onclick = async () => {
+document.getElementById('fixShareBtn').onclick = async (ev) => {
   const btn = document.getElementById('fixShareBtn');
   if(!loadOk){ toast('목록을 읽지 못한 상태예요. 새로고침 후 다시 시도해주세요.', false); return; }
   if(!NOTES.length){ toast('정리할 글이 없어요.', false); return; }
 
+  // Shift 를 누른 채 누르면 이미 끝난 글까지 전부 다시 만듦
+  const force = !!(ev && ev.shiftKey);
+  const todo  = NOTES.filter(n => force || !n.no || n.ogv !== OG_VER);
+
+  if(!todo.length){
+    toast('이미 전부 정리돼 있어요. (전체를 다시 만들려면 Shift 누르고 클릭)');
+    return;
+  }
+
   btn.disabled = true;
   const before = btn.textContent;
   try{
-    const filled = backfillNos();          // 번호 없는 글에 번호 부여
+    backfillNos();                         // 번호 없는 글에 번호 부여
 
-    if(filled.length){
-      btn.textContent = '번호 저장 중…';
-      const res = await putFile(DATA_FILE, b64encode(dataFileText()), dataSha, '글 번호 부여');
-      dataSha = res.content.sha;
-    }
-
-    // 모든 글의 공유 페이지 생성 (내용이 바뀌었을 수 있으니 전부 다시)
     let done = 0;
-    for(const n of NOTES){
-      btn.textContent = '공유 페이지 ' + (++done) + '/' + NOTES.length;
+    for(const n of todo){
+      btn.textContent = '공유 페이지 ' + (++done) + '/' + todo.length;
       await putOgPage(n);
     }
 
+    // 번호·썸네일 위치·판 번호를 한 번에 저장
+    btn.textContent = '저장 중…';
+    const res = await putFile(DATA_FILE, b64encode(dataFileText()), dataSha, '공유 주소 정리');
+    dataSha = res.content.sha;
+
     renderList();
-    toast('정리 완료 — ' + NOTES.length + '개 글의 공유 주소가 준비됐어요');
+    toast('정리 완료 — ' + todo.length + '개 글' +
+          (NOTES.length > todo.length ? ' (나머지 ' + (NOTES.length - todo.length) + '개는 건너뜀)' : ''));
   }catch(e){
     toast('실패: ' + e.message, false);
   }finally{
