@@ -1909,5 +1909,56 @@ document.querySelectorAll('.faq-item').forEach(item => {
     <a href="https://mapa365.notion.site/3b49279ab8ee80d78de2f94557c32423?pvs=105" class="btn btn-primary" target="_blank" rel="noopener">4기 합류하기</a>
   </div>
 </div>
+
+<!-- 유튜브 최신 영상 — GitHub Actions 가 하루 한 번 youtube-data.js 를 갱신합니다.
+     파일이 없거나 비어 있으면 위에 적어둔 목록이 그대로 보입니다. -->
+<script src="/youtube-data.js"></script>
+<script>
+(function(){
+  var D = window.YT_LATEST;
+  if(!D) return;                       // 아직 연동 전 → 박아둔 목록 유지
+
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function thumb(id){
+    return '<img src="https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg" ' +
+           'onerror="this.onerror=null;this.src=\'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg\';" ' +
+           'alt="" loading="lazy">';
+  }
+  // 흐르는 줄은 절반(-50%)만큼 움직이므로 목록을 두 번 넣어야 끊김 없이 이어진다
+  function build(list, o){
+    var out = [];
+    [false, true].forEach(function(dup){
+      list.forEach(function(v, i){
+        out.push(
+          '<a class="' + o.card + ' ' + o.tone + ((i % 4) + 1) + '" ' +
+          'href="' + o.url(v.id) + '" target="_blank" rel="noopener" ' +
+          'title="' + esc(v.title) + '"' + (dup ? ' aria-hidden="true" tabindex="-1"' : '') + '>' +
+          thumb(v.id) + '<span class="' + o.play + '">▶</span></a>'
+        );
+      });
+    });
+    return out.join('');
+  }
+
+  var lt = document.querySelector('.longform-track');
+  var st = document.querySelector('.shorts-track');
+
+  if(lt && D.long && D.long.length){
+    lt.innerHTML = build(D.long, {
+      card:'longform-card', tone:'lc', play:'longform-play',
+      url:function(id){ return 'https://www.youtube.com/watch?v=' + id; }
+    });
+  }
+  if(st && D.shorts && D.shorts.length){
+    st.innerHTML = build(D.shorts, {
+      card:'shorts-card', tone:'sc', play:'shorts-play',
+      url:function(id){ return 'https://www.youtube.com/shorts/' + id; }
+    });
+  }
+})();
+</script>
 </body>
 </html>
