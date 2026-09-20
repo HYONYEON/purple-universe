@@ -31,7 +31,7 @@ window.NOTES = [
     ],
     "no": 6,
     "imgtop": 0.106,
-    "ogimg": "images/1789859775108_8n8bg_og-6.jpg",
+    "ogimg": "images/1789872253815_l7l06_og-6.jpg",
     "ogv": 2
   },
   {
@@ -63,7 +63,7 @@ window.NOTES = [
     ],
     "no": 5,
     "imgtop": 0.076,
-    "ogimg": "images/1789859778551_i11pt_og-5.jpg",
+    "ogimg": "images/1789872256945_yzwo2_og-5.jpg",
     "ogv": 2
   },
   {
@@ -95,7 +95,7 @@ window.NOTES = [
     ],
     "no": 4,
     "imgtop": 0.076,
-    "ogimg": "images/1789859781860_p52kh_og-4.jpg",
+    "ogimg": "images/1789872260669_9qt0o_og-4.jpg",
     "ogv": 2
   },
   {
@@ -145,7 +145,7 @@ window.NOTES = [
     ],
     "no": 3,
     "imgtop": 0.076,
-    "ogimg": "images/1789859786031_pemok_og-3.jpg",
+    "ogimg": "images/1789872265328_loe9q_og-3.jpg",
     "ogv": 2
   },
   {
