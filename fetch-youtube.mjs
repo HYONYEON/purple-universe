@@ -18,6 +18,12 @@ const WANT_SHORTS = 8;
 const SCAN_MAX    = 100;   // 최신 몇 개까지 훑어볼지 (4+8을 채우기 위한 여유분)
 const SHORT_SEC   = 180;   // 3분 이하면 쇼츠 후보
 
+/* 유튜브 라이브(진행 중·예정·종료된 녹화본)를 홈 화면에서 제외할지.
+   ─ 라이브는 썸네일이 매번 같은 템플릿이라 다른 콘텐츠 옆에서 겉돌고,
+     녹화본은 '30X 퍼플 노트'에 전용 섹션이 따로 있어서 기본값은 제외.
+   ─ 홈에도 띄우고 싶으면 false 로 바꾸면 됩니다. */
+const SKIP_LIVE = true;
+
 if(!KEY){
   console.error('YT_API_KEY 가 없습니다. GitHub Secrets 에 등록했는지 확인하세요.');
   process.exit(1);
@@ -83,10 +89,21 @@ const main = async () => {
   const vids = [];
   for(let i = 0; i < ids.length; i += 50){
     const res = await api('videos', {
-      part: 'snippet,contentDetails,status', id: ids.slice(i, i + 50).join(','),
+      part: 'snippet,contentDetails,status,liveStreamingDetails',
+      id: ids.slice(i, i + 50).join(','),
     });
     (res.items || []).forEach(v => {
       if(v.status?.privacyStatus && v.status.privacyStatus !== 'public') return;   // 비공개·일부공개 제외
+
+      // 라이브 판별 — liveStreamingDetails 는 종료된 녹화본에도 남아 있어서 과거 라이브까지 잡힌다
+      const wasLive = !!v.liveStreamingDetails ||
+                      (v.snippet?.liveBroadcastContent &&
+                       v.snippet.liveBroadcastContent !== 'none');
+      if(SKIP_LIVE && wasLive){
+        console.log('  (건너뜀 · 라이브) ' + (v.snippet?.title || v.id));
+        return;
+      }
+
       vids.push({
         id: v.id,
         title: v.snippet?.title || '',
