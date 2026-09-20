@@ -196,19 +196,107 @@
   .resource-link:hover{text-decoration:underline;}
 
   footer.m-footer{padding:40px 0; text-align:center; color:var(--text-faint); font-size:13.5px; border-top:1px solid var(--border); margin-top:20px;}
+
+  /* ---------- 미리보기(맛보기) 모드 ----------
+     비밀번호 없이 들어온 사람에게도 '무엇이 있는지'는 보여주고,
+     실제 내용은 흐리게 가린 뒤 누르면 가입 안내를 띄운다. */
+  .peek-bar{
+    display:none; position:sticky; top:0; z-index:90;
+    background:linear-gradient(135deg, rgba(124,77,255,.22), rgba(86,38,196,.22));
+    border-bottom:1px solid var(--border-strong); backdrop-filter:blur(10px);
+  }
+  body.peek .peek-bar{display:block;}
+  .peek-inner{
+    display:flex; align-items:center; justify-content:center; gap:16px;
+    flex-wrap:wrap; padding:12px 24px; text-align:center;
+  }
+  .peek-inner span{font-size:15px; color:var(--text);}
+  .peek-inner .btn{padding:9px 20px; font-size:14.5px;}
+  .peek-link{
+    font-size:14px; color:var(--text-dim); text-decoration:underline;
+    background:none; border:none; cursor:pointer; font-family:inherit;
+  }
+  .peek-link:hover{color:var(--text);}
+
+  /* 가릴 것들 — 제목·날짜는 남기고 내용만 흐리게 */
+  body.peek .resource-embed,
+  body.peek .resource-card p,
+  body.peek .resource-link,
+  body.peek .agent-box{
+    filter:blur(6px); user-select:none; pointer-events:none;
+  }
+  body.peek .agent-box{opacity:.75;}
+  body.peek .resource-card{cursor:pointer; position:relative; transition:border-color .18s ease;}
+  body.peek .resource-card:hover{border-color:var(--border-strong);}
+  body.peek .resource-card::after{
+    content:'\1F512 멤버 전용';
+    position:absolute; top:12px; right:12px;
+    font-size:12px; font-weight:700; letter-spacing:.02em;
+    padding:5px 11px; border-radius:100px;
+    background:rgba(8,5,15,.82); color:var(--gold-soft);
+    border:1px solid rgba(243,216,154,.3); backdrop-filter:blur(6px);
+  }
+  body.peek .m-search input{cursor:pointer;}
+  body.peek .agent-wrap{cursor:pointer; position:relative;}
+
+  /* 잠금 안내 팝업 */
+  .lock-modal{
+    display:none; position:fixed; inset:0; z-index:220;
+    background:rgba(4,2,10,.8); backdrop-filter:blur(6px);
+    align-items:center; justify-content:center; padding:24px;
+  }
+  .lock-modal.show{display:flex;}
+  .lock-box{
+    max-width:440px; width:100%; text-align:center;
+    background:var(--bg-alt2); border:1px solid var(--border-strong);
+    border-radius:22px; padding:38px 30px 32px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.7);
+  }
+  .lock-ico{font-size:34px;}
+  .lock-box h3{font-size:21px; font-weight:700; margin:14px 0 10px;}
+  .lock-box p{font-size:15px; color:var(--text-dim); line-height:1.6; margin-bottom:24px;}
+  .lock-box .btn{width:100%; justify-content:center;}
+  .lock-or{margin-top:20px; font-size:14px; color:var(--text-faint);}
+  .lock-pw{display:none; margin-top:16px;}
+  .lock-pw.show{display:block;}
+  .lock-pw input{
+    width:100%; padding:13px 18px; border-radius:100px; text-align:center;
+    border:1px solid var(--border); background:var(--bg-alt);
+    color:var(--text); font-size:15.5px; font-family:inherit; margin-bottom:10px;
+  }
+  .lock-pw input:focus{outline:none; border-color:var(--purple-bright);}
+  .lock-err{color:#FF8A8A; font-size:13.5px; min-height:18px; margin-top:8px;}
+  .lock-close{
+    position:absolute; top:16px; right:18px; background:none; border:none;
+    color:var(--text-faint); font-size:20px; cursor:pointer;
+  }
 </style>
 </head>
 <body>
 
-<!-- PASSWORD GATE -->
-<div class="gate" id="gate">
-  <div class="gate-box">
-    <div class="gate-logo">🔒 PURPLE UNIVERSE</div>
-    <h2>멤버쉽 전용 공간</h2>
-    <p>가입하신 멤버쉽 전용 비밀번호를 입력해주세요.</p>
-    <input type="password" id="gateInput" placeholder="비밀번호">
-    <button class="btn btn-primary" id="gateBtn">입장하기</button>
-    <p class="gate-error" id="gateError"></p>
+<!-- 미리보기 안내 띠 (비밀번호 없이 들어온 사람에게만 보임) -->
+<div class="peek-bar" id="peekBar">
+  <div class="peek-inner">
+    <span>🔒 멤버쉽 전용 공간을 미리보기로 열어봤어요.</span>
+    <a href="/#pricing" class="btn btn-primary">멤버쉽 살펴보기</a>
+    <button class="peek-link" id="peekLogin" type="button">이미 멤버예요</button>
+  </div>
+</div>
+
+<!-- 멤버 전용 안내 팝업 -->
+<div class="lock-modal" id="lockModal">
+  <div class="lock-box" style="position:relative;">
+    <button class="lock-close" id="lockClose" type="button" aria-label="닫기">✕</button>
+    <div class="lock-ico">🔒</div>
+    <h3>멤버 전용 게시물입니다</h3>
+    <p>줌미팅 녹화본, 학습 자료, AI 기획 도구는<br>퍼플 유니버스 멤버에게만 열려 있어요.</p>
+    <a href="/#pricing" class="btn btn-primary">멤버쉽 가입은 여기에서 →</a>
+    <p class="lock-or">이미 멤버라면 <button class="peek-link" id="lockPwToggle" type="button">비밀번호 입력</button></p>
+    <div class="lock-pw" id="lockPw">
+      <input type="password" id="gateInput" placeholder="멤버쉽 전용 비밀번호" autocomplete="current-password">
+      <button class="btn btn-primary" id="gateBtn" type="button">입장하기</button>
+      <p class="lock-err" id="gateError"></p>
+    </div>
   </div>
 </div>
 
@@ -228,8 +316,8 @@
   </div>
 </div>
 
-<!-- MAIN CONTENT (gated) -->
-<div id="mainContent" style="display:none;">
+<!-- MAIN CONTENT — 미리보기에서도 보이고, 내용만 흐리게 가려진다 -->
+<div id="mainContent">
 
   <header class="m-header">
     <div class="wrap m-nav">
@@ -326,6 +414,7 @@
       <span class="eyebrow">AI AGENT</span>
       <h2>콘텐츠 기획 AI 에이전트</h2>
       <p>내 비즈니스에 맞는 콘텐츠 아이디어와 기획을 도와주는 전용 에이전트예요. (현재 UI만 먼저 준비된 상태이고, 실제 AI 연결은 곧 추가될 예정이에요.)</p>
+      <div class="agent-wrap" data-lock>
       <div class="agent-box">
         <div class="agent-messages" id="agentMessages">
           <div class="agent-msg bot">안녕하세요! 콘텐츠 기획을 도와드릴 에이전트예요. 어떤 걸 도와드릴까요? (지금은 준비 중이라 실제 답변은 아직 연결되지 않았어요)</div>
@@ -334,6 +423,7 @@
           <input type="text" id="agentInput" placeholder="예: 이번 주 인스타 릴스 아이디어 추천해줘">
           <button class="btn btn-primary" id="agentSend">보내기</button>
         </div>
+      </div>
       </div>
       <p class="agent-note">* 지금은 화면만 완성된 상태예요. 실제 AI 응답이 연결되면 안내드릴게요.</p>
     </div>
@@ -348,17 +438,57 @@
   // 아래 값을 원하는 비밀번호로 바꿔주세요.
   const SITE_PASSWORD = "purple2026";
 
-  const gate = document.getElementById('gate');
-  const gateInput = document.getElementById('gateInput');
-  const gateBtn = document.getElementById('gateBtn');
-  const gateError = document.getElementById('gateError');
-  const mainContent = document.getElementById('mainContent');
+  const gateInput  = document.getElementById('gateInput');
+  const gateBtn    = document.getElementById('gateBtn');
+  const gateError  = document.getElementById('gateError');
   const weeklyPopup = document.getElementById('weeklyPopup');
-  const popupClose = document.getElementById('popupClose');
+  const popupClose  = document.getElementById('popupClose');
+  const lockModal   = document.getElementById('lockModal');
+  const lockClose   = document.getElementById('lockClose');
+  const lockPw      = document.getElementById('lockPw');
+  const lockPwTggl  = document.getElementById('lockPwToggle');
+  const peekLogin   = document.getElementById('peekLogin');
 
+  /* 잠금 안내 팝업 열고 닫기 (pw = 비밀번호 칸을 바로 펼칠지) */
+  function openLock(pw){
+    lockPw.classList.toggle('show', !!pw);
+    gateError.textContent = '';
+    lockModal.classList.add('show');
+    if(pw) setTimeout(function(){ gateInput.focus(); }, 60);
+  }
+  function closeLock(){ lockModal.classList.remove('show'); }
+
+  lockClose.addEventListener('click', closeLock);
+  lockModal.addEventListener('click', function(e){
+    if(e.target === lockModal) closeLock();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeLock();
+  });
+  lockPwTggl.addEventListener('click', function(){
+    lockPw.classList.add('show');
+    gateInput.focus();
+  });
+  peekLogin.addEventListener('click', function(){ openLock(true); });
+
+  /* 미리보기 상태에서 가려진 영역을 누르면 안내 팝업 */
+  function wirePeekClicks(){
+    const spots = document.querySelectorAll('.resource-card, [data-lock], .m-search input, #searchBtn');
+    spots.forEach(function(el){
+      el.addEventListener('click', function(e){
+        if(!document.body.classList.contains('peek')) return;
+        e.preventDefault();
+        openLock(false);
+      });
+    });
+  }
+
+  /* 잠금 해제 — 멤버 */
   function unlock(){
-    gate.style.display = 'none';
-    mainContent.style.display = 'block';
+    document.body.classList.remove('peek');
+    const si = document.getElementById('searchInput');
+    if(si) si.readOnly = false;
+    closeLock();
     sessionStorage.setItem('pu_members_unlocked', '1');
     // 세션당 한 번만 이번 주 알림 팝업 표시
     if(!sessionStorage.getItem('pu_weekly_popup_seen')){
@@ -384,9 +514,16 @@
     weeklyPopup.classList.remove('show');
   });
 
+  // 시작 상태 — 이번 세션에 이미 들어왔던 멤버면 그대로, 아니면 미리보기
   if(sessionStorage.getItem('pu_members_unlocked') === '1'){
     unlock();
+  } else {
+    document.body.classList.add('peek');
+    // 미리보기에서는 검색창에 글자를 넣을 수 없게 (누르면 안내 팝업만)
+    const si = document.getElementById('searchInput');
+    if(si) si.readOnly = true;
   }
+  wirePeekClicks();
 
   // ===== AI 에이전트 (UI만, 실제 연결 전) =====
   const agentMessages = document.getElementById('agentMessages');
