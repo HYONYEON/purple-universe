@@ -842,6 +842,18 @@
   }
   .shorts-title{position:relative; z-index:1; font-size:17px; font-weight:600; color:#fff; line-height:1.4; text-shadow:0 1px 6px rgba(0,0,0,.6);}
 
+  /* 모바일 — 카드 폭이 616px·300px 고정이라 화면을 넘어감. 화면 기준으로 다시 잡는다.
+     롱폼은 한 번에 1장, 쇼츠는 2장. 다음 장이 살짝 비쳐서 '더 있다'는 게 보이도록 여유를 둠. */
+  @media(max-width:760px){
+    .latest{padding:72px 0;}
+    .longform-card{width:78vw;}
+    .shorts-card{width:38vw;}
+    .longform-track, .shorts-track{gap:12px;}
+    .longform-play, .shorts-play{font-size:36px;}
+    .shorts-card{padding:14px;}
+    .longform-card{padding:16px;}
+  }
+
   /* ---------- FOOTER ---------- */
   footer{padding:56px 0 40px; border-top:1px solid var(--border);}
   .foot-grid{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;}
