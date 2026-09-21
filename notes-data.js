@@ -4,6 +4,36 @@
 window.NOTES = [
   {
     "cat": "marketing",
+    "date": "2026-09-21",
+    "title": "제품 설명은 안 팔립니다 '부를 이름'이 팔립니다",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1789989960266_ponyy_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789989962514_weqfz_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789989964827_fvpfv_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1789989967184_w0idi_B_04_news3.png"
+      }
+    ],
+    "no": 7,
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
     "date": "2026-09-20",
     "title": "이번 주 이긴 브랜드는 첫 판매가 아니라 재구매를 봤습니다",
     "desc": "",
