@@ -2,6 +2,10 @@ User-agent: *
 Allow: /
 Disallow: /manage-a13l742d7a.html
 Disallow: /manage-a13l742d7a
+Disallow: /review-yy7cw90873.html
+Disallow: /review-yy7cw90873
+Disallow: /apply.html
+Disallow: /apply
 Disallow: /members.html
 Disallow: /members
 

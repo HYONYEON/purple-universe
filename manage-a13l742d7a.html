@@ -1104,7 +1104,8 @@ async function loadApplications(){
 
   if(!items.length){
     body.innerHTML = '<p class="ap-empty">아직 신청이 없어요.<br>' +
-      '<a href="https://purpleuniverse.net/apply" target="_blank" rel="noopener" style="font-size:13px;">신청 페이지 열어보기 ↗</a></p>';
+      '<a href="https://purpleuniverse.net/apply" target="_blank" rel="noopener" style="font-size:13px;">신청 페이지 열어보기 ↗</a> · ' +
+      '<a href="/review-yy7cw90873.html" target="_blank" rel="noopener" style="font-size:13px;">심사 페이지 ↗</a></p>';
     if(items.length === 0 && fresh.length === 0) markSeen(items);
     return;
   }
@@ -1129,8 +1130,9 @@ async function loadApplications(){
         '</div>';
       }).join('') +
     '</div>' +
-    '<p class="ap-empty" style="margin-top:12px;">누적 ' + data.total + '명 / 정원 10명 · ' +
-      '<a href="https://docs.google.com/spreadsheets/d/1g2GO2DxfN1abIpnzVoI0NiU0yMhQCqs19jSj2BTdF8c/edit" target="_blank" rel="noopener" style="font-size:13px;">시트에서 전체 보기 ↗</a></p>';
+    '<p class="ap-empty" style="margin-top:12px;">누적 ' + data.total + '명 / 정원 10명<br>' +
+      '<a href="/review-yy7cw90873.html" target="_blank" rel="noopener" style="font-size:13px;">답변 전체 보고 심사하기 ↗</a> · ' +
+      '<a href="https://docs.google.com/spreadsheets/d/1g2GO2DxfN1abIpnzVoI0NiU0yMhQCqs19jSj2BTdF8c/edit" target="_blank" rel="noopener" style="font-size:13px;">시트 ↗</a></p>';
 
   // 목록을 봤으니 '여기까지 확인했다'고 기록 (다음부터 이 뒤에 온 것만 '새 신청')
   markSeen(items);

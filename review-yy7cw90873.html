@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>4기 신청서 심사 — 퍼플 유니버스</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08050F; --bg-alt:#0F0A1E; --bg-alt2:#140D26;
+    --surface:rgba(255,255,255,.045); --surface-2:rgba(255,255,255,.07);
+    --border:rgba(184,155,255,.16); --border-strong:rgba(184,155,255,.32);
+    --purple:#7C4DFF; --purple-deep:#5626C4; --purple-bright:#A98BFF; --purple-pale:#C9B6FF;
+    --gold:#E8B85E; --gold-soft:#F3D89A;
+    --text:#F4F1FC; --text-dim:#B7ACD1; --text-faint:#756A94;
+    --ok:#5FD08A; --warn:#FF8A8A;
+    --maxw:1000px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans KR', sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    word-break:keep-all; overflow-wrap:break-word;
+  }
+  a{color:var(--purple-bright); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  .eyebrow{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:13px;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--purple-bright);
+  }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    padding:11px 20px; border-radius:100px; border:none; cursor:pointer;
+    font-weight:600; font-size:14.5px; font-family:inherit;
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+  .btn-primary{background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff;}
+  .btn-ghost{background:var(--surface); color:var(--text); border:1px solid var(--border-strong);}
+  .btn-sm{padding:7px 15px; font-size:13px;}
+
+  header{border-bottom:1px solid var(--border); background:var(--bg-alt); padding:20px 0; position:sticky; top:0; z-index:40;}
+  .h-row{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  header h1{font-size:23px; font-weight:700; margin-top:5px;}
+
+  /* 열쇠 입력 */
+  .gate{position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 50% 22%, #1a1030, #08050F 70%); padding:24px;}
+  .gate-box{max-width:400px; width:100%; text-align:center; background:var(--surface);
+    border:1px solid var(--border); border-radius:22px; padding:40px 32px;}
+  .gate-box h2{font-size:21px; margin:10px 0 8px;}
+  .gate-box p{color:var(--text-dim); font-size:14.5px; margin-bottom:22px; line-height:1.65;}
+  .gate-box input{width:100%; padding:13px 16px; border-radius:12px; border:1px solid var(--border);
+    background:var(--bg-alt); color:var(--text); font-size:15.5px; font-family:inherit; margin-bottom:12px; text-align:center;}
+  .gate-box input:focus{outline:none; border-color:var(--purple-bright);}
+  .gate-box .btn{width:100%;}
+  .gate-err{color:var(--warn); font-size:13.5px; min-height:18px; margin-top:10px;}
+
+  /* 요약 줄 */
+  .stats{display:flex; gap:10px; flex-wrap:wrap; margin:26px 0 20px;}
+  .stat{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:14px 20px; min-width:104px;
+  }
+  .stat b{display:block; font-size:24px; font-weight:700; font-family:'Space Grotesk';}
+  .stat span{font-size:13px; color:var(--text-faint);}
+  .stat.ok b{color:var(--ok);}
+  .stat.hold b{color:var(--gold-soft);}
+  .stat.out b{color:var(--text-faint);}
+
+  /* 걸러보기 */
+  .filters{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px;}
+  .chip{
+    padding:8px 16px; border-radius:100px; cursor:pointer; font-size:14px; font-family:inherit;
+    background:var(--surface); border:1px solid var(--border); color:var(--text-dim);
+  }
+  .chip:hover{border-color:var(--border-strong); color:var(--text);}
+  .chip.on{background:rgba(124,77,255,.18); border-color:var(--purple-bright); color:var(--text); font-weight:600;}
+
+  /* 신청서 카드 */
+  .card{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:18px; padding:24px 26px; margin-bottom:16px;
+  }
+  .card.s승인{border-color:rgba(95,208,138,.42);}
+  .card.s보류{border-color:rgba(243,216,154,.38);}
+  .card.s제외{opacity:.52;}
+  .card.test{opacity:.4;}
+  .c-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:4px;}
+  .c-name{font-size:21px; font-weight:700;}
+  .c-when{font-size:13px; color:var(--text-faint); margin-left:auto; white-space:nowrap;}
+  .pill{font-size:12px; font-weight:700; padding:4px 12px; border-radius:100px; white-space:nowrap;}
+  .pill.심사중{background:rgba(124,77,255,.18); color:var(--purple-bright);}
+  .pill.승인{background:rgba(95,208,138,.16); color:var(--ok);}
+  .pill.보류{background:rgba(232,184,94,.16); color:var(--gold-soft);}
+  .pill.제외{background:var(--surface-2); color:var(--text-faint);}
+  .pill.lv{background:rgba(232,184,94,.14); color:var(--gold-soft);}
+  .c-sub{font-size:15px; color:var(--text-dim); margin-bottom:16px;}
+  .c-sub .ph{color:var(--purple-bright); font-variant-numeric:tabular-nums;}
+
+  /* 답변 */
+  .qa{border-top:1px solid var(--border); padding-top:16px; margin-top:4px;}
+  .qa dt{
+    font-family:'Space Grotesk', sans-serif; font-size:12px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:6px;
+  }
+  .qa dd{font-size:15px; color:var(--text); line-height:1.7; margin-bottom:18px; white-space:pre-line;}
+  .qa dd:last-child{margin-bottom:0;}
+  .qa dd a{word-break:break-all;}
+  .qa dd.empty{color:var(--text-faint); font-style:normal;}
+  .fold{margin-top:6px;}
+  .fold-btn{
+    background:none; border:none; cursor:pointer; font-family:inherit;
+    font-size:14px; color:var(--purple-bright); padding:6px 0;
+  }
+  .fold-btn:hover{text-decoration:underline;}
+  .fold-body{display:none;}
+  .fold-body.open{display:block;}
+
+  /* 심사 */
+  .judge{
+    border-top:1px solid var(--border); margin-top:18px; padding-top:16px;
+    display:flex; gap:9px; align-items:center; flex-wrap:wrap;
+  }
+  .judge .lab{font-size:13px; color:var(--text-faint); margin-right:2px;}
+  .judge input{
+    flex:1 1 200px; min-width:160px; padding:9px 14px; border-radius:10px;
+    border:1px solid var(--border); background:var(--bg-alt);
+    color:var(--text); font-size:14px; font-family:inherit;
+  }
+  .judge input:focus{outline:none; border-color:var(--purple-bright);}
+  .jbtn{
+    padding:8px 15px; border-radius:100px; cursor:pointer; font-size:13.5px; font-family:inherit;
+    background:var(--bg-alt); border:1px solid var(--border); color:var(--text-dim);
+  }
+  .jbtn:hover{border-color:var(--border-strong); color:var(--text);}
+  .jbtn.on{font-weight:700;}
+  .jbtn.on[data-v="승인"]{background:rgba(95,208,138,.18); border-color:var(--ok); color:var(--ok);}
+  .jbtn.on[data-v="보류"]{background:rgba(232,184,94,.16); border-color:var(--gold-soft); color:var(--gold-soft);}
+  .jbtn.on[data-v="제외"]{background:var(--surface-2); border-color:var(--border-strong); color:var(--text-dim);}
+  .jbtn.on[data-v="심사중"]{background:rgba(124,77,255,.18); border-color:var(--purple-bright); color:var(--purple-bright);}
+  .saved{font-size:13px; color:var(--ok); opacity:0; transition:opacity .2s ease;}
+  .saved.show{opacity:1;}
+
+  .empty{padding:70px 0; text-align:center; color:var(--text-faint); font-size:15.5px; line-height:1.8;}
+  footer{padding:40px 0 60px; text-align:center; color:var(--text-faint); font-size:13px;}
+  @media(max-width:600px){
+    .card{padding:20px 18px;}
+    .c-name{font-size:19px;}
+    .c-when{margin-left:0; flex-basis:100%;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 열쇠 -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <span class="eyebrow">REVIEW</span>
+    <h2>신청서 심사</h2>
+    <p>조회 키를 한 번만 입력하면<br>다음부터는 이 브라우저에서 바로 열립니다.</p>
+    <input type="password" id="keyInput" placeholder="조회 키" autocomplete="off">
+    <button class="btn btn-primary" id="keyBtn" type="button">열기</button>
+    <p class="gate-err" id="keyErr"></p>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <header>
+    <div class="wrap h-row">
+      <div>
+        <span class="eyebrow">REVIEW</span>
+        <h1>4기 신청서 심사</h1>
+      </div>
+      <div style="display:flex; gap:9px; flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" id="reload" type="button">새로고침</button>
+        <a class="btn btn-ghost btn-sm" id="sheetLink" href="#" target="_blank" rel="noopener">시트 ↗</a>
+        <button class="btn btn-ghost btn-sm" id="logout" type="button">키 지우기</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+    <div class="filters" id="filters"></div>
+    <div id="list"></div>
+  </div>
+
+  <footer>퍼플 유니버스 운영진 전용 · 신청자 개인정보가 담겨 있으니 화면 공유에 주의해주세요.<br>
+    30분 동안 사용이 없으면 자동으로 잠깁니다.</footer>
+</div>
+
+<script>
+const ENDPOINT  = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1g2GO2DxfN1abIpnzVoI0NiU0yMhQCqs19jSj2BTdF8c/edit";
+const STATUSES  = ['심사중','승인','보류','제외'];
+
+let KEY = localStorage.getItem('pu_apply_key') || '';
+let ITEMS = [];
+let FILTER = '전체';
+
+const $ = id => document.getElementById(id);
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+/* 줄 안의 주소만 링크로 */
+function linkify(s){
+  return esc(s).replace(/(https?:\/\/[^\s<]+)/g, function(u){
+    return '<a href="' + u + '" target="_blank" rel="noopener">' + u + '</a>';
+  });
+}
+function when(s){
+  const m = String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  return m ? (+m[2]) + '월 ' + (+m[3]) + '일 ' + m[4] + ':' + m[5] : String(s||'');
+}
+function lv(s){ const m = String(s||'').match(/^(Lv\.\d)/); return m ? m[1] : ''; }
+
+/* ---------- 불러오기 ---------- */
+async function load(){
+  $('list').innerHTML = '<p class="empty">불러오는 중…</p>';
+  let data;
+  try{
+    const url = ENDPOINT + '?action=list&full=1&limit=100&key=' + encodeURIComponent(KEY);
+    data = await (await fetch(url, { redirect:'follow' })).json();
+  }catch(e){
+    $('list').innerHTML = '<p class="empty">불러오지 못했어요.<br>인터넷 연결을 확인하고 새로고침을 눌러주세요.</p>';
+    return;
+  }
+
+  if(!data || data.ok === false){
+    if(data && data.error === 'unauthorized'){
+      localStorage.removeItem('pu_apply_key');
+      KEY = '';
+      $('app').style.display = 'none';
+      $('gate').style.display = 'flex';
+      $('keyErr').textContent = '조회 키가 맞지 않아요.';
+      return;
+    }
+    $('list').innerHTML = '<p class="empty">오류: ' + esc((data && data.error) || '알 수 없음') + '</p>';
+    return;
+  }
+
+  ITEMS = (data.items || []).filter(function(it){ return !it.test; });
+  render(data);
+}
+
+/* ---------- 그리기 ---------- */
+function render(data){
+  const count = {};
+  STATUSES.forEach(function(s){ count[s] = 0; });
+  ITEMS.forEach(function(it){ count[it.status] = (count[it.status] || 0) + 1; });
+
+  $('stats').innerHTML =
+    '<div class="stat"><b>' + ITEMS.length + '</b><span>전체 신청</span></div>' +
+    '<div class="stat ok"><b>' + (count['승인']||0) + '</b><span>승인 / 정원 10명</span></div>' +
+    '<div class="stat"><b>' + (count['심사중']||0) + '</b><span>심사중</span></div>' +
+    '<div class="stat hold"><b>' + (count['보류']||0) + '</b><span>보류</span></div>' +
+    '<div class="stat out"><b>' + (count['제외']||0) + '</b><span>제외</span></div>';
+
+  $('filters').innerHTML = ['전체'].concat(STATUSES).map(function(s){
+    const n = s === '전체' ? ITEMS.length : (count[s]||0);
+    return '<button class="chip' + (FILTER===s ? ' on' : '') + '" data-f="' + s + '" type="button">' +
+           s + ' ' + n + '</button>';
+  }).join('');
+  $('filters').querySelectorAll('.chip').forEach(function(c){
+    c.onclick = function(){ FILTER = c.dataset.f; render(data); };
+  });
+
+  const shown = FILTER === '전체' ? ITEMS : ITEMS.filter(function(it){ return it.status === FILTER; });
+
+  if(!shown.length){
+    $('list').innerHTML = '<p class="empty">' +
+      (ITEMS.length ? '이 상태에 해당하는 신청이 없어요.'
+                    : '아직 신청이 없어요.<br><a href="https://purpleuniverse.net/apply" target="_blank" rel="noopener">신청 페이지 열어보기 ↗</a>') +
+      '</p>';
+    return;
+  }
+
+  $('list').innerHTML = shown.map(cardHTML).join('');
+  wire();
+}
+
+function qa(label, value, asLink){
+  const v = String(value == null ? '' : value).trim();
+  return '<dt>' + label + '</dt>' +
+         '<dd' + (v ? '' : ' class="empty"') + '>' + (v ? (asLink ? linkify(v) : esc(v)) : '(미입력)') + '</dd>';
+}
+
+function cardHTML(it){
+  const level = lv(it.level);
+  return '<div class="card s' + esc(it.status) + '" data-at="' + esc(it.at) + '">' +
+    '<div class="c-head">' +
+      '<span class="c-name">' + esc(it.name || '(이름 없음)') + '</span>' +
+      '<span class="pill ' + esc(it.status) + '">' + esc(it.status) + '</span>' +
+      (level ? '<span class="pill lv">' + esc(level) + '</span>' : '') +
+      '<span class="c-when">' + esc(when(it.at)) + '</span>' +
+    '</div>' +
+    '<p class="c-sub">' +
+      esc([it.age ? it.age + '세' : '', it.job, it.area].filter(Boolean).join(' · ')) +
+      (it.phone ? ' · <span class="ph">' + esc(it.phone) + '</span>' : '') +
+    '</p>' +
+
+    '<dl class="qa">' +
+      qa('현재의 고민 · 해결하고 싶은 것', it.concern) +
+      qa('사업의 강점 (USP)', it.usp) +
+    '</dl>' +
+
+    '<div class="fold">' +
+      '<button class="fold-btn" type="button">나머지 답변 보기 ▾</button>' +
+      '<div class="fold-body">' +
+        '<dl class="qa">' +
+          qa('웹사이트 · SNS 링크', it.links, true) +
+          qa('인생의 최종 목표', it.goal) +
+          qa('레벨 (전문)', it.level) +
+          qa('교육 경험', it.edu) +
+          qa('유입 경로', it.referrer) +
+          qa('개인정보 동의', it.agree) +
+        '</dl>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="judge">' +
+      '<span class="lab">심사</span>' +
+      STATUSES.map(function(s){
+        return '<button class="jbtn' + (it.status===s ? ' on' : '') + '" data-v="' + s + '" type="button">' + s + '</button>';
+      }).join('') +
+      '<input type="text" class="memo" placeholder="메모 (선택)" value="' + esc(it.memo || '') + '">' +
+      '<span class="saved">저장됨</span>' +
+    '</div>' +
+  '</div>';
+}
+
+function wire(){
+  document.querySelectorAll('.card').forEach(function(card){
+    const at = card.dataset.at;
+
+    const fb = card.querySelector('.fold-btn');
+    const body = card.querySelector('.fold-body');
+    fb.onclick = function(){
+      const open = body.classList.toggle('open');
+      fb.textContent = open ? '나머지 답변 접기 ▴' : '나머지 답변 보기 ▾';
+    };
+
+    const memo = card.querySelector('.memo');
+    card.querySelectorAll('.jbtn').forEach(function(b){
+      b.onclick = function(){ save(card, at, b.dataset.v, memo.value); };
+    });
+    let t = null;
+    memo.oninput = function(){
+      clearTimeout(t);
+      t = setTimeout(function(){
+        const cur = card.querySelector('.jbtn.on');
+        save(card, at, cur ? cur.dataset.v : '심사중', memo.value);
+      }, 900);
+    };
+  });
+}
+
+async function save(card, at, status, memo){
+  const saved = card.querySelector('.saved');
+  try{
+    const r = await fetch(ENDPOINT, {
+      method:'POST',
+      headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action:'status', key:KEY, at:at, status:status, memo:memo }),
+      redirect:'follow'
+    });
+    const out = await r.json();
+    if(!out || out.ok === false) throw new Error((out && out.error) || '실패');
+
+    // 화면 반영
+    card.querySelectorAll('.jbtn').forEach(function(b){ b.classList.toggle('on', b.dataset.v === status); });
+    const pill = card.querySelector('.pill');
+    pill.className = 'pill ' + status;
+    pill.textContent = status;
+    card.className = 'card s' + status;
+    const item = ITEMS.find(function(x){ return x.at === at; });
+    if(item){ item.status = status; item.memo = memo; }
+
+    saved.textContent = '저장됨';
+    saved.classList.add('show');
+    setTimeout(function(){ saved.classList.remove('show'); }, 1400);
+  }catch(e){
+    saved.textContent = '저장 실패';
+    saved.style.color = 'var(--warn)';
+    saved.classList.add('show');
+  }
+}
+
+/* ---------- 열쇠 ---------- */
+function openApp(){
+  $('gate').style.display = 'none';
+  $('app').style.display = 'block';
+  $('sheetLink').href = SHEET_URL;
+  touch();                       // 자동 잠금 시계 시작
+  load();
+}
+$('keyBtn').onclick = function(){
+  const v = $('keyInput').value.trim();
+  if(!v){ $('keyErr').textContent = '조회 키를 입력해주세요.'; return; }
+  KEY = v;
+  localStorage.setItem('pu_apply_key', v);
+  $('keyErr').textContent = '';
+  openApp();
+};
+$('keyInput').addEventListener('keydown', function(e){ if(e.key==='Enter') $('keyBtn').click(); });
+$('reload').onclick = load;
+$('logout').onclick = function(){ localStorage.removeItem('pu_apply_key'); location.reload(); };
+
+/* ---------- 자동 잠금 ----------
+   신청자 실명·연락처가 보이는 화면이라, 자리를 비운 사이 열려 있는 걸 막습니다.
+   ─ 30분 동안 아무 조작이 없으면 화면을 비우고 키를 다시 묻습니다
+   ─ 마지막 조작 시각은 localStorage 에 남겨서, 탭을 새로 열어도 이어집니다
+   ─ 키 자체는 지우지 않으므로, 다시 입력하면 바로 열립니다 */
+const IDLE_MIN = 30;
+let idleTimer = null;
+
+function touch(){
+  localStorage.setItem('pu_review_touch', String(Date.now()));
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(lock, IDLE_MIN * 60 * 1000);
+}
+
+function lock(){
+  clearTimeout(idleTimer);
+  ITEMS = [];
+  $('list').innerHTML = '';
+  $('stats').innerHTML = '';
+  $('filters').innerHTML = '';
+  $('app').style.display = 'none';
+  $('keyInput').value = '';
+  $('keyErr').textContent = IDLE_MIN + '분 동안 사용이 없어 잠갔어요. 키를 다시 입력해주세요.';
+  $('gate').style.display = 'flex';
+  setTimeout(function(){ $('keyInput').focus(); }, 80);
+}
+
+/* 조작이 있을 때마다 시계를 되돌림 (자주 불리므로 3초에 한 번만 기록) */
+(function(){
+  let last = 0;
+  function onAct(){
+    if($('app').style.display === 'none') return;
+    const now = Date.now();
+    if(now - last < 3000){ return; }
+    last = now;
+    touch();
+  }
+  ['click','keydown','scroll','mousemove','touchstart'].forEach(function(ev){
+    window.addEventListener(ev, onAct, { passive:true });
+  });
+  // 다른 탭에서 잠겼거나, 탭을 다시 열었을 때 시간 초과면 잠금
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState !== 'visible') return;
+    if($('app').style.display === 'none') return;
+    const t = Number(localStorage.getItem('pu_review_touch') || 0);
+    if(t && Date.now() - t > IDLE_MIN * 60 * 1000) lock();
+    else touch();
+  });
+})();
+
+/* 시작 — 저장된 키가 있어도, 마지막 조작이 30분을 넘었으면 다시 묻습니다 */
+(function(){
+  if(!KEY) return;
+  const t = Number(localStorage.getItem('pu_review_touch') || 0);
+  if(t && Date.now() - t > IDLE_MIN * 60 * 1000){
+    $('keyErr').textContent = '마지막 사용 후 ' + IDLE_MIN + '분이 지나 잠긴 상태예요. 키를 입력해주세요.';
+    return;
+  }
+  openApp();
+})();
+</script>
+</body>
+</html>
