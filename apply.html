@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>4기 사전 신청 — 퍼플 유니버스</title>
+<meta name="description" content="퍼플 유니버스 멤버십 4기 사전 신청. 각 기수 정원 10명, 선착순 모집.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="퍼플 유니버스">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="4기 사전 신청 — 퍼플 유니버스">
+<meta property="og:description" content="콘텐츠를 잘 쓰는 사업가들의 멤버십. 정원 10명, 선착순 모집.">
+<meta property="og:url" content="https://purpleuniverse.net/apply">
+<meta property="og:image" content="https://purpleuniverse.net/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="4기 사전 신청 — 퍼플 유니버스">
+<meta name="twitter:image" content="https://purpleuniverse.net/og-image.png">
+<link rel="canonical" href="https://purpleuniverse.net/apply">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08050F; --bg-alt:#0F0A1E; --bg-alt2:#140D26;
+    --surface:rgba(255,255,255,.045); --surface-2:rgba(255,255,255,.07);
+    --border:rgba(184,155,255,.16); --border-strong:rgba(184,155,255,.32);
+    --purple:#7C4DFF; --purple-deep:#5626C4; --purple-bright:#A98BFF; --purple-pale:#C9B6FF;
+    --gold:#E8B85E; --gold-soft:#F3D89A;
+    --text:#F4F1FC; --text-dim:#B7ACD1; --text-faint:#756A94;
+    --warn:#FF8A8A;
+    --radius:20px; --maxw:760px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans KR', sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    word-break:keep-all; overflow-wrap:break-word;
+  }
+  body::before{
+    content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:
+      radial-gradient(1.6px 1.6px at 40px 60px, rgba(232,225,255,.4), transparent),
+      radial-gradient(1.2px 1.2px at 140px 20px, rgba(255,255,255,.3), transparent),
+      radial-gradient(1.8px 1.8px at 230px 130px, rgba(184,155,255,.35), transparent),
+      radial-gradient(1px 1px at 70px 170px, rgba(255,255,255,.25), transparent),
+      radial-gradient(1.4px 1.4px at 310px 90px, rgba(232,184,94,.28), transparent);
+    background-repeat:repeat; background-size:420px 420px;
+  }
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  .eyebrow{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:14px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--purple-bright);
+  }
+
+  /* ---------- HEADER ---------- */
+  header{border-bottom:1px solid var(--border); background:var(--bg-alt); padding:18px 0;}
+  .a-nav{display:flex; align-items:center; justify-content:space-between; gap:14px;}
+  .a-back{font-weight:600; font-size:16px; color:var(--text-dim);}
+  .a-back:hover{color:var(--text);}
+  .a-tag{
+    font-family:'Space Grotesk'; font-size:12.5px; letter-spacing:.1em; font-weight:600;
+    color:var(--gold-soft); border:1px solid rgba(243,216,154,.35);
+    padding:6px 14px; border-radius:100px; white-space:nowrap;
+  }
+
+  /* ---------- HERO ---------- */
+  .a-hero{padding:56px 0 8px; text-align:center;}
+  .a-hero h1{font-size:clamp(28px,5vw,40px); font-weight:700; margin-top:14px;}
+  .a-hero p{color:var(--text-dim); margin-top:14px; font-size:16.5px;}
+
+  /* ---------- 필독 사항 ---------- */
+  .notice{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:18px; padding:26px 28px; margin-top:34px;
+  }
+  .notice h2{font-size:17px; font-weight:700; margin-bottom:16px; color:var(--gold-soft);}
+  .notice ol{list-style:none; counter-reset:n; display:flex; flex-direction:column; gap:16px;}
+  .notice li{counter-increment:n; position:relative; padding-left:30px; font-size:15px; color:var(--text-dim); line-height:1.65;}
+  .notice li::before{
+    content:'[' counter(n) ']'; position:absolute; left:0; top:0;
+    font-family:'Space Grotesk'; font-size:13px; font-weight:700; color:var(--purple-bright);
+  }
+  .notice li b{color:var(--text); font-weight:600;}
+  .notice .sub{display:block; margin-top:7px; font-size:14px; color:var(--text-faint);}
+  @media(max-width:520px){ .notice{padding:22px 20px;} }
+
+  /* ---------- FORM ---------- */
+  form{margin-top:34px; padding-bottom:20px;}
+  .field{margin-bottom:28px;}
+  .field > label{
+    display:block; font-size:16px; font-weight:600; color:var(--text);
+    margin-bottom:6px; line-height:1.5;
+  }
+  .req{color:var(--purple-bright); margin-left:4px;}
+  .hint{font-size:14px; color:var(--text-faint); line-height:1.6; margin-bottom:10px; white-space:pre-line;}
+  input[type=text], input[type=tel], textarea{
+    width:100%; padding:14px 17px; border-radius:12px;
+    border:1px solid var(--border); background:var(--bg-alt);
+    color:var(--text); font-size:16px; font-family:inherit; line-height:1.6;
+  }
+  input:focus, textarea:focus{outline:none; border-color:var(--purple-bright);}
+  input::placeholder, textarea::placeholder{color:#5B5278;}
+  textarea{resize:vertical; min-height:120px;}
+  .field.bad input, .field.bad textarea, .field.bad .opts{border-color:var(--warn);}
+  .err{display:none; color:var(--warn); font-size:13.5px; margin-top:7px;}
+  .field.bad .err{display:block;}
+
+  /* 선택 항목 */
+  .opts{display:flex; flex-direction:column; gap:9px;}
+  .opt{
+    display:flex; align-items:flex-start; gap:11px; cursor:pointer;
+    padding:14px 16px; border-radius:12px;
+    background:var(--bg-alt); border:1px solid var(--border);
+    font-size:15px; color:var(--text-dim); line-height:1.55;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover{border-color:var(--border-strong);}
+  .opt input{
+    flex:0 0 auto; width:19px; height:19px; margin-top:1px;
+    accent-color:var(--purple); cursor:pointer;
+  }
+  .opt input:checked ~ span{color:var(--text);}
+  .opt:has(input:checked){
+    border-color:var(--purple-bright); background:rgba(124,77,255,.10);
+  }
+  .opt b{color:var(--purple-pale); font-weight:700;}
+
+  /* 동의 */
+  .agree-box{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:20px 22px; margin-bottom:26px;
+  }
+  .agree-box p{font-size:14px; color:var(--text-faint); line-height:1.7; margin-bottom:14px;}
+  .agree-box .opt{background:transparent; border:none; padding:0; font-size:15px; color:var(--text);}
+  .agree-box .opt:hover{border:none;}
+
+  /* 제출 */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:16px 28px; border-radius:100px; border:none; cursor:pointer;
+    font-weight:600; font-size:17px; font-family:inherit;
+    transition:transform .2s ease, opacity .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn:disabled{opacity:.5; cursor:not-allowed; transform:none;}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff;
+    box-shadow:0 8px 30px rgba(124,77,255,.4); width:100%;
+  }
+  .btn-ghost{background:var(--surface); color:var(--text); border:1px solid var(--border-strong);}
+  .submit-note{margin-top:14px; font-size:13.5px; color:var(--text-faint); text-align:center; line-height:1.6;}
+  .form-err{
+    display:none; margin-top:16px; padding:14px 18px; border-radius:12px;
+    background:rgba(255,90,90,.10); border:1px solid rgba(255,90,90,.3);
+    color:#FF9B9B; font-size:14.5px; line-height:1.6;
+  }
+  .form-err.show{display:block;}
+
+  /* ---------- 완료 화면 ---------- */
+  .done{display:none; padding:80px 0 100px; text-align:center;}
+  .done.show{display:block;}
+  .done-ico{
+    width:74px; height:74px; margin:0 auto 24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:34px;
+    background:rgba(124,77,255,.16); border:1px solid var(--border-strong);
+  }
+  .done h2{font-size:clamp(24px,4vw,32px); font-weight:700; margin-bottom:14px;}
+  .done p{color:var(--text-dim); font-size:16.5px; line-height:1.75; margin-bottom:10px;}
+  .done .next{
+    margin:30px auto 0; max-width:460px; text-align:left;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:22px 24px;
+  }
+  .done .next h3{font-size:15px; font-weight:700; color:var(--gold-soft); margin-bottom:12px;}
+  .done .next li{font-size:14.5px; color:var(--text-dim); line-height:1.7; padding-left:16px; position:relative; list-style:none;}
+  .done .next li::before{content:''; position:absolute; left:0; top:11px; width:5px; height:5px; border-radius:50%; background:var(--purple-bright);}
+  .done-btns{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:30px;}
+
+  footer{
+    padding:36px 0 44px; text-align:center;
+    color:var(--text-faint); font-size:13.5px;
+    border-top:1px solid var(--border); margin-top:30px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap a-nav">
+    <a href="/" class="a-back">← 퍼플 유니버스</a>
+    <span class="a-tag">4기 · 정원 10명</span>
+  </div>
+</header>
+
+<!-- ===== 신청 화면 ===== -->
+<div id="applyView">
+
+  <section class="a-hero">
+    <div class="wrap">
+      <span class="eyebrow">MEMBERSHIP APPLICATION</span>
+      <h1>퍼플 유니버스 4기<br>사전 신청</h1>
+      <p>1년의 로드맵을 함께 만들기 위한 설문입니다.<br>여유 있게 시간을 두고 구체적으로 작성해주세요.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="notice">
+      <h2>신청 전 꼭 읽어주세요</h2>
+      <ol>
+        <li>
+          각 기수별로 <b>선착순 10명</b>을 모집합니다.
+          <span class="sub">4기 모집 마감 — 2026년 9월 25일</span>
+        </li>
+        <li>
+          퍼플 유니버스는 사업가를 트레이닝하는 과정이라, <b>사업자를 내신 분</b>이 신청하시면 승인 확률이 높습니다.
+          <span class="sub">· 세무사·노무사·페이닥터 등 전문 자격을 갖추셨다면 사업자 보유와 무관하게 신청 가능합니다.
+· 프리랜서라도 구체적인 비즈니스 목표와 수익화 모델을 갖추고 계시면 신청 가능합니다.
+· 비즈니스 목표와 수익화 모델이 전혀 없으시면 심사 단계에서 제외될 확률이 높습니다.</span>
+        </li>
+        <li>
+          <b>자세하게 작성해주실수록 승인 확률이 높아집니다.</b>
+          <span class="sub">저희가 대표님의 사업을 이해하는 데 쓰는 유일한 자료입니다.</span>
+        </li>
+      </ol>
+    </div>
+
+    <form id="applyForm" novalidate>
+
+      <!-- 1. 성함 -->
+      <div class="field" data-req>
+        <label for="name">성함<span class="req">*</span></label>
+        <input type="text" id="name" name="name" autocomplete="name" placeholder="홍길동">
+        <p class="err">성함을 입력해주세요.</p>
+      </div>
+
+      <!-- 2. 나이 -->
+      <div class="field" data-req>
+        <label for="age">나이<span class="req">*</span></label>
+        <p class="hint">운영진만 확인하니 정확히 적어주세요.</p>
+        <input type="text" id="age" name="age" inputmode="numeric" placeholder="38">
+        <p class="err">나이를 입력해주세요.</p>
+      </div>
+
+      <!-- 3. 연락처 -->
+      <div class="field" data-req data-phone>
+        <label for="phone">연락처<span class="req">*</span></label>
+        <p class="hint">010-1234-5678 형식으로 적어주세요.</p>
+        <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="010-1234-5678" maxlength="13">
+        <p class="err">연락처를 010-1234-5678 형식으로 입력해주세요.</p>
+      </div>
+
+      <!-- 4. 직업 -->
+      <div class="field" data-req>
+        <label for="job">직업<span class="req">*</span></label>
+        <p class="hint">구체적으로 어떤 업무를 하고 계신지 적어주세요.</p>
+        <input type="text" id="job" name="job" placeholder="예: 온라인 건강식품 셀러 / 세무사 / 필라테스 스튜디오 운영">
+        <p class="err">직업을 입력해주세요.</p>
+      </div>
+
+      <!-- 5. 주로 업무를 하는 곳 -->
+      <div class="field" data-req>
+        <label for="area">주로 업무를 하는 곳<span class="req">*</span></label>
+        <p class="hint">사무실 위치를 적어주셔도 좋고, 전문 자격사분들은 주 활동 지역을 적어주세요.</p>
+        <input type="text" id="area" name="area" placeholder="예: 서울 강남구 / 경기 성남 · 수도권 전역">
+        <p class="err">주로 업무를 하시는 곳을 입력해주세요.</p>
+      </div>
+
+      <!-- 6. USP -->
+      <div class="field" data-req>
+        <label for="usp">내 사업의 강점 (USP)<span class="req">*</span></label>
+        <p class="hint">· 남들보다 내가 잘하는 전문 자격이나 고객 해결 사례
+· (셀러라면) 제품의 어떤 점이 특화되어 있는지
+· (자영업자라면) 어떤 서비스를 특화해서 제공하고 있는지
+· 목표하는 매출액이나 구체적인 수익화 모델이 있는지</p>
+        <textarea id="usp" name="usp" rows="6" placeholder="상세히 적어주세요."></textarea>
+        <p class="err">사업의 강점을 입력해주세요.</p>
+      </div>
+
+      <!-- 7. 링크 -->
+      <div class="field" data-req>
+        <label for="links">웹사이트 · SNS 링크<span class="req">*</span></label>
+        <p class="hint">비즈니스에 사용하고 있는 주소를 전부 적어주세요. 줄을 나눠 적어주시면 됩니다.</p>
+        <textarea id="links" name="links" rows="4" placeholder="https://instagram.com/…&#10;https://smartstore.naver.com/…"></textarea>
+        <p class="err">웹사이트나 SNS 링크를 입력해주세요.</p>
+      </div>
+
+      <!-- 8. 교육 경험 -->
+      <div class="field" data-req data-radio="edu">
+        <label>SNS · 마케팅 · 브랜딩 교육을 수강하거나 참여한 경험이 얼마나 있으신가요?<span class="req">*</span></label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="edu" value="한 번도 없다."><span>한 번도 없다.</span></label>
+          <label class="opt"><input type="radio" name="edu" value="1~5회 사이"><span>1~5회 사이</span></label>
+          <label class="opt"><input type="radio" name="edu" value="5회 이상"><span>5회 이상</span></label>
+        </div>
+        <p class="err">하나를 선택해주세요.</p>
+      </div>
+
+      <!-- 9. 레벨 -->
+      <div class="field" data-req data-radio="level">
+        <label>SNS 이해도와 콘텐츠 제작 실력에 따른 레벨을 체크해주세요.<span class="req">*</span></label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="level" value="Lv.1ㅣSNS를 아예 모르고 콘텐츠를 기획/촬영/제작 해본 적이 한 번도 없다."><span><b>Lv.1</b> SNS를 아예 모르고, 콘텐츠를 기획·촬영·제작해본 적이 한 번도 없다.</span></label>
+          <label class="opt"><input type="radio" name="level" value="Lv.2ㅣSNS가 뭔지는 알고 있지만 콘텐츠 기획/촬영/제작의 경험이 적다."><span><b>Lv.2</b> SNS가 뭔지는 알지만, 콘텐츠 기획·촬영·제작 경험이 적다.</span></label>
+          <label class="opt"><input type="radio" name="level" value="Lv.3ㅣSNS 팔로워가 1000명 미만이고 콘텐츠 기획/촬영/제작을 쭉 진행하고 있다."><span><b>Lv.3</b> 팔로워가 1,000명 미만이고, 콘텐츠 기획·촬영·제작을 쭉 진행하고 있다.</span></label>
+          <label class="opt"><input type="radio" name="level" value="Lv.4ㅣSNS 팔로워가 1000명 이상이지만 콘텐츠 방향성과 수익화 모델이 필요하다."><span><b>Lv.4</b> 팔로워가 1,000명 이상이지만, 콘텐츠 방향성과 수익화 모델이 필요하다.</span></label>
+          <label class="opt"><input type="radio" name="level" value="Lv.5ㅣSNS 팔로워가 1만 명 이상이고 비즈니스 확장이 필요한 상황이다."><span><b>Lv.5</b> 팔로워가 1만 명 이상이고, 비즈니스 확장이 필요한 상황이다.</span></label>
+        </div>
+        <p class="err">하나를 선택해주세요.</p>
+      </div>
+
+      <!-- 10. 고민 -->
+      <div class="field" data-req>
+        <label for="concern">현재의 고민과 퍼플 유니버스에서 해결하고 싶은 것<span class="req">*</span></label>
+        <p class="hint">상세히 적어주실수록 저희가 해결점을 찾는 게 빨라집니다.</p>
+        <textarea id="concern" name="concern" rows="6" placeholder="지금 무엇이 가장 막혀 있는지 적어주세요."></textarea>
+        <p class="err">현재의 고민을 입력해주세요.</p>
+      </div>
+
+      <!-- 11. 인생 목표 -->
+      <div class="field" data-req>
+        <label for="goal">원하는 인생의 최종 목표가 무엇인가요?<span class="req">*</span></label>
+        <p class="hint">동기부여가 되고 일어날 힘을 주는 목표라면 무엇이든 좋습니다.</p>
+        <textarea id="goal" name="goal" rows="5" placeholder="가슴 벅찬 목표를 적어주세요."></textarea>
+        <p class="err">최종 목표를 입력해주세요.</p>
+      </div>
+
+      <!-- 유입 경로 (선택) -->
+      <div class="field">
+        <label for="referrer">퍼플 유니버스를 어떻게 알게 되셨나요? <span style="color:var(--text-faint); font-weight:400; font-size:14px;">(선택)</span></label>
+        <input type="text" id="referrer" name="referrer" placeholder="예: 유튜브 / 단톡방 / 지인 소개">
+      </div>
+
+      <!-- 동의 -->
+      <div class="agree-box field" data-req data-check="agree">
+        <p>작성해주신 내용은 <b style="color:var(--text-dim);">4기 선발 심사와 1년 로드맵 설계</b>에만 사용하며, 운영진 외에는 공개하지 않습니다. 선발 여부와 무관하게 모집이 끝난 뒤 6개월이 지나면 파기합니다.</p>
+        <label class="opt"><input type="checkbox" name="agree" value="동의"><span>개인정보 수집·이용에 동의합니다.<span class="req">*</span></span></label>
+        <p class="err">동의가 필요합니다.</p>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">사전 신청하기</button>
+      <p class="submit-note">제출 후에는 수정이 어렵습니다. 한 번 더 확인해주세요.</p>
+      <div class="form-err" id="formErr"></div>
+
+    </form>
+  </div>
+</div>
+
+<!-- ===== 완료 화면 ===== -->
+<div class="done" id="doneView">
+  <div class="wrap">
+    <div class="done-ico">✓</div>
+    <h2>신청이 접수됐습니다</h2>
+    <p>작성해주신 내용을 운영진이 직접 읽고 검토합니다.<br>결과는 <b style="color:var(--text);">적어주신 연락처</b>로 안내드립니다.</p>
+    <div class="next">
+      <h3>다음 순서</h3>
+      <ul>
+        <li>운영진이 신청 내용을 검토합니다</li>
+        <li>승인되면 연락처로 안내와 함께 다음 단계를 보내드립니다</li>
+        <li>정원 10명이 차면 다음 기수로 안내드릴 수 있습니다</li>
+      </ul>
+    </div>
+    <div class="done-btns">
+      <a href="/notes" class="btn btn-primary" style="width:auto;">30X 퍼플 노트 보기</a>
+      <a href="/" class="btn btn-ghost">홈으로</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 Purple Universe · HYONSLAB &amp; JuInSEE FILM
+</footer>
+
+<script>
+/* ===== 신청 접수 주소 =====
+   구글 앱스 스크립트 웹 앱 주소입니다. (2026-09-22 연결 확인)
+   스크립트를 고쳐 '새 버전'으로 다시 배포하면 이 주소는 그대로 유지됩니다.
+   단, '새 배포'로 새로 만들면 주소가 바뀌니 그때는 이 줄을 교체해야 합니다. */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
+
+(function(){
+  const form   = document.getElementById('applyForm');
+  const btn    = document.getElementById('submitBtn');
+  const formErr= document.getElementById('formErr');
+  const applyV = document.getElementById('applyView');
+  const doneV  = document.getElementById('doneView');
+
+  /* 연락처 자동 하이픈 */
+  const phone = document.getElementById('phone');
+  phone.addEventListener('input', function(){
+    const n = phone.value.replace(/\D/g,'').slice(0,11);
+    phone.value = n.length < 4 ? n
+      : n.length < 8 ? n.slice(0,3) + '-' + n.slice(3)
+      : n.slice(0,3) + '-' + n.slice(3,7) + '-' + n.slice(7);
+  });
+
+  /* 입력하면 오류 표시 해제 */
+  form.addEventListener('input', function(e){
+    const f = e.target.closest('.field');
+    if(f) f.classList.remove('bad');
+  });
+  form.addEventListener('change', function(e){
+    const f = e.target.closest('.field');
+    if(f) f.classList.remove('bad');
+  });
+
+  /* 검사 — 통과하면 true */
+  function validate(){
+    let firstBad = null;
+
+    form.querySelectorAll('.field[data-req]').forEach(function(f){
+      let ok = true;
+
+      if(f.dataset.radio){
+        ok = !!form.querySelector('input[name="' + f.dataset.radio + '"]:checked');
+      } else if(f.dataset.check){
+        const c = form.querySelector('input[name="' + f.dataset.check + '"]');
+        ok = !!(c && c.checked);
+      } else {
+        const el = f.querySelector('input, textarea');
+        ok = !!(el && el.value.trim());
+        if(ok && f.hasAttribute('data-phone')){
+          ok = /^01[016789]-\d{3,4}-\d{4}$/.test(el.value.trim());
+        }
+      }
+
+      f.classList.toggle('bad', !ok);
+      if(!ok && !firstBad) firstBad = f;
+    });
+
+    if(firstBad){
+      firstBad.scrollIntoView({ behavior:'smooth', block:'center' });
+      const el = firstBad.querySelector('input, textarea');
+      if(el) setTimeout(function(){ el.focus({ preventScroll:true }); }, 320);
+      return false;
+    }
+    return true;
+  }
+
+  function collect(){
+    const d = {};
+    ['name','age','phone','job','area','usp','links','concern','goal','referrer']
+      .forEach(function(k){
+        const el = document.getElementById(k);
+        d[k] = el ? el.value.trim() : '';
+      });
+    ['edu','level'].forEach(function(k){
+      const c = form.querySelector('input[name="' + k + '"]:checked');
+      d[k] = c ? c.value : '';
+    });
+    const ag = form.querySelector('input[name="agree"]');
+    d.agree = (ag && ag.checked) ? '동의' : '';
+    return d;
+  }
+
+  function fail(msg){
+    formErr.textContent = msg;
+    formErr.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = '사전 신청하기';
+  }
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    formErr.classList.remove('show');
+
+    if(!validate()) return;
+
+    if(!ENDPOINT){
+      fail('신청 접수 주소가 아직 설정되지 않았습니다. 잠시 후 다시 시도해주시거나, 카카오톡으로 문의해주세요.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '보내는 중…';
+
+    const body = JSON.stringify(collect());
+    let sent = false;
+
+    try{
+      // text/plain 으로 보내면 사전 요청(preflight)이 생기지 않아 안정적입니다
+      const res = await fetch(ENDPOINT, {
+        method:'POST',
+        headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: body,
+        redirect:'follow'
+      });
+      const out = await res.json().catch(function(){ return null; });
+      if(out && out.ok === false) { fail('접수 중 문제가 생겼습니다: ' + (out.error || '알 수 없는 오류')); return; }
+      sent = true;
+    }catch(err){
+      // 응답을 읽지 못하는 경우가 있어, 전송만이라도 확실히 되도록 한 번 더 시도합니다
+      try{
+        await fetch(ENDPOINT, { method:'POST', mode:'no-cors', body: body });
+        sent = true;
+      }catch(err2){
+        fail('전송에 실패했습니다. 인터넷 연결을 확인하시고 다시 시도해주세요. 계속 실패하면 카카오톡으로 문의해주세요.');
+        return;
+      }
+    }
+
+    if(sent){
+      applyV.style.display = 'none';
+      doneV.classList.add('show');
+      window.scrollTo(0, 0);
+    }
+  });
+})();
+</script>
+</body>
+</html>
