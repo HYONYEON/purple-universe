@@ -87,7 +87,8 @@
     font-family:'Space Grotesk'; font-size:13px; font-weight:700; color:var(--purple-bright);
   }
   .notice li b{color:var(--text); font-weight:600;}
-  .notice .sub{display:block; margin-top:7px; font-size:14px; color:var(--text-faint);}
+  /* pre-line 이 있어야 안에 넣은 줄바꿈이 살아납니다 */
+  .notice .sub{display:block; margin-top:7px; font-size:14px; color:var(--text-faint); white-space:pre-line;}
   @media(max-width:520px){ .notice{padding:22px 20px;} }
 
   /* ---------- FORM ---------- */
