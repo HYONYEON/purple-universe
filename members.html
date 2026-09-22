@@ -14,7 +14,7 @@
 <meta property="og:image" content="https://purpleuniverse.net/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="퍼플 유니버스 4기 — 콘텐츠를 잘 쓰는 사업가들의 멤버십">
+<meta property="og:image:alt" content="퍼플 유니버스 5기 — 콘텐츠를 잘 쓰는 사업가들의 멤버십">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="퍼플 유니버스 멤버십 전용">
 <meta name="twitter:description" content="퍼플 유니버스 멤버 전용 페이지입니다.">
@@ -218,17 +218,19 @@
   }
   .peek-link:hover{color:var(--text);}
 
-  /* 가릴 것들 — 제목·날짜는 남기고 내용만 흐리게 */
-  body.peek .resource-embed,
-  body.peek .resource-card p,
-  body.peek .resource-link,
+  /* 가릴 것들 — .gated 섹션만. 제목·날짜는 남기고 내용만 흐리게
+     (멤버 인터뷰는 유튜브 공개 영상이라 gated 가 아니고, 미리보기에서도 그대로 보인다) */
+  body.peek .gated .resource-embed,
+  body.peek .gated .resource-card p,
+  body.peek .gated .resource-link,
+  body.peek .gated .roadmap-text,
   body.peek .agent-box{
     filter:blur(6px); user-select:none; pointer-events:none;
   }
   body.peek .agent-box{opacity:.75;}
-  body.peek .resource-card{cursor:pointer; position:relative; transition:border-color .18s ease;}
-  body.peek .resource-card:hover{border-color:var(--border-strong);}
-  body.peek .resource-card::after{
+  body.peek .gated .resource-card{cursor:pointer; position:relative; transition:border-color .18s ease;}
+  body.peek .gated .resource-card:hover{border-color:var(--border-strong);}
+  body.peek .gated .resource-card::after{
     content:'\1F512 멤버 전용';
     position:absolute; top:12px; right:12px;
     font-size:12px; font-weight:700; letter-spacing:.02em;
@@ -238,6 +240,84 @@
   }
   body.peek .m-search input{cursor:pointer;}
   body.peek .agent-wrap{cursor:pointer; position:relative;}
+
+  /* ---------- 일정표 (미리보기에서도 보임) ---------- */
+  .sched-sum{
+    display:inline-flex; align-items:center; gap:8px; margin-bottom:22px;
+    padding:9px 18px; border-radius:100px; font-size:15px; font-weight:600;
+    background:rgba(124,77,255,.14); color:var(--purple-pale);
+    border:1px solid var(--border-strong);
+  }
+  /* 3열 카드 — 줄 수를 1/3로 줄여 스크롤을 짧게 */
+  .sched-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  @media(max-width:900px){ .sched-grid{grid-template-columns:1fr 1fr;} }
+  @media(max-width:600px){ .sched-grid{grid-template-columns:1fr;} }
+  .sched-card{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:14px 18px;
+    display:flex; flex-direction:column; gap:5px;
+  }
+  .sched-card.past{opacity:.4;}
+  /* 날짜 · 시간 · 배지를 한 줄에 — 카드 높이를 두 줄로 줄인다 */
+  .sched-top{display:flex; align-items:baseline; gap:9px;}
+  .sched-date{
+    flex:0 0 auto; font-weight:700; font-size:16px; font-variant-numeric:tabular-nums;
+  }
+  .sched-dow{font-weight:500; color:var(--text-faint); font-size:14px; margin-left:4px;}
+  .sched-time{
+    flex:1 1 auto; min-width:0; font-size:13.5px; color:var(--text-faint);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .sched-badge{
+    flex:0 0 auto; margin-left:auto;
+    font-size:11.5px; font-weight:700; padding:4px 11px; border-radius:100px;
+    white-space:nowrap;
+  }
+  .sc-zoom{background:rgba(124,77,255,.18); color:var(--purple-bright);}
+  .sc-off {background:rgba(232,184,94,.16); color:var(--gold-soft);}
+  .sc-live{background:rgba(255,90,120,.16); color:#FF9AAE;}
+  .sc-web {background:rgba(88,200,140,.16); color:#7FD8A8;}
+  .sched-title{font-size:15px; font-weight:600; line-height:1.45;}
+  .sched-area{font-weight:500; color:var(--text-faint);}
+  .sched-note{margin-top:18px; font-size:14px; color:var(--text-faint); line-height:1.6;}
+  .sched-toggle{
+    display:block; width:100%; max-width:320px; margin:14px auto 0;
+    padding:12px 20px; border-radius:100px; cursor:pointer;
+    background:var(--surface); border:1px solid var(--border-strong);
+    color:var(--text-dim); font-size:14.5px; font-weight:600; font-family:inherit;
+    transition:color .18s ease, border-color .18s ease;
+  }
+  .sched-toggle:hover{color:var(--text); border-color:var(--purple-bright);}
+  @media(max-width:520px){
+    .sched-card{padding:14px 16px; gap:6px;}
+  }
+
+  /* 로드맵 입구 카드 — 내용은 노션에 있고 여기서는 문만 연다 */
+  .roadmap-entry{
+    display:flex; align-items:center; gap:20px; cursor:pointer;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:18px; padding:26px 28px; max-width:720px;
+    transition:border-color .18s ease, transform .18s ease;
+  }
+  .roadmap-entry:hover{border-color:var(--border-strong); transform:translateY(-2px);}
+  .roadmap-ico{font-size:32px; flex:0 0 auto;}
+  .roadmap-text{flex:1; min-width:0;}
+  .roadmap-text h4{font-size:18px; font-weight:700; margin-bottom:4px;}
+  .roadmap-text p{font-size:14.5px; color:var(--text-dim); line-height:1.5;}
+  .roadmap-go{flex:0 0 auto; font-size:15px; font-weight:600; color:var(--gold-soft);}
+  body.peek .roadmap-entry{position:relative;}
+  body.peek .roadmap-entry::after{
+    content:'\1F512 멤버 전용';
+    position:absolute; top:12px; right:14px;
+    font-size:12px; font-weight:700; padding:5px 11px; border-radius:100px;
+    background:rgba(8,5,15,.82); color:var(--gold-soft);
+    border:1px solid rgba(243,216,154,.3);
+  }
+  body.peek .roadmap-go{visibility:hidden;}
+  @media(max-width:520px){
+    .roadmap-entry{flex-wrap:wrap; gap:14px; padding:22px 20px;}
+    .roadmap-go{width:100%;}
+  }
 
   /* 잠금 안내 팝업 */
   .lock-modal{
@@ -341,7 +421,70 @@
     </div>
   </section>
 
+  <!-- ===== 멤버 인터뷰 (공개) =====
+       유튜브에 공개로 올라가는 영상이라 미리보기에서도 그대로 보입니다.
+       새 인터뷰를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하고
+       data-yt="" 안에 유튜브 주소의 v= 뒤 값만 넣어주세요. -->
   <section class="m-section">
+    <div class="wrap">
+      <span class="eyebrow">MEMBER INTERVIEW</span>
+      <h2>멤버 인터뷰</h2>
+      <p>퍼플 유니버스 멤버들이 각자의 사업을 어떻게 키워왔는지, 직접 이야기합니다.</p>
+      <div class="resource-grid" id="interviewGrid">
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-tag">INTERVIEW</span>
+          <h4>첫 번째 인터뷰가 곧 올라갑니다</h4>
+          <p>촬영이 끝난 순서대로 이 자리에 채워집니다.</p>
+        </div>
+      </div>
+      <p class="no-result" id="interviewNoResult">검색 결과가 없어요.</p>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <!-- ===== 모임 일정 (공개) =====
+       내용이 아니라 '얼마나 자주 모이는지'만 보여주는 자리.
+       구체적인 장소는 넣지 않습니다. 날짜·시간·종류만.
+       일정을 고치는 곳은 아래 스크립트의 SCHEDULE_REPEAT / SCHEDULE_ONCE 입니다. -->
+  <section class="m-section">
+    <div class="wrap">
+      <span class="eyebrow">SCHEDULE</span>
+      <h2>앞으로 3개월 모임 일정</h2>
+      <p>퍼플 유니버스는 이 주기로 계속 모입니다. 장소와 참가 방법은 멤버에게 따로 안내해요.</p>
+      <div id="schedSummary"></div>
+      <div id="schedList"></div>
+      <p class="sched-note">
+        일정은 사정에 따라 조정될 수 있어요. 오프라인 모임의 장소는 멤버 안내로만 공유합니다.
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <!-- ===== 비즈니스 1년 로드맵 (멤버 전용) =====
+       내용은 노션에 두고 여기서는 문만 엽니다.
+       노션 주소가 정해지면 아래 스크립트의 ROADMAP_URL 한 줄만 채우면 됩니다. -->
+  <section class="m-section gated">
+    <div class="wrap">
+      <span class="eyebrow">ROADMAP</span>
+      <h2>비즈니스 1년 로드맵</h2>
+      <p>멤버 각자가 1년 동안 어떤 사업을 어떤 순서로 펼칠지 정리한 계획서예요. 서로의 로드맵을 보며 연결점을 찾습니다.</p>
+      <div class="roadmap-entry" id="roadmapEntry" data-lock>
+        <div class="roadmap-ico">🗺️</div>
+        <div class="roadmap-text">
+          <h4>멤버 로드맵 모아보기</h4>
+          <p>멤버 전원의 1년 계획서를 한곳에서 볼 수 있어요.</p>
+        </div>
+        <span class="roadmap-go">열기 →</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <section class="m-section gated">
     <div class="wrap">
       <span class="eyebrow">ZOOM ARCHIVE</span>
       <h2>전체 줌미팅 다시보기</h2>
@@ -378,7 +521,7 @@
 
   <div class="wrap"><div class="m-divider"></div></div>
 
-  <section class="m-section">
+  <section class="m-section gated">
     <div class="wrap">
       <span class="eyebrow">CURATED</span>
       <h2>비즈니스에 도움되는 콘텐츠</h2>
@@ -409,7 +552,7 @@
 
   <div class="wrap"><div class="m-divider"></div></div>
 
-  <section class="m-section">
+  <section class="m-section gated">
     <div class="wrap">
       <span class="eyebrow">AI AGENT</span>
       <h2>콘텐츠 기획 AI 에이전트</h2>
@@ -437,6 +580,33 @@
   // ===== 비밀번호 설정 =====
   // 아래 값을 원하는 비밀번호로 바꿔주세요.
   const SITE_PASSWORD = "purple2026";
+
+  /* ===================== 모임 일정 =====================
+     ▼ 매주(또는 격주) 반복되는 일정은 여기에 규칙으로 넣습니다.
+        한 번 적어두면 날짜가 지나도 알아서 다음 일정으로 채워져요.
+        weekday : 0=일 1=월 2=화 3=수 4=목 5=금 6=토
+        every   : 1=매주, 2=격주 (생략하면 매주)
+        type    : zoom / offline / live / webinar                      */
+  const SCHEDULE_REPEAT = [
+    { weekday:0, type:'zoom', title:'전체 줌미팅',                  time:'밤 9시' },
+    { weekday:3, type:'live', title:'퍼플 유니버스 LIVE · 무엇이든 물어보세요', time:'밤 9시' }
+  ];
+
+  /* ▼ 날짜가 정해진 일정만 여기에 하나씩 추가합니다. (오프라인 세미나, 특강 등)
+        장소는 적지 않습니다. 지역만 보여주고 싶으면 area:'서울' 처럼 넣으세요.   */
+  const SCHEDULE_ONCE = [
+    // { date:'2026-10-18', type:'offline', title:'오프라인 세미나', time:'오후 2시', area:'서울' },
+  ];
+
+  /* ▼ 쉬는 날 (반복 일정을 건너뛸 날짜) — 명절, 휴가 등 */
+  const SCHEDULE_SKIP = [
+    // '2026-10-05',
+  ];
+
+  // ===== 멤버 로드맵 노션 주소 =====
+  // 노션에서 '멤버 이메일에만 공유'로 설정한 페이지 주소를 넣어주세요.
+  // 비워두면 로드맵 카드를 눌러도 아무 곳으로도 가지 않습니다.
+  const ROADMAP_URL = "";
 
   const gateInput  = document.getElementById('gateInput');
   const gateBtn    = document.getElementById('gateBtn');
@@ -471,15 +641,131 @@
   });
   peekLogin.addEventListener('click', function(){ openLock(true); });
 
-  /* 미리보기 상태에서 가려진 영역을 누르면 안내 팝업 */
+  /* 미리보기 상태에서 가려진 영역을 누르면 안내 팝업
+     ─ .gated 섹션 안만 대상. 멤버 인터뷰는 공개라 그냥 재생된다. */
   function wirePeekClicks(){
-    const spots = document.querySelectorAll('.resource-card, [data-lock], .m-search input, #searchBtn');
+    const spots = document.querySelectorAll(
+      '.gated .resource-card, .gated [data-lock], .m-search input, #searchBtn'
+    );
     spots.forEach(function(el){
       el.addEventListener('click', function(e){
         if(!document.body.classList.contains('peek')) return;
         e.preventDefault();
+        e.stopPropagation();
         openLock(false);
       });
+    });
+  }
+
+  /* ===================== 일정표 그리기 =====================
+     오늘을 기준으로 지난 2주 + 앞으로 3개월을 보여준다.
+     반복 규칙을 날짜로 펼치므로, 시간이 지나도 손댈 필요가 없다. */
+  (function(){
+    const listBox = document.getElementById('schedList');
+    const sumBox  = document.getElementById('schedSummary');
+    if(!listBox) return;
+
+    // 배지는 '종류'만 짧게. 자세한 이름은 아래 제목 줄에 들어간다
+    const TYPES = {
+      zoom:    { label:'줌',        cls:'sc-zoom' },
+      offline: { label:'오프라인',  cls:'sc-off'  },
+      live:    { label:'LIVE',      cls:'sc-live' },
+      webinar: { label:'웨비나',    cls:'sc-web'  }
+    };
+    const DOW = ['일','월','화','수','목','금','토'];
+    const key = d => d.getFullYear() + '-' +
+      String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const from = new Date(today); from.setDate(from.getDate() - 14);
+    const to   = new Date(today); to.setDate(to.getDate() + 90);
+    const skip = SCHEDULE_SKIP || [];
+
+    const items = [];
+
+    // 반복 일정 펼치기
+    (SCHEDULE_REPEAT || []).forEach(function(r){
+      const every = r.every || 1;
+      let hit = 0;
+      for(let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)){
+        if(d.getDay() !== r.weekday) continue;
+        hit++;
+        if(every > 1 && (hit % every) !== 1) continue;      // 격주 등
+        if(skip.indexOf(key(d)) > -1) continue;
+        items.push({ date:new Date(d), type:r.type, title:r.title, time:r.time, area:'' });
+      }
+    });
+
+    // 날짜가 정해진 일정
+    (SCHEDULE_ONCE || []).forEach(function(o){
+      const p = String(o.date || '').split('-').map(Number);
+      if(p.length !== 3) return;
+      const d = new Date(p[0], p[1]-1, p[2]);
+      if(d < from || d > to) return;
+      items.push({ date:d, type:o.type, title:o.title, time:o.time, area:o.area });
+    });
+
+    if(!items.length){ listBox.innerHTML = ''; return; }
+    items.sort(function(a,b){ return a.date - b.date; });
+
+    const esc = s => String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+    const SHOW = 15;                  // 처음에 보여줄 개수 (3열 × 5줄)
+    let upcoming = 0;
+
+    function cardHTML(it){
+      const past = it.date < today;         // 지난 일정은 흐리게만. 따로 문구는 넣지 않는다
+      const t = TYPES[it.type] || { label:'모임', cls:'sc-zoom' };
+      return '<div class="sched-card' + (past ? ' past' : '') + '">' +
+        '<div class="sched-top">' +
+          '<span class="sched-date">' + (it.date.getMonth()+1) + '.' + it.date.getDate() +
+            '<span class="sched-dow">' + DOW[it.date.getDay()] + '</span></span>' +
+          '<span class="sched-time">' + esc(it.time || '') + '</span>' +
+          '<span class="sched-badge ' + t.cls + '">' + t.label + '</span>' +
+        '</div>' +
+        '<span class="sched-title">' + esc(it.title) +
+          (it.area ? '<span class="sched-area"> · ' + esc(it.area) + '</span>' : '') +
+        '</span>' +
+      '</div>';
+    }
+
+    items.forEach(function(it){ if(it.date >= today) upcoming++; });
+
+    const head = items.slice(0, SHOW), tail = items.slice(SHOW);
+    let html = '<div class="sched-grid">' + head.map(cardHTML).join('') + '</div>';
+    if(tail.length){
+      html += '<div id="schedMore" hidden><div class="sched-grid" style="margin-top:12px;">' +
+              tail.map(cardHTML).join('') + '</div></div>' +
+              '<button class="sched-toggle" id="schedToggle" type="button">' +
+              '남은 일정 ' + tail.length + '개 더 보기 ↓</button>';
+    }
+
+    listBox.innerHTML = html;
+
+    const more = document.getElementById('schedMore');
+    const tog  = document.getElementById('schedToggle');
+    if(more && tog){
+      tog.addEventListener('click', function(){
+        const open = !more.hidden;
+        more.hidden = open;
+        tog.textContent = open
+          ? '남은 일정 ' + tail.length + '개 더 보기 ↓'
+          : '접기 ↑';
+      });
+    }
+
+    if(sumBox && upcoming){
+      sumBox.innerHTML = '<span class="sched-sum">📅 앞으로 3개월간 ' + upcoming + '번 모입니다</span>';
+    }
+  })();
+
+  /* 로드맵 입구 — 멤버 상태에서 누르면 노션으로 */
+  const roadmapEntry = document.getElementById('roadmapEntry');
+  if(roadmapEntry){
+    roadmapEntry.addEventListener('click', function(){
+      if(document.body.classList.contains('peek')) return;   // 미리보기는 위에서 처리됨
+      if(ROADMAP_URL) window.open(ROADMAP_URL, '_blank', 'noopener');
     });
   }
 
@@ -589,9 +875,10 @@
   const searchInput = document.getElementById('searchInput');
   const searchBtn = document.getElementById('searchBtn');
   const searchGrids = [
+    { grid: document.getElementById('interviewGrid'), noResult: document.getElementById('interviewNoResult') },
     { grid: document.getElementById('zoomGrid'), noResult: document.getElementById('zoomNoResult') },
     { grid: document.getElementById('curatedGrid'), noResult: document.getElementById('curatedNoResult') }
-  ];
+  ].filter(function(s){ return s.grid && s.noResult; });
 
   function performSearch(){
     const q = searchInput.value.trim().toLowerCase();
