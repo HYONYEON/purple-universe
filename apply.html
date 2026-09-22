@@ -87,8 +87,16 @@
     font-family:'Space Grotesk'; font-size:13px; font-weight:700; color:var(--purple-bright);
   }
   .notice li b{color:var(--text); font-weight:600;}
-  /* pre-line 이 있어야 안에 넣은 줄바꿈이 살아납니다 */
-  .notice .sub{display:block; margin-top:7px; font-size:14px; color:var(--text-faint); white-space:pre-line;}
+  .notice .sub{display:block; margin-top:7px; font-size:14px; color:var(--text-faint);}
+  /* 딸린 설명 항목 — 한 줄에 하나, 넘치는 줄은 글자 아래로 맞춰 들여쓰기 */
+  .notice .sublist{list-style:none; margin-top:10px; display:flex; flex-direction:column; gap:8px;}
+  .notice .sublist li{
+    position:relative; padding-left:15px; text-align:left;
+    font-size:14px; color:var(--text-faint); line-height:1.65;
+  }
+  .notice .sublist li::before{
+    content:'·'; position:absolute; left:3px; top:0; color:var(--purple-bright);
+  }
   @media(max-width:520px){ .notice{padding:22px 20px;} }
 
   /* ---------- FORM ---------- */
@@ -220,9 +228,11 @@
         </li>
         <li>
           퍼플 유니버스는 사업가를 트레이닝하는 과정이라, <b>사업자를 내신 분</b>이 신청하시면 승인 확률이 높습니다.
-          <span class="sub">· 세무사·노무사·페이닥터 등 전문 자격을 갖추셨다면 사업자 보유와 무관하게 신청 가능합니다.
-· 프리랜서라도 구체적인 비즈니스 목표와 수익화 모델을 갖추고 계시면 신청 가능합니다.
-· 비즈니스 목표와 수익화 모델이 전혀 없으시면 심사 단계에서 제외될 확률이 높습니다.</span>
+          <ul class="sublist">
+            <li>세무사·노무사·페이닥터 등 전문 자격을 갖추셨다면 사업자 보유와 무관하게 신청 가능합니다.</li>
+            <li>프리랜서라도 구체적인 비즈니스 목표와 수익화 모델을 갖추고 계시면 신청 가능합니다.</li>
+            <li>비즈니스 목표와 수익화 모델이 전혀 없으시면 심사 단계에서 제외될 확률이 높습니다.</li>
+          </ul>
         </li>
         <li>
           <b>자세하게 작성해주실수록 승인 확률이 높아집니다.</b>

@@ -162,6 +162,41 @@
     .side-list{max-height:none;}
   }
 
+  /* ---------- 신청 현황 ---------- */
+  #applyBadge{
+    font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:100px;
+    background:rgba(124,77,255,.18); color:var(--purple-bright); white-space:nowrap;
+  }
+  #applyBadge.new{
+    background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff;
+    box-shadow:0 0 14px rgba(124,77,255,.55);
+  }
+  #applyBadge.zero{background:var(--surface); color:var(--text-faint);}
+  .ap-list{display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; margin:0 -4px; padding:0 4px;}
+  .ap-list::-webkit-scrollbar{width:6px;}
+  .ap-list::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:3px;}
+  .ap-item{
+    background:var(--bg-alt); border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px;
+  }
+  .ap-item.fresh{border-color:var(--purple-bright); background:rgba(124,77,255,.09);}
+  .ap-item.test{opacity:.45;}
+  .ap-top{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:5px;}
+  .ap-name{font-size:15px; font-weight:700;}
+  .ap-when{font-size:12px; color:var(--text-faint); margin-left:auto; white-space:nowrap;}
+  .ap-meta{font-size:13px; color:var(--text-dim); line-height:1.5;}
+  .ap-lv{
+    display:inline-block; font-size:11.5px; font-weight:700;
+    padding:2px 9px; border-radius:100px; margin-top:6px;
+    background:rgba(232,184,94,.16); color:var(--gold-soft);
+  }
+  .ap-concern{font-size:12.5px; color:var(--text-faint); line-height:1.55; margin-top:7px;}
+  .ap-phone{font-size:12.5px; color:var(--purple-bright); margin-top:5px; font-variant-numeric:tabular-nums;}
+  .ap-empty{font-size:14px; color:var(--text-faint); line-height:1.6;}
+  .ap-keybox .hint{margin-bottom:10px;}
+  .ap-keybox input{margin-bottom:9px;}
+  .ap-keybox .btn{width:100%; justify-content:center;}
+
   .toast{
     position:fixed; left:50%; bottom:30px; transform:translateX(-50%);
     background:var(--bg-alt2); border:1px solid var(--border-strong); color:var(--text);
@@ -235,6 +270,17 @@
 
     <!-- 왼쪽 : 올라간 글 목록 -->
     <aside class="side">
+      <!-- 신청 현황 — apply 페이지로 들어온 신청을 여기서 바로 확인 -->
+      <section class="card" id="applyCard" style="margin-bottom:16px;">
+        <h2 style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+          신청 현황
+          <span id="applyBadge"></span>
+          <button class="btn btn-ghost btn-sm" id="applyRefresh" type="button"
+                  style="margin-left:auto; padding:5px 12px; font-size:12.5px;">새로고침</button>
+        </h2>
+        <div id="applyBody"></div>
+      </section>
+
       <section class="card">
         <h2>올라간 글 <span style="color:var(--text-faint); font-size:15px; font-weight:400;" id="cnt"></span></h2>
         <div class="side-list" id="list"></div>
@@ -962,6 +1008,147 @@ dropZone(tDrop, f=>pickImage(f, d=>{
   tDrop.textContent='이미지 선택됨 — 바꾸려면 클릭';
 }));
 
+/* ===================== 신청 현황 =====================
+   purpleuniverse.net/apply 로 들어온 신청을 구글 앱스 스크립트에서 읽어옵니다.
+   이 주소는 apply.html 에도 들어있어 공개돼 있지만, 목록 조회에는 '조회 키'가 필요합니다.
+   키는 이 브라우저에만 저장되고 사이트에는 올라가지 않습니다. */
+const APPLY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec';
+
+function applyKey(){ return localStorage.getItem('pu_apply_key') || ''; }
+function lastSeen(){ return localStorage.getItem('pu_apply_seen') || ''; }
+
+function apEsc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+/* '2026-09-22 10:22:56' → '9.22 10:22' */
+function apWhen(s){
+  const m = String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  return m ? (+m[2]) + '.' + (+m[3]) + ' ' + m[4] + ':' + m[5] : String(s||'');
+}
+/* 'Lv.3ㅣ…' → 'Lv.3' */
+function apLevel(s){
+  const m = String(s||'').match(/^(Lv\.\d)/);
+  return m ? m[1] : '';
+}
+
+function askApplyKey(msg){
+  document.getElementById('applyBadge').className = 'zero';
+  document.getElementById('applyBadge').textContent = '—';
+  document.getElementById('applyBody').innerHTML =
+    '<div class="ap-keybox">' +
+      '<p class="hint">' + apEsc(msg || '신청 목록을 보려면 조회 키를 한 번만 입력해주세요.') + '</p>' +
+      '<input type="password" id="apKeyInput" placeholder="조회 키">' +
+      '<button class="btn btn-primary btn-sm" id="apKeySave" type="button">저장하고 불러오기</button>' +
+    '</div>';
+  document.getElementById('apKeySave').onclick = function(){
+    const v = document.getElementById('apKeyInput').value.trim();
+    if(!v) return;
+    localStorage.setItem('pu_apply_key', v);
+    loadApplications();
+  };
+  document.getElementById('apKeyInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') document.getElementById('apKeySave').click();
+  });
+}
+
+async function loadApplications(){
+  const badge = document.getElementById('applyBadge');
+  const body  = document.getElementById('applyBody');
+  if(!badge || !body) return;
+
+  const key = applyKey();
+  if(!key){ askApplyKey(); return; }
+
+  badge.className = 'zero';
+  badge.textContent = '…';
+  body.innerHTML = '<p class="ap-empty">불러오는 중…</p>';
+
+  let data;
+  try{
+    const url = APPLY_ENDPOINT + '?action=list&key=' + encodeURIComponent(key) + '&limit=30';
+    const r = await fetch(url, { redirect:'follow' });
+    data = await r.json();
+  }catch(e){
+    badge.className = 'zero'; badge.textContent = '?';
+    body.innerHTML = '<p class="ap-empty">신청 목록을 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침을 눌러주세요.</p>';
+    return;
+  }
+
+  if(!data || data.ok === false){
+    if(data && data.error === 'unauthorized'){
+      localStorage.removeItem('pu_apply_key');
+      askApplyKey('조회 키가 맞지 않아요. 다시 입력해주세요.');
+    }else{
+      badge.className = 'zero'; badge.textContent = '?';
+      body.innerHTML = '<p class="ap-empty">오류: ' + apEsc((data && data.error) || '알 수 없음') + '</p>';
+    }
+    return;
+  }
+
+  const items = (data.items || []).filter(function(it){ return !it.test; });
+  const seen  = lastSeen();
+  const fresh = items.filter(function(it){ return !seen || it.at > seen; });
+
+  // 배지
+  if(fresh.length){
+    badge.className = 'new';
+    badge.textContent = '새 신청 ' + fresh.length + '건';
+  }else if(data.total){
+    badge.className = '';
+    badge.textContent = '누적 ' + data.total + '명';
+  }else{
+    badge.className = 'zero';
+    badge.textContent = '0명';
+  }
+
+  if(!items.length){
+    body.innerHTML = '<p class="ap-empty">아직 신청이 없어요.<br>' +
+      '<a href="https://purpleuniverse.net/apply" target="_blank" rel="noopener" style="font-size:13px;">신청 페이지 열어보기 ↗</a></p>';
+    if(items.length === 0 && fresh.length === 0) markSeen(items);
+    return;
+  }
+
+  body.innerHTML =
+    '<div class="ap-list">' +
+      items.map(function(it){
+        const isFresh = !seen || it.at > seen;
+        const lv = apLevel(it.level);
+        return '<div class="ap-item' + (isFresh ? ' fresh' : '') + '">' +
+          '<div class="ap-top">' +
+            '<span class="ap-name">' + apEsc(it.name || '(이름 없음)') + '</span>' +
+            '<span class="ap-when">' + apEsc(apWhen(it.at)) + '</span>' +
+          '</div>' +
+          '<div class="ap-meta">' +
+            apEsc([it.age ? it.age + '세' : '', it.job].filter(Boolean).join(' · ')) +
+            (it.area ? '<br>' + apEsc(it.area) : '') +
+          '</div>' +
+          (lv ? '<span class="ap-lv">' + apEsc(lv) + '</span>' : '') +
+          (it.concern ? '<p class="ap-concern">' + apEsc(it.concern) + '</p>' : '') +
+          (it.phone ? '<p class="ap-phone">' + apEsc(it.phone) + '</p>' : '') +
+        '</div>';
+      }).join('') +
+    '</div>' +
+    '<p class="ap-empty" style="margin-top:12px;">누적 ' + data.total + '명 / 정원 10명 · ' +
+      '<a href="https://docs.google.com/spreadsheets/d/1g2GO2DxfN1abIpnzVoI0NiU0yMhQCqs19jSj2BTdF8c/edit" target="_blank" rel="noopener" style="font-size:13px;">시트에서 전체 보기 ↗</a></p>';
+
+  // 목록을 봤으니 '여기까지 확인했다'고 기록 (다음부터 이 뒤에 온 것만 '새 신청')
+  markSeen(items);
+}
+
+function markSeen(items){
+  if(items && items.length){
+    const newest = items.reduce(function(a,b){ return (a.at > b.at) ? a : b; }).at;
+    // 배지는 이번 화면에 그대로 두고, 저장만 해둡니다
+    setTimeout(function(){ localStorage.setItem('pu_apply_seen', newest); }, 1500);
+  }
+}
+
+document.getElementById('applyRefresh').onclick = function(){
+  localStorage.setItem('pu_apply_seen', lastSeen());   // 그대로 두고 다시 조회
+  loadApplications();
+};
+
 /* ===================== 시작 ===================== */
 (async function init(){
   resetForm();
@@ -971,6 +1158,7 @@ dropZone(tDrop, f=>pickImage(f, d=>{
       await loadData();
       document.getElementById('gate').style.display='none';
       document.getElementById('app').style.display='block';
+      loadApplications();                 // 신청 현황은 따로, 실패해도 글 관리엔 영향 없음
       return;
     }catch(e){ localStorage.removeItem('pu_admin'); }
   }
