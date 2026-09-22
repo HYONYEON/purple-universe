@@ -876,9 +876,20 @@ function openModal(n){
   const cbtn = document.getElementById('copyLinkBtn');
   if(cbtn) cbtn.onclick = () => copyLink(shareUrl, cbtn);
 
-  // 주소창에 이 글의 주소를 남김 (뒤로 가기로 목록에 돌아올 수 있게)
-  if(location.hash !== '#' + encodeURIComponent(slug)){
-    history.pushState({ slug }, '', '#' + encodeURIComponent(slug));
+  /* 주소창을 공유용 주소와 똑같이 맞춤.
+     ─ 예전에는 /notes#7 이 남았는데, 그 주소를 복사해 카톡에 붙이면
+       '#' 뒤는 서버로 가지 않아 개별 미리보기가 안 뜬다.
+     ─ 이제 주소창도 /n/7 이 되므로, 주소창을 복사해도 결과가 같다.
+     ─ 화면은 그대로 두고 주소만 바꾸는 것이라 새로 불러오지 않는다. */
+  const shareState = n.no ? { no: n.no } : { slug: slug };
+  const sharePath  = n.no ? '/n/' + n.no : location.pathname + '#' + encodeURIComponent(slug);
+  if(location.pathname + location.hash !== sharePath){
+    // 이미 이 글의 주소로 들어온 경우(리다이렉트로 #7 을 달고 온 경우)는 덧쌓지 않고 바꿔치기
+    if(location.hash && findBySlug(location.hash.replace(/^#/, '')) === n){
+      history.replaceState(shareState, '', sharePath);
+    }else{
+      history.pushState(shareState, '', sharePath);
+    }
   }
 
   modalBack.classList.add('open');
@@ -889,8 +900,9 @@ function closeModal(fromHistory){
   modalBack.classList.remove('open');
   modalScroll.innerHTML = '';   // 영상 재생 정지
   document.body.style.overflow = '';
-  if(!fromHistory && location.hash){
-    history.pushState(null, '', location.pathname);
+  // 글 주소에 머물러 있으면 목록 주소로 되돌림
+  if(!fromHistory && (location.hash || /^\/n\/\d+/.test(location.pathname))){
+    history.pushState(null, '', '/notes');
   }
 }
 
@@ -901,15 +913,20 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal();
 document.getElementById('noteSearch').addEventListener('input', e => render(e.target.value));
 render('');
 
-/* ---------- 주소에 글 이름이 있으면 바로 열기 ---------- */
-function openFromHash(){
-  const h = location.hash.replace(/^#/, '');
-  const n = findBySlug(h);
+/* ---------- 주소를 보고 해당 글을 여는 자리 ----------
+   두 가지 형태를 모두 받습니다.
+     /n/7        ← 지금 쓰는 공유 주소 (주소창에도 이게 남습니다)
+     /notes#7    ← 예전 주소, 그리고 /n/7.html 리다이렉트가 달고 오는 형태
+   뒤로·앞으로 가기가 주소 형태와 무관하게 동작하도록 둘 다 봅니다. */
+function routeFromUrl(){
+  const m = location.pathname.match(/^\/n\/(\d+)(?:\.html)?\/?$/);
+  const key = m ? m[1] : location.hash.replace(/^#/, '');
+  const n = key ? findBySlug(decodeURIComponent(key)) : null;
   if(n) openModal(n);
   else if(modalBack.classList.contains('open')) closeModal(true);
 }
-window.addEventListener('popstate', openFromHash);
-openFromHash();
+window.addEventListener('popstate', routeFromUrl);
+routeFromUrl();
 
 const header = document.getElementById('siteHeader');
 window.addEventListener('scroll', () => {
