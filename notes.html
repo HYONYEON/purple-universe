@@ -504,6 +504,16 @@ function esc(s){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* 이미지 주소를 루트 기준으로 바꿈.
+   주소창이 /n/8 처럼 한 단계 들어간 상태에서는 'images/...' 같은 상대 경로가
+   /n/images/... 로 잘못 해석돼 404 가 납니다. 항상 / 로 시작하게 만듭니다. */
+function absPath(p){
+  const v = String(p == null ? '' : p).trim();
+  if(!v) return '';
+  if(/^(https?:)?\/\//.test(v) || v.charAt(0) === '/' || v.indexOf('data:') === 0) return v;
+  return '/' + v.replace(/^\.?\//, '');
+}
+
 /* 썸네일로 쓸 이미지
    ─ 썸네일 칸을 비워둬도 본문 첫 이미지(카드뉴스 1번)를 자동으로 씀 */
 function coverOf(n){
@@ -524,7 +534,7 @@ function thumbHTML(n, isPick){
     // data-top : 제목이 시작되는 위치(원본 높이의 비율). 잘리지 않게 맞추는 데 씀
     const top = (typeof n.imgtop === 'number' && n.imgtop > 0)
       ? ' data-top="' + n.imgtop.toFixed(4) + '"' : '';
-    inner = '<img src="' + esc(cover) + '" alt="" loading="lazy"' + top + '>';
+    inner = '<img src="' + esc(absPath(cover)) + '" alt="" loading="lazy"' + top + '>';
   } else {
     inner = '<div class="ph">자료 준비 중</div>';
   }
@@ -676,7 +686,7 @@ function blockHTML(b){
   if(typeof b === 'string') return paras(b);
   switch(b.t){
     case 'h':     return '<h4>' + esc(b.v) + '</h4>';
-    case 'img':   return '<figure><img src="' + esc(b.v) + '" alt="" loading="lazy">' +
+    case 'img':   return '<figure><img src="' + esc(absPath(b.v)) + '" alt="" loading="lazy">' +
                          (b.cap ? '<figcaption>' + esc(b.cap) + '</figcaption>' : '') + '</figure>';
     case 'quote': return paras(b.v, 'blockquote');
     case 'list':  return '<ul class="m-list">' + (b.v || []).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
@@ -701,7 +711,7 @@ function bodyHTML(body){
       }else{
         const gid = 'gal' + (++galleryId);
         const figs = group.map((g, k) =>
-          '<figure><img src="' + esc(g.v) + '" alt=""' +
+          '<figure><img src="' + esc(absPath(g.v)) + '" alt=""' +
           (k === 0 ? '' : ' loading="lazy"') + '>' +      // 첫 장은 바로 불러옴
           (g.cap ? '<figcaption>' + esc(g.cap) + '</figcaption>' : '') + '</figure>'
         ).join('');
