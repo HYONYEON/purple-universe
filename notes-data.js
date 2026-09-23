@@ -30,7 +30,9 @@ window.NOTES = [
       }
     ],
     "no": 8,
-    "ogv": 2
+    "ogv": 2,
+    "imgtop": 0.106,
+    "ogimg": "images/1790153170194_582s5_og-8.jpg"
   },
   {
     "cat": "marketing",
@@ -60,7 +62,9 @@ window.NOTES = [
       }
     ],
     "no": 7,
-    "ogv": 2
+    "ogv": 2,
+    "imgtop": 0.062,
+    "ogimg": "images/1790153173506_vqcny_og-7.jpg"
   },
   {
     "cat": "marketing",
