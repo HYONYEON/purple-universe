@@ -4,6 +4,36 @@
 window.NOTES = [
   {
     "cat": "marketing",
+    "date": "2026-09-23",
+    "title": "브랜드는 물러서고 손님이 만들고 쓰고 말합니다",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1790150844069_5906k_B_01_cover_1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790150846454_kl75i_B_02_news1_1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790150848361_tsycl_B_03_news2_1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790150850799_jvi4x_B_04_news3_1.png"
+      }
+    ],
+    "no": 8,
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
     "date": "2026-09-21",
     "title": "제품 설명은 안 팔립니다 '부를 이름'이 팔립니다",
     "desc": "",
