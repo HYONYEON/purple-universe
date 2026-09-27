@@ -4,6 +4,38 @@
 window.NOTES = [
   {
     "cat": "marketing",
+    "date": "2026-09-25",
+    "title": "게시물을 1/3 줄였는데 왜 팔로워는 20% 늘었을까요?",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1790494976849_4u8cu_B_01_cover_2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790494979226_tzcf3_B_02.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790494981580_90fmw_B_03.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790494983035_0hixp_B_04.png"
+      }
+    ],
+    "no": 9,
+    "imgtop": 0.106,
+    "ogimg": "images/1790494984543_5q6us_og-9.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
     "date": "2026-09-23",
     "title": "브랜드는 물러서고 손님이 만들고 쓰고 말합니다",
     "desc": "",
