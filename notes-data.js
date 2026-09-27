@@ -4,6 +4,38 @@
 window.NOTES = [
   {
     "cat": "marketing",
+    "date": "2026-09-26",
+    "title": "이번 주 잘 팔린 말은 브랜드가 아니라 손님이 만들었습니다",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1790495103286_m3h2e_W_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790495105198_fa1sk_W_02_cases.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790495107327_x6gms_W_03_why.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1790495109681_7b29b_W_04_check.png"
+      }
+    ],
+    "no": 10,
+    "imgtop": 0.106,
+    "ogimg": "images/1790495111568_bd3hw_og-10.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
     "date": "2026-09-25",
     "title": "게시물을 1/3 줄였는데 왜 팔로워는 20% 늘었을까요?",
     "desc": "",
