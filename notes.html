@@ -98,7 +98,7 @@
     color:#fff; padding:10px 20px; border-radius:100px;
     font-size:17px; font-weight:600; box-shadow:0 4px 20px rgba(124,77,255,.35);
   }
-  @media(max-width:860px){ .navlinks{display:none;} }
+  @media(max-width:980px){ .navlinks{display:none;} }
 
   /* ---------- 모바일 메뉴 (햄버거) ---------- */
   .navtoggle{
@@ -140,8 +140,8 @@
   .mobmenu a:last-child{border-bottom:none;}
   .mobmenu a.mm-page{color:var(--purple-pale); font-weight:600;}
   .mobmenu .mm-divider{height:1px; margin:8px 0; background:var(--border-strong); opacity:.5;}
-  @media(max-width:860px){ .navtoggle{display:flex;} }
-  @media(min-width:861px){ .mobmenu{display:none !important;} }
+  @media(max-width:980px){ .navtoggle{display:flex;} }
+  @media(min-width:981px){ .mobmenu{display:none !important;} }
   @media (prefers-reduced-motion: reduce){
     .navtoggle span, .navtoggle span::before, .navtoggle span::after{transition:none;}
   }
@@ -419,6 +419,7 @@
       <a href="/">플랫폼 소개</a>
       <a href="/#trust">멤버쉽</a>
       <span class="nav-sep" aria-hidden="true"></span>
+      <!-- [웨비나 숨김 — 포스터 나오면 주석 해제] <a href="/webinar">웨비나</a> -->
       <a href="/notes" class="nav-here">30X 퍼플 노트</a>
     </div>
     <a href="/members" class="navcta">멤버쉽 전용</a>
@@ -430,6 +431,7 @@
       <a href="/">플랫폼 소개</a>
       <a href="/#trust">멤버쉽</a>
       <div class="mm-divider"></div>
+      <!-- [웨비나 숨김 — 포스터 나오면 주석 해제] <a href="/webinar" class="mm-page">웨비나</a> -->
       <a href="/notes" class="mm-page">30X 퍼플 노트</a>
       <a href="/members" class="mm-page">멤버쉽 전용</a>
     </div>

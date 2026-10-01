@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow"><!-- [웨비나 숨김] 공개할 때 이 줄 삭제 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>웨비나 — 퍼플 유니버스</title>
+<meta name="description" content="퍼플 유니버스가 매달 무료로 여는 웨비나. 자료와 녹화본까지 전부 드립니다.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="퍼플 유니버스">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="웨비나 — 퍼플 유니버스">
+<meta property="og:description" content="전부 무료로 엽니다. 자료도, 녹화본도 드립니다.">
+<meta property="og:url" content="https://purpleuniverse.net/webinar">
+<meta property="og:image" content="https://purpleuniverse.net/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="웨비나 — 퍼플 유니버스">
+<meta name="twitter:image" content="https://purpleuniverse.net/og-image.png">
+<link rel="canonical" href="https://purpleuniverse.net/webinar">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<style>
+  :root{
+    --bg:#08050F; --bg-alt:#0F0A1E; --bg-alt2:#140D26;
+    --surface:rgba(255,255,255,.045); --surface-2:rgba(255,255,255,.07);
+    --border:rgba(184,155,255,.16); --border-strong:rgba(184,155,255,.32);
+    --purple:#7C4DFF; --purple-deep:#5626C4; --purple-bright:#A98BFF; --purple-pale:#C9B6FF;
+    --gold:#E8B85E; --gold-soft:#F3D89A;
+    --text:#F4F1FC; --text-dim:#B7ACD1; --text-faint:#756A94;
+    --ok:#5FD08A;
+    --radius:20px; --maxw:1180px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans KR', sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    word-break:keep-all; overflow-wrap:break-word;
+  }
+  body::before{
+    content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:
+      radial-gradient(1.6px 1.6px at 40px 60px, rgba(232,225,255,.4), transparent),
+      radial-gradient(1.2px 1.2px at 140px 20px, rgba(255,255,255,.3), transparent),
+      radial-gradient(1.8px 1.8px at 230px 130px, rgba(184,155,255,.35), transparent),
+      radial-gradient(1px 1px at 70px 170px, rgba(255,255,255,.25), transparent),
+      radial-gradient(1.4px 1.4px at 310px 90px, rgba(232,184,94,.28), transparent),
+      radial-gradient(1.6px 1.6px at 360px 270px, rgba(184,155,255,.3), transparent);
+    background-repeat:repeat; background-size:420px 420px;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+  .eyebrow{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:15px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--purple-bright);
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(8,5,15,.72); backdrop-filter:blur(14px);
+    border-bottom:1px solid transparent; transition:border-color .3s ease;
+  }
+  header.scrolled{border-bottom-color:var(--border);}
+  nav{
+    max-width:var(--maxw); margin:0 auto; padding:14px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:700; font-size:19px;}
+  .navlinks{display:flex; align-items:center; gap:26px; font-size:17.5px; color:var(--text-dim);}
+  .navlinks a:hover{color:var(--text);}
+  .nav-sep{width:1px; height:18px; background:var(--border-strong); display:inline-block;}
+  .navlinks a{position:relative; padding:6px 2px;}
+  .navlinks a.nav-here{
+    color:#EFE8FF; font-weight:700;
+    text-shadow:0 0 10px rgba(169,139,255,.75), 0 0 22px rgba(124,77,255,.45);
+  }
+  .navlinks a.nav-here::after{
+    content:''; position:absolute; left:50%; bottom:-2px;
+    width:100%; height:2px; transform:translateX(-50%); border-radius:2px;
+    background:linear-gradient(90deg, transparent, var(--purple-bright), transparent);
+    box-shadow:0 0 10px rgba(169,139,255,.8);
+    animation:navGlow 2.6s ease-in-out infinite;
+  }
+  @keyframes navGlow{ 0%,100%{opacity:.75;} 50%{opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .navlinks a.nav-here::after{animation:none;} }
+  .navcta{
+    background:linear-gradient(135deg,var(--purple),var(--purple-deep));
+    color:#fff; padding:10px 20px; border-radius:100px;
+    font-size:17px; font-weight:600; box-shadow:0 4px 20px rgba(124,77,255,.35);
+  }
+  @media(max-width:980px){ .navlinks{display:none;} }
+
+  .navtoggle{
+    display:none; flex:0 0 auto; width:42px; height:42px; margin-left:10px;
+    align-items:center; justify-content:center;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; cursor:pointer; color:var(--text);
+  }
+  .navtoggle span{
+    display:block; position:relative; width:19px; height:2px; border-radius:2px;
+    background:currentColor; transition:transform .28s ease, opacity .2s ease;
+  }
+  .navtoggle span::before, .navtoggle span::after{
+    content:''; position:absolute; left:0; width:19px; height:2px;
+    border-radius:2px; background:currentColor; transition:transform .28s ease;
+  }
+  .navtoggle span::before{top:-6px;}
+  .navtoggle span::after{top:6px;}
+  .navtoggle.open span{background:transparent;}
+  .navtoggle.open span::before{transform:translateY(6px) rotate(45deg);}
+  .navtoggle.open span::after{transform:translateY(-6px) rotate(-45deg);}
+  .mobmenu{display:none; border-top:1px solid var(--border);
+    background:rgba(8,5,15,.97); backdrop-filter:blur(14px);}
+  .mobmenu.open{display:block;}
+  .mobmenu-inner{padding:10px 28px 22px;}
+  .mobmenu a{display:block; padding:15px 2px; font-size:18.5px; color:var(--text-dim);
+    border-bottom:1px solid rgba(184,155,255,.10);}
+  .mobmenu a:last-child{border-bottom:none;}
+  .mobmenu a.mm-page{color:var(--purple-pale); font-weight:600;}
+  .mobmenu .mm-divider{height:1px; margin:8px 0; background:var(--border-strong); opacity:.5;}
+  @media(max-width:980px){ .navtoggle{display:flex;} }
+  @media(min-width:981px){ .mobmenu{display:none !important;} }
+
+  /* ---------- HERO ---------- */
+  .w-hero{padding:170px 0 10px; text-align:center;}
+  .w-hero h1{font-size:clamp(30px,5vw,54px); font-weight:700; margin-top:16px;}
+  .w-hero .lead{
+    color:var(--text-dim); margin-top:18px; font-size:18px;
+    max-width:660px; margin-left:auto; margin-right:auto;
+  }
+  /* 무료 원칙 — 이 페이지의 핵심 약속 */
+  .promise{
+    display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:30px;
+  }
+  .promise div{
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:100px; padding:10px 20px; font-size:15px; color:var(--text-dim);
+  }
+  .promise b{color:var(--text); font-weight:600;}
+  .promise .chk{color:var(--ok); font-weight:700;}
+
+  /* ---------- SECTION ---------- */
+  .sec{margin-top:70px;}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:22px; flex-wrap:wrap;}
+  .sec-head h2{font-size:clamp(23px,2.6vw,30px); font-weight:700;}
+  .sec-head .count{font-size:15px; color:var(--text-faint);}
+  .sec-head p{flex-basis:100%; font-size:15.5px; color:var(--text-faint); margin-top:-6px;}
+
+  .w-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px;}
+
+  /* ---------- CARD ---------- */
+  .w-card{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:18px; overflow:hidden; cursor:pointer;
+    display:flex; flex-direction:column;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .w-card:hover{border-color:var(--border-strong); transform:translateY(-3px);}
+  .w-poster{
+    position:relative; width:100%; aspect-ratio:4/5;
+    background:linear-gradient(160deg,#2a1454,#4a2a8f 55%,#7c4dff);
+    border-bottom:1px solid var(--border); overflow:hidden;
+  }
+  .w-poster img{width:100%; height:100%; object-fit:cover; object-position:center;}
+  .w-poster .ph{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:10px; padding:0 22px; text-align:center;
+  }
+  .w-poster .ph .big{font-size:21px; font-weight:700; line-height:1.4; color:#fff;}
+  .w-poster .ph .sm{font-size:13.5px; color:rgba(255,255,255,.72);}
+  .w-state{
+    position:absolute; top:13px; left:13px;
+    font-size:12px; font-weight:700; padding:5px 12px; border-radius:100px;
+    background:rgba(8,5,15,.78); backdrop-filter:blur(8px);
+  }
+  .w-state.soon{color:var(--ok); border:1px solid rgba(95,208,138,.42);}
+  .w-state.done{color:var(--text-dim); border:1px solid var(--border-strong);}
+  .w-free{
+    position:absolute; top:13px; right:13px;
+    font-size:12px; font-weight:700; padding:5px 12px; border-radius:100px;
+    background:rgba(232,184,94,.18); color:var(--gold-soft);
+    border:1px solid rgba(243,216,154,.32); backdrop-filter:blur(8px);
+  }
+  .w-body{padding:20px 22px 22px; display:flex; flex-direction:column; gap:9px; flex:1;}
+  .w-meta{display:flex; align-items:center; gap:9px; flex-wrap:wrap; font-size:13px;}
+  .w-when{color:var(--purple-bright); font-weight:600; font-variant-numeric:tabular-nums;}
+  .w-host{color:var(--text-faint);}
+  .w-card h3{font-size:19px; font-weight:700; line-height:1.45;}
+  .w-card p{font-size:14.5px; color:var(--text-dim); line-height:1.6;}
+  .w-more{margin-top:auto; padding-top:8px; font-size:14.5px; font-weight:600; color:var(--gold-soft);}
+
+  .no-result{display:none; color:var(--text-faint); font-size:15.5px; padding:40px 4px; text-align:center;}
+
+  /* ---------- MODAL ---------- */
+  .modal-back{
+    position:fixed; inset:0; z-index:200; display:none;
+    align-items:center; justify-content:center; padding:24px;
+    background:rgba(4,2,10,.8); backdrop-filter:blur(7px);
+  }
+  .modal-back.open{display:flex;}
+  .modal{
+    position:relative; width:min(880px, 92vw); max-height:92vh;
+    background:var(--bg-alt2); border:1px solid var(--border-strong);
+    border-radius:22px; display:flex; flex-direction:column; overflow:hidden;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.75);
+  }
+  .modal-head{padding:24px 64px 18px 28px; border-bottom:1px solid var(--border);}
+  .modal-head .top{display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-bottom:9px;}
+  .modal-head h2{font-size:clamp(21px,3vw,27px); font-weight:700; line-height:1.4;}
+  .modal-close{
+    position:absolute; top:18px; right:20px; z-index:3;
+    width:38px; height:38px; border-radius:50%; cursor:pointer;
+    background:var(--surface-2); border:1px solid var(--border);
+    color:var(--text); font-size:19px; line-height:1;
+  }
+  .modal-close:hover{background:var(--surface);}
+  .modal-scroll{padding:24px 28px 10px; overflow-y:auto; flex:1;}
+  .modal-scroll::-webkit-scrollbar{width:8px;}
+  .modal-scroll::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:4px;}
+
+  /* 한눈에 보는 정보 */
+  .facts{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;
+    margin-bottom:24px;
+  }
+  .fact{background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:13px 16px;}
+  .fact dt{
+    font-family:'Space Grotesk',sans-serif; font-size:11.5px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:4px;
+  }
+  .fact dd{font-size:15px; font-weight:600;}
+
+  .m-poster{border-radius:14px; border:1px solid var(--border); margin-bottom:22px; width:100%;}
+  .m-embed{width:100%; aspect-ratio:16/9; border:0; border-radius:14px; margin-bottom:22px;}
+
+  .modal-scroll h4{font-size:18px; font-weight:700; margin:24px 0 10px;}
+  .modal-scroll p{font-size:16px; color:var(--text-dim); line-height:1.8; margin-bottom:14px;}
+  .modal-scroll ul.blist{list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:16px;}
+  .modal-scroll ul.blist li{
+    position:relative; padding-left:19px; font-size:16px; color:var(--text-dim); line-height:1.7;
+  }
+  .modal-scroll ul.blist li::before{
+    content:''; position:absolute; left:2px; top:11px;
+    width:6px; height:6px; border-radius:50%; background:var(--purple-bright);
+  }
+  .modal-scroll blockquote{
+    border-left:3px solid var(--purple-bright); padding:4px 0 4px 16px;
+    margin:0 0 16px; font-size:16.5px; color:var(--purple-pale); line-height:1.75;
+  }
+  .modal-scroll figure{margin-bottom:18px;}
+  .modal-scroll figure img{width:100%; border-radius:13px; border:1px solid var(--border);}
+
+  /* ---------- 신청 폼 (팝업 안) ---------- */
+  .w-form{
+    margin:28px 0 14px; padding:24px 22px 22px; border-radius:18px;
+    background:linear-gradient(160deg,rgba(124,77,255,.13),rgba(124,77,255,.03));
+    border:1px solid var(--border-strong);
+  }
+  .w-form h4{margin:0 0 6px !important;}
+  .w-form .lead{font-size:14.5px !important; margin-bottom:18px !important;}
+  .f-row{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;}
+  .f-field{display:flex; flex-direction:column; gap:6px;}
+  .f-field.full{grid-column:1 / -1;}
+  .f-field label{font-size:13.5px; font-weight:600; color:var(--text-dim);}
+  .f-field label .opt{font-weight:400; color:var(--text-faint); margin-left:4px;}
+  .f-field input{
+    width:100%; padding:12px 14px; border-radius:11px; font:inherit; font-size:15.5px;
+    background:var(--surface); border:1px solid var(--border); color:var(--text);
+  }
+  .f-field input:focus{outline:none; border-color:var(--purple-bright); box-shadow:0 0 0 3px rgba(124,77,255,.2);}
+  .f-check{display:flex; gap:10px; align-items:flex-start; margin-top:10px; cursor:pointer;
+    font-size:14px; color:var(--text-dim); line-height:1.6;}
+  .f-check input{margin-top:4px; width:17px; height:17px; accent-color:var(--purple-bright); flex:none;}
+  .f-check b{color:var(--text); font-weight:600;}
+  .f-check small{display:block; color:var(--text-faint); font-size:12.5px;}
+  .f-submit{margin-top:18px; width:100%;}
+  .f-submit[disabled]{opacity:.6; cursor:default; transform:none;}
+  .f-msg{margin-top:12px; font-size:14px; min-height:1em; color:#FF9C9C;}
+  .f-done{text-align:center; padding:10px 4px 4px;}
+  .f-done .ic{font-size:34px; margin-bottom:8px;}
+  .f-done h4{margin:0 0 8px !important;}
+  .f-done p{font-size:15px !important; margin:0 !important;}
+  @media(max-width:600px){ .f-row{grid-template-columns:1fr;} .w-form{padding:20px 16px 18px;} }
+
+  /* 맨 아래 — 멤버십은 여기서 딱 한 번, 짧게 */
+  .m-foot{
+    border-top:1px solid var(--border); padding:18px 28px 22px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:13px 24px; border-radius:100px; border:none; cursor:pointer;
+    font-weight:600; font-size:16px; font-family:inherit;
+    transition:transform .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff;
+    box-shadow:0 8px 26px rgba(124,77,255,.38);}
+  .btn-ghost{background:var(--surface); color:var(--text); border:1px solid var(--border-strong);}
+  .m-foot .after{
+    flex:1 1 220px; min-width:180px;
+    font-size:13.5px; color:var(--text-faint); line-height:1.6;
+  }
+  .m-foot .after a{color:var(--purple-bright);}
+  .m-foot .after a:hover{text-decoration:underline;}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:70px 0 54px; border-top:1px solid var(--border); margin-top:90px;}
+  .foot-grid{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:18px;}
+  .foot-links{display:flex; gap:20px; font-size:15.5px; color:var(--text-faint);}
+  .foot-links a:hover{color:var(--text);}
+  .foot-note{margin-top:24px; font-size:14px; color:var(--text-faint); text-align:center;}
+
+  @media(max-width:600px){
+    .w-hero{padding:130px 0 6px;}
+    .modal{width:100%; max-height:94vh;}
+    .modal-head{padding:20px 58px 16px 20px;}
+    .modal-scroll{padding:20px 20px 8px;}
+    .m-foot{padding:16px 20px 20px;}
+    .btn{width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav>
+    <a href="/" class="brand">퍼플 유니버스</a>
+    <div class="navlinks">
+      <a href="/">플랫폼 소개</a>
+      <a href="/#trust">멤버쉽</a>
+      <span class="nav-sep" aria-hidden="true"></span>
+      <a href="/webinar" class="nav-here">웨비나</a>
+      <a href="/notes">30X 퍼플 노트</a>
+    </div>
+    <a href="/members" class="navcta">멤버쉽 전용</a>
+    <button class="navtoggle" id="navToggle" type="button"
+            aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobMenu"><span></span></button>
+  </nav>
+  <div class="mobmenu" id="mobMenu">
+    <div class="mobmenu-inner">
+      <a href="/">플랫폼 소개</a>
+      <a href="/#trust">멤버쉽</a>
+      <div class="mm-divider"></div>
+      <a href="/webinar" class="mm-page">웨비나</a>
+      <a href="/notes" class="mm-page">30X 퍼플 노트</a>
+      <a href="/members" class="mm-page">멤버쉽 전용</a>
+    </div>
+  </div>
+</header>
+
+<section class="w-hero">
+  <div class="wrap">
+    <span class="eyebrow">WEBINAR</span>
+    <h1>배우는 데 돈을 쓰지 마세요</h1>
+    <p class="lead">
+      퍼플 유니버스가 여는 웨비나는 전부 무료입니다.<br>
+      쓰던 자료도 그대로 드리고, 못 오신 분께는 녹화본을 보내드려요.
+    </p>
+    <div class="promise">
+      <div><span class="chk">✓</span> <b>참가비 없음</b></div>
+      <div><span class="chk">✓</span> <b>자료 전부 제공</b></div>
+      <div><span class="chk">✓</span> <b>녹화본 제공</b></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" id="content"></div>
+<p class="no-result" id="noResult">아직 등록된 웨비나가 없어요.</p>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div style="font-weight:600;">퍼플 유니버스</div>
+      <div class="foot-links">
+        <a href="https://www.youtube.com/@purple-universe-kk" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://www.instagram.com/purpleuniverse.kk/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.tiktok.com/@purpleuniverse.kk" target="_blank" rel="noopener">TikTok</a>
+      </div>
+    </div>
+    <p class="foot-note">© 2026 Purple Universe · HYONSLAB &amp; JuInSEE FILM</p>
+  </div>
+</footer>
+
+<!-- 상세 팝업 -->
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" type="button" aria-label="닫기">✕</button>
+    <div class="modal-head" id="modalHead"></div>
+    <div class="modal-scroll" id="modalScroll"></div>
+    <div class="m-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<script src="/webinars-data.js"></script>
+<script>
+const WEBINARS = Array.isArray(window.WEBINARS) ? window.WEBINARS : [];
+/* 신청이 저장되는 곳 — 5기 신청서와 같은 구글 시트 주소 */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
+
+const SECTIONS = [
+  { key:'fixed',  title:'정기 웨비나',
+    desc:'매달 같은 자리에서 엽니다. 처음 오셔도 따라올 수 있게 구성합니다.' },
+  { key:'client', title:'기업 · 클라이언트 웨비나',
+    desc:'기업과 함께 여는 자리입니다. 그달의 주제에 따라 내용이 달라집니다.' }
+];
+
+const $ = id => document.getElementById(id);
+const modalBack  = $('modalBack');
+const modalHead  = $('modalHead');
+const modalScroll= $('modalScroll');
+const modalFoot  = $('modalFoot');
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+/* 이미지 주소를 루트 기준으로. 주소창이 한 단계 들어가도 깨지지 않게 */
+function absPath(p){
+  const v = String(p == null ? '' : p).trim();
+  if(!v) return '';
+  if(/^(https?:)?\/\//.test(v) || v.charAt(0) === '/' || v.indexOf('data:') === 0) return v;
+  return '/' + v.replace(/^\.?\//, '');
+}
+function ytId(v){
+  const m = String(v||'').match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/);
+  return m ? m[1] : (/^[\w-]{11}$/.test(String(v||'').trim()) ? String(v).trim() : '');
+}
+/* '2026-10-08' → '10월 8일 (목)' */
+const DOW = ['일','월','화','수','목','금','토'];
+function fmtDate(s){
+  const p = String(s||'').split('-').map(Number);
+  if(p.length !== 3) return String(s||'');
+  const d = new Date(p[0], p[1]-1, p[2]);
+  return p[1] + '월 ' + p[2] + '일 (' + DOW[d.getDay()] + ')';
+}
+function isPast(s){
+  const p = String(s||'').split('-').map(Number);
+  if(p.length !== 3) return false;
+  const d = new Date(p[0], p[1]-1, p[2]);
+  const today = new Date(); today.setHours(0,0,0,0);
+  return d < today;
+}
+/* 줄바꿈을 살려서 문단으로 */
+function paras(v, tag){
+  const t = tag || 'p';
+  return String(v == null ? '' : v)
+    .replace(/\r\n?/g, '\n').split(/\n{2,}/)
+    .map(x => x.trim()).filter(Boolean)
+    .map(x => '<' + t + '>' + esc(x).replace(/\n/g, '<br>') + '</' + t + '>')
+    .join('');
+}
+function blockHTML(b){
+  switch(b.t){
+    case 'h':     return '<h4>' + esc(b.v) + '</h4>';
+    case 'list':  return '<ul class="blist">' +
+                    (Array.isArray(b.v) ? b.v : [b.v]).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+    case 'quote': return paras(b.v, 'blockquote');
+    case 'img':   return '<figure><img src="' + esc(absPath(b.v)) + '" alt="" loading="lazy"></figure>';
+    default:      return paras(b.v);
+  }
+}
+
+/* ---------- 목록 ---------- */
+function render(){
+  const box = $('content');
+  const sorted = WEBINARS.slice().sort((a,b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  if(!sorted.length){ box.innerHTML = ''; $('noResult').style.display = 'block'; return; }
+  $('noResult').style.display = 'none';
+
+  let html = '';
+  SECTIONS.forEach(sec => {
+    const list = sorted.filter(w => (w.cat || 'fixed') === sec.key);
+    if(!list.length) return;
+    html += '<section class="sec">' +
+      '<div class="sec-head"><h2>' + sec.title + '</h2>' +
+      '<span class="count">' + list.length + '회</span>' +
+      '<p>' + sec.desc + '</p></div>' +
+      '<div class="w-grid">' + list.map(cardHTML).join('') + '</div></section>';
+  });
+  box.innerHTML = html;
+
+  box.querySelectorAll('.w-card').forEach(c => {
+    c.addEventListener('click', () => {
+      const w = WEBINARS.find(x => String(x.no) === c.dataset.no);
+      if(w) openModal(w);
+    });
+  });
+}
+
+function cardHTML(w){
+  const past = isPast(w.date);
+  const poster = absPath(w.poster);
+  return '<article class="w-card" data-no="' + esc(w.no) + '">' +
+    '<div class="w-poster">' +
+      (poster
+        ? '<img src="' + esc(poster) + '" alt="" loading="lazy">'
+        : '<div class="ph"><span class="big">' + esc(w.title || '웨비나') + '</span>' +
+          (w.host ? '<span class="sm">' + esc(w.host) + '</span>' : '') + '</div>') +
+      '<span class="w-state ' + (past ? 'done' : 'soon') + '">' + (past ? '종료' : '모집 중') + '</span>' +
+      '<span class="w-free">무료</span>' +
+    '</div>' +
+    '<div class="w-body">' +
+      '<div class="w-meta">' +
+        '<span class="w-when">' + esc(fmtDate(w.date)) + (w.time ? ' · ' + esc(w.time) : '') + '</span>' +
+        (w.host ? '<span class="w-host">' + esc(w.host) + '</span>' : '') +
+      '</div>' +
+      '<h3>' + esc(w.title) + '</h3>' +
+      (w.desc ? '<p>' + esc(w.desc) + '</p>' : '') +
+      '<span class="w-more">자세히 보기 →</span>' +
+    '</div>' +
+  '</article>';
+}
+
+/* ---------- 팝업 ---------- */
+function openModal(w){
+  const past = isPast(w.date);
+  const yt = ytId(w.replayYt);
+
+  modalHead.innerHTML =
+    '<div class="top">' +
+      '<span class="w-state ' + (past ? 'done' : 'soon') + '" style="position:static;">' +
+        (past ? '종료된 웨비나' : '모집 중') + '</span>' +
+      '<span class="w-free" style="position:static;">무료</span>' +
+    '</div>' +
+    '<h2>' + esc(w.title) + '</h2>';
+
+  let html = '<dl class="facts">' +
+    '<div class="fact"><dt>일시</dt><dd>' + esc(fmtDate(w.date)) + (w.time ? ' ' + esc(w.time) : '') + '</dd></div>' +
+    (w.place ? '<div class="fact"><dt>장소</dt><dd>' + esc(w.place) + '</dd></div>' : '') +
+    (w.host  ? '<div class="fact"><dt>함께하는 곳</dt><dd>' + esc(w.host) + '</dd></div>' : '') +
+    '<div class="fact"><dt>참가비</dt><dd style="color:var(--gold-soft);">없음</dd></div>' +
+  '</dl>';
+
+  if(past && yt){
+    html += '<iframe class="m-embed" src="https://www.youtube.com/embed/' + yt + '" title="' + esc(w.title) +
+            '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen ' +
+            'allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>';
+  }else if(w.poster){
+    html += '<img class="m-poster" src="' + esc(absPath(w.poster)) + '" alt="">';
+  }
+
+  html += (Array.isArray(w.body) ? w.body : []).map(blockHTML).join('');
+
+  /* 모집 중이면 팝업 안에서 바로 신청 (따로 신청 링크를 넣은 경우만 그 링크로) */
+  const inline = !past && !w.applyUrl;
+  if(inline) html += formHTML(w);
+  modalScroll.innerHTML = html;
+  modalScroll.scrollTop = 0;
+  if(inline) bindForm(w);
+
+  /* 아래 줄 — 안내는 여기서 딱 한 번만 */
+  let act = '';
+  if(inline){
+    act = '<button class="btn btn-primary" type="button" id="goForm">무료로 신청하기</button>';
+  }else if(!past && w.applyUrl){
+    act = '<a class="btn btn-primary" href="' + esc(w.applyUrl) + '" target="_blank" rel="noopener">무료로 신청하기</a>';
+  }else if(past && yt){
+    act = '<a class="btn btn-ghost" href="https://www.youtube.com/watch?v=' + yt + '" target="_blank" rel="noopener">유튜브에서 보기 ↗</a>';
+  }
+  if(w.materialUrl){
+    act += '<a class="btn btn-ghost" href="' + esc(w.materialUrl) + '" target="_blank" rel="noopener">자료 받기</a>';
+  }
+  modalFoot.innerHTML = act +
+    '<p class="after">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 ' +
+    '<a href="/#trust">멤버십</a>을 둘러보세요.</p>';
+
+  const go = $('goForm');
+  if(go) go.addEventListener('click', () => {
+    const f = $('wForm');
+    if(!f) return;
+    f.scrollIntoView({ behavior:'smooth', block:'start' });
+    const n = $('fName'); if(n) setTimeout(() => n.focus({ preventScroll:true }), 350);
+  });
+  /* 폼이 화면에 보이면 아래 버튼은 숨김 (같은 버튼 두 개 방지) */
+  if(go && 'IntersectionObserver' in window){
+    const io = new IntersectionObserver(es => {
+      go.style.display = es[0].isIntersecting ? 'none' : '';
+    }, { root: modalScroll, threshold: 0.15 });
+    io.observe($('wForm'));
+  }
+
+  const slug = 'w' + w.no;
+  if(location.hash !== '#' + slug) history.pushState({ w:w.no }, '', '#' + slug);
+
+  modalBack.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+/* ---------- 신청 폼 ---------- */
+function formHTML(w){
+  return '<form class="w-form" id="wForm" novalidate>' +
+    '<h4>무료로 신청하기</h4>' +
+    '<p class="lead">신청하시면 확인 문자를 바로 보내드리고, 시작 10분 전에 입장 링크를 문자로 보내드립니다.</p>' +
+    '<div class="f-row">' +
+      '<div class="f-field"><label for="fName">이름</label>' +
+        '<input id="fName" name="name" autocomplete="name" maxlength="30" required></div>' +
+      '<div class="f-field"><label for="fPhone">휴대폰 번호</label>' +
+        '<input id="fPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-0000-0000" maxlength="13" required></div>' +
+      '<div class="f-field full"><label for="fJob">하시는 일<span class="opt">(선택)</span></label>' +
+        '<input id="fJob" name="job" maxlength="60" placeholder="예) 필라테스 센터 운영, 1인 브랜드 준비 중"></div>' +
+    '</div>' +
+    '<label class="f-check"><input type="checkbox" id="fAgree">' +
+      '<span><b>[필수]</b> 웨비나 안내 문자 수신 및 개인정보 수집에 동의합니다.' +
+      '<small>이름·휴대폰 번호는 이번 웨비나 안내(신청 확인·입장 링크·녹화본)에만 쓰고, 신청일로부터 4개월 뒤 자동으로 지웁니다.</small></span></label>' +
+    '<label class="f-check"><input type="checkbox" id="fNews">' +
+      '<span>[선택] 다음 웨비나 소식도 문자로 받아볼게요.' +
+      '<small>동의하시면 번호를 소식 안내용으로 계속 보관하고, 문자 속 수신거부로 언제든 멈출 수 있습니다.</small></span></label>' +
+    '<button class="btn btn-primary f-submit" type="submit" id="fSubmit">신청 완료하기</button>' +
+    '<p class="f-msg" id="fMsg" role="alert"></p>' +
+  '</form>';
+}
+
+function bindForm(w){
+  const form = $('wForm'), phone = $('fPhone'), msg = $('fMsg'), btn = $('fSubmit');
+
+  /* 숫자만 넣어도 010-1234-5678 로 */
+  phone.addEventListener('input', () => {
+    const d = phone.value.replace(/\D/g, '').slice(0, 11);
+    phone.value = d.length < 4 ? d : d.length < 8 ? d.slice(0,3) + '-' + d.slice(3)
+                : d.slice(0,3) + '-' + d.slice(3, d.length - 4) + '-' + d.slice(-4);
+  });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    msg.textContent = '';
+    const name = $('fName').value.trim();
+    const digits = phone.value.replace(/\D/g, '');
+    if(!name){ msg.textContent = '이름을 입력해주세요.'; $('fName').focus(); return; }
+    if(!/^01[016789]\d{7,8}$/.test(digits)){ msg.textContent = '휴대폰 번호를 확인해주세요.'; phone.focus(); return; }
+    if(!$('fAgree').checked){ msg.textContent = '안내 문자를 받으려면 필수 항목에 동의해주세요.'; return; }
+
+    btn.disabled = true; btn.textContent = '신청하는 중…';
+    try{
+      const res = await fetch(ENDPOINT, {
+        method:'POST',
+        headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          type:'webinar', no:w.no, name:name, phone:digits,
+          job:$('fJob').value.trim(),
+          agree:'동의', news: $('fNews').checked ? '동의' : ''
+        })
+      });
+      const r = await res.json();
+      if(!r.ok) throw new Error(r.error || '신청에 실패했습니다');
+      form.innerHTML =
+        '<div class="f-done"><div class="ic">💜</div>' +
+        '<h4>' + (r.already ? '이미 신청되어 있어요' : '신청이 완료되었습니다') + '</h4>' +
+        '<p>' + esc(fmtDate(w.date)) + (w.time ? ' ' + esc(w.time) : '') + ', 시작 10분 전에<br>' +
+        '<b>' + esc(phone.value) + '</b> 으로 입장 링크를 보내드릴게요.</p></div>';
+    }catch(err){
+      msg.textContent = (err && err.message && !/fetch|JSON|Unexpected/i.test(err.message))
+        ? err.message : '잠시 연결이 원활하지 않습니다. 다시 한 번 눌러주세요.';
+      btn.disabled = false; btn.textContent = '신청 완료하기';
+    }
+  });
+}
+
+function closeModal(fromHistory){
+  modalBack.classList.remove('open');
+  modalScroll.innerHTML = '';   // 영상 정지
+  document.body.style.overflow = '';
+  if(!fromHistory && location.hash) history.pushState(null, '', location.pathname);
+}
+
+modalBack.addEventListener('click', e => { if(e.target === modalBack) closeModal(); });
+$('modalClose').addEventListener('click', () => closeModal());
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+function routeFromUrl(){
+  const m = location.hash.match(/^#w(\d+)$/);
+  const w = m ? WEBINARS.find(x => String(x.no) === m[1]) : null;
+  if(w) openModal(w);
+  else if(modalBack.classList.contains('open')) closeModal(true);
+}
+window.addEventListener('popstate', routeFromUrl);
+
+render();
+routeFromUrl();
+
+/* 헤더 테두리 */
+const header = $('siteHeader');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive:true });
+
+/* 모바일 메뉴 */
+(function(){
+  const t = $('navToggle'), m = $('mobMenu');
+  if(!t || !m) return;
+  const setOpen = on => {
+    t.classList.toggle('open', on);
+    m.classList.toggle('open', on);
+    t.setAttribute('aria-expanded', on ? 'true' : 'false');
+  };
+  t.addEventListener('click', () => setOpen(!m.classList.contains('open')));
+  m.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('click', e => {
+    if(!m.classList.contains('open')) return;
+    if(!m.contains(e.target) && !t.contains(e.target)) setOpen(false);
+  });
+  window.addEventListener('resize', () => { if(window.innerWidth > 980) setOpen(false); });
+})();
+</script>
+</body>
+</html>

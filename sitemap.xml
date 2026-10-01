@@ -5,6 +5,7 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+  <!-- [웨비나 숨김] /webinar 는 포스터 나오면 다시 추가 -->
   <url>
     <loc>https://purpleuniverse.net/notes</loc>
     <changefreq>weekly</changefreq>
