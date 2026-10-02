@@ -249,7 +249,7 @@
   }
   .modal-back.open{display:flex;}
   .modal{
-    position:relative; width:min(880px, 92vw); max-height:92vh;
+    position:relative; width:min(1000px, 94vw); max-height:92vh;
     background:var(--bg-alt2); border:1px solid var(--border-strong);
     border-radius:22px; display:flex; flex-direction:column; overflow:hidden;
     box-shadow:0 30px 70px -20px rgba(0,0,0,.75);
@@ -282,6 +282,17 @@
 
   .m-poster{border-radius:14px; border:1px solid var(--border); margin-bottom:22px; width:100%; display:block;}
   .m-poster + .w-form{margin-top:0;}
+  /* 포스터 왼쪽 · 내용 오른쪽 */
+  .m-split{display:grid; grid-template-columns:minmax(0,38%) minmax(0,1fr); gap:26px; align-items:start;}
+  .m-left{position:sticky; top:0;}
+  .m-left .m-poster{margin-bottom:0;}
+  .m-right > .facts{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
+  .m-right .w-form{margin-top:4px;}
+  .m-right .f-row{grid-template-columns:1fr;}
+  @media(max-width:760px){
+    .m-split{grid-template-columns:1fr; gap:18px;}
+    .m-left{position:static; max-width:340px; width:100%; margin:0 auto;}
+  }
   .m-embed{width:100%; aspect-ratio:16/9; border:0; border-radius:14px; margin-bottom:22px;}
 
   .modal-scroll h4{font-size:18px; font-weight:700; margin:24px 0 10px;}
@@ -618,19 +629,27 @@ function openModal(w){
     '<div class="fact"><dt>참가비</dt><dd style="color:var(--gold-soft);">' + esc(feeOf(w)) + '</dd></div>' +
   '</dl>';
 
+  let media = '';
   if(past && yt){
-    html += '<iframe class="m-embed" src="https://www.youtube.com/embed/' + yt + '" title="' + esc(w.title) +
+    media = '<iframe class="m-embed" src="https://www.youtube.com/embed/' + yt + '" title="' + esc(w.title) +
             '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen ' +
             'allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>';
   }else if(w.poster){
-    html += posterMedia(absPath(w.poster), 'm-poster');
+    media = posterMedia(absPath(w.poster), 'm-poster');
   }
 
-  html += (Array.isArray(w.body) ? w.body : []).map(blockHTML).join('');
+  let rest = (Array.isArray(w.body) ? w.body : []).map(blockHTML).join('');
 
   /* 모집 중이면 팝업 안에서 바로 신청 (따로 신청 링크를 넣은 경우만 그 링크로) */
   const inline = !past && !w.applyUrl;
-  if(inline) html += formHTML(w);
+  if(inline) rest += formHTML(w);
+
+  /* 포스터가 있으면 PC에선 왼쪽 포스터 · 오른쪽 내용 두 칸으로 (스크롤 줄이기) */
+  if(media && !(past && yt)){
+    html = '<div class="m-split"><div class="m-left">' + media + '</div><div class="m-right">' + html + rest + '</div></div>';
+  }else{
+    html += media + rest;
+  }
   modalScroll.innerHTML = html;
   modalScroll.scrollTop = 0;
   if(inline) bindForm(w);
