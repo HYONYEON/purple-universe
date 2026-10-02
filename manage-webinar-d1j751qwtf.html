@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>웨비나 관리 — 퍼플 유니버스</title>
+<title>웨비나·클래스 관리 — 퍼플 유니버스</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -146,7 +146,7 @@
 <div class="gate" id="gate">
   <div class="gate-box">
     <span class="eyebrow">ADMIN</span>
-    <h2 style="margin-top:10px;">웨비나 관리</h2>
+    <h2 style="margin-top:10px;">웨비나·클래스 관리</h2>
     <p>글 관리 페이지와 같은 깃허브 키를 씁니다. 한 번 등록하면 이 브라우저에서 바로 열려요.</p>
     <div class="field">
       <label>깃허브 접근 키</label>
@@ -167,7 +167,7 @@
     <div class="wrap">
       <div>
         <span class="eyebrow">ADMIN</span>
-        <h1>웨비나 관리</h1>
+        <h1>웨비나·클래스 관리</h1>
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <a class="btn btn-ghost btn-sm" href="https://purpleuniverse.net/webinar" target="_blank" rel="noopener">사이트 보기 ↗</a>
@@ -194,8 +194,8 @@
             <div class="field">
               <label>분류</label>
               <select id="fCat">
-                <option value="fixed">정기 웨비나</option>
-                <option value="client">기업 · 클라이언트 웨비나</option>
+                <option value="webinar">웨비나 (무료)</option>
+                <option value="class">클래스 (자체 · 외부 협업)</option>
               </select>
             </div>
             <div class="field">
@@ -223,6 +223,12 @@
               <label>함께하는 곳 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
               <input type="text" id="fHost" placeholder="예: ○○기업">
             </div>
+          </div>
+
+          <div class="field" id="priceField" style="display:none;">
+            <label>참가비 <span style="color:var(--text-faint); font-weight:400;">(클래스만)</span></label>
+            <input type="text" id="fPrice" placeholder="예: 5만 원 · 무료 · 멤버 무료">
+            <p class="hint">카드 오른쪽 위 배지와 팝업의 참가비 칸에 그대로 보입니다. 비워두면 '유료 · 별도 안내'로 표시돼요.</p>
           </div>
 
           <div class="field">
@@ -480,7 +486,8 @@ function isPast(s){
   const t = new Date(); t.setHours(0,0,0,0);
   return d < t;
 }
-const CATS = { fixed:'정기', client:'기업' };
+const CATS = { webinar:'웨비나', class:'클래스' };
+const catOf = w => w.cat === 'class' ? 'class' : 'webinar';
 function renderList(){
   const box = $('list');
   $('cnt').textContent = '· ' + LIST.length + '개';
@@ -489,7 +496,7 @@ function renderList(){
     const past = isPast(w.date);
     return '<div class="list-item' + (i === editIndex ? ' editing' : '') + '" data-open="' + i + '">' +
       '<div class="li-top">' +
-        '<span class="pill ' + (w.cat || 'fixed') + '">' + (CATS[w.cat] || '정기') + '</span>' +
+        '<span class="pill ' + (catOf(w) === 'class' ? 'client' : 'fixed') + '">' + CATS[catOf(w)] + '</span>' +
         '<span class="pill ' + (past ? 'done' : 'soon') + '">' + (past ? '종료' : '모집 중') + '</span>' +
         '<span class="li-when">' + (w.date || '') + '</span>' +
         (admOk ? '<span class="pill cnt">신청 ' + countFor(w.no) + '</span>' : '') +
@@ -517,8 +524,8 @@ function maxNo(){ return LIST.reduce((m, w) => Math.max(m, Number(w.no) || 0), 0
 function resetForm(){
   editIndex = -1; posterData = null;
   $('formTitle').textContent = '새 웨비나 등록';
-  ['fTitle','fDesc','fHost','fTime','fPlace','fApply','fYt','fMat'].forEach(id => $(id).value = '');
-  $('fCat').value = 'fixed';
+  ['fTitle','fDesc','fHost','fTime','fPlace','fApply','fYt','fMat','fPrice'].forEach(id => $(id).value = '');
+  $('fCat').value = 'webinar'; syncCat();
   $('fDate').value = new Date().toISOString().slice(0,10);
   $('fTime').value = '밤 9시';
   $('fPlace').value = '온라인 (Zoom)';
@@ -531,7 +538,8 @@ function resetForm(){
 function editItem(i){
   const w = LIST[i]; editIndex = i;
   $('formTitle').textContent = '웨비나 수정';
-  $('fCat').value   = w.cat || 'fixed';
+  $('fCat').value   = catOf(w);
+  $('fPrice').value = w.price || ''; syncCat();
   $('fDate').value  = w.date || '';
   $('fTitle').value = w.title || '';
   $('fTime').value  = w.time || '';
@@ -572,6 +580,7 @@ async function save(){
     const item = {
       no   : (editIndex > -1 && LIST[editIndex].no) ? LIST[editIndex].no : maxNo() + 1,
       cat  : $('fCat').value,
+      price: $('fCat').value === 'class' ? $('fPrice').value.trim() : '',
       title: title,
       host : $('fHost').value.trim(),
       date : date,
@@ -703,6 +712,9 @@ $('matBtn').onclick = async () => {
   }catch(e){ toast('실패: ' + e.message, false); }
   finally{ b.disabled = false; b.textContent = '녹화본 · 자료 문자 보내기'; }
 };
+
+function syncCat(){ $('priceField').style.display = $('fCat').value === 'class' ? '' : 'none'; }
+$('fCat').addEventListener('change', syncCat);
 
 /* ---------- 이벤트 ---------- */
 $('loginBtn').onclick = connect;

@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow"><!-- [웨비나 숨김] 공개할 때 이 줄 삭제 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>웨비나 — 퍼플 유니버스</title>
-<meta name="description" content="퍼플 유니버스가 매달 무료로 여는 웨비나. 자료와 녹화본까지 전부 드립니다.">
+<title>웨비나·클래스 — 퍼플 유니버스</title>
+<meta name="description" content="퍼플 유니버스가 매달 무료로 여는 웨비나와, 자체·외부 협업 클래스. 자료와 녹화본까지 드립니다.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="퍼플 유니버스">
 <meta property="og:locale" content="ko_KR">
-<meta property="og:title" content="웨비나 — 퍼플 유니버스">
+<meta property="og:title" content="웨비나·클래스 — 퍼플 유니버스">
 <meta property="og:description" content="전부 무료로 엽니다. 자료도, 녹화본도 드립니다.">
 <meta property="og:url" content="https://purpleuniverse.net/webinar">
 <meta property="og:image" content="https://purpleuniverse.net/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="웨비나 — 퍼플 유니버스">
+<meta name="twitter:title" content="웨비나·클래스 — 퍼플 유니버스">
 <meta name="twitter:image" content="https://purpleuniverse.net/og-image.png">
 <link rel="canonical" href="https://purpleuniverse.net/webinar">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -131,6 +131,8 @@
   /* ---------- HERO ---------- */
   .w-hero{padding:170px 0 10px; text-align:center;}
   .w-hero h1{font-size:clamp(30px,5vw,54px); font-weight:700; margin-top:16px;}
+  .w-hero .mbr{display:none;}
+  @media(max-width:760px){ .w-hero .mbr{display:inline;} }
   .w-hero .lead{
     color:var(--text-dim); margin-top:18px; font-size:18px;
     max-width:660px; margin-left:auto; margin-right:auto;
@@ -146,6 +148,45 @@
   }
   .promise b{color:var(--text); font-weight:600;}
   .promise .chk{color:var(--ok); font-weight:700;}
+  .promise .note{border-color:rgba(243,216,154,.28);}
+  .promise .dot{color:var(--gold-soft); font-weight:700; font-size:13px;}
+
+  /* ---------- 두 칸: 왼쪽 웨비나 · 오른쪽 클래스 ---------- */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:70px; align-items:start;}
+  .duo .sec{margin-top:0; min-width:0;}
+  .feat .w-card{cursor:pointer;}
+  .feat .w-card{flex-direction:row; min-height:0;}
+  .feat .w-poster{width:46%; flex:none; border-bottom:none; border-right:1px solid var(--border);}
+  .feat .w-body{padding:26px 24px; justify-content:center; gap:12px;}
+  .feat .w-card h3{font-size:21px;}
+  .feat .w-card p{font-size:15px;}
+  @media(max-width:560px){
+    .feat .w-card{flex-direction:column;}
+    .feat .w-poster{width:100%; border-right:none; border-bottom:1px solid var(--border);}
+  }
+  .rail-head{display:flex; justify-content:space-between; align-items:center; margin:26px 0 12px;}
+  .rail-head span{font-size:14px; font-weight:600; color:var(--text-faint);}
+  .rail-btns{display:flex; gap:6px;}
+  .rail-btns button{width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:15px;
+    background:var(--surface); border:1px solid var(--border); color:var(--text);}
+  .rail-btns button:hover{border-color:var(--border-strong);}
+  .rail{display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px;
+    scrollbar-width:thin; scrollbar-color:var(--border-strong) transparent; -webkit-overflow-scrolling:touch;}
+  .rail::-webkit-scrollbar{height:6px;}
+  .rail::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:3px;}
+  .rail .w-card{flex:0 0 200px; scroll-snap-align:start;}
+  .rail .w-body{padding:13px 14px 15px; gap:5px;}
+  .rail .w-card h3{font-size:14.5px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .rail .w-card p, .rail .w-more, .rail .w-host{display:none;}
+  .rail .w-poster .ph .big{font-size:15px;}
+  .rail .w-state, .rail .w-free{font-size:10.5px; padding:3px 8px; top:9px;}
+  .rail .w-state{left:9px;} .rail .w-free{right:9px;}
+  .empty-card{border:1.5px dashed var(--border-strong); border-radius:18px; aspect-ratio:4/5; max-height:520px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center;
+    color:var(--text-faint); padding:24px;}
+  .empty-card b{color:var(--text-dim); font-size:18px;}
+  .w-free.paid{background:rgba(124,77,255,.22); color:var(--purple-pale); border-color:rgba(169,139,255,.4);}
+  @media(max-width:900px){ .duo{grid-template-columns:1fr; gap:64px;} }
 
   /* ---------- SECTION ---------- */
   .sec{margin-top:70px;}
@@ -338,7 +379,7 @@
       <a href="/">플랫폼 소개</a>
       <a href="/#trust">멤버쉽</a>
       <span class="nav-sep" aria-hidden="true"></span>
-      <a href="/webinar" class="nav-here">웨비나</a>
+      <a href="/webinar" class="nav-here">웨비나·클래스</a>
       <a href="/notes">30X 퍼플 노트</a>
     </div>
     <a href="/members" class="navcta">멤버쉽 전용</a>
@@ -350,7 +391,7 @@
       <a href="/">플랫폼 소개</a>
       <a href="/#trust">멤버쉽</a>
       <div class="mm-divider"></div>
-      <a href="/webinar" class="mm-page">웨비나</a>
+      <a href="/webinar" class="mm-page">웨비나·클래스</a>
       <a href="/notes" class="mm-page">30X 퍼플 노트</a>
       <a href="/members" class="mm-page">멤버쉽 전용</a>
     </div>
@@ -359,22 +400,24 @@
 
 <section class="w-hero">
   <div class="wrap">
-    <span class="eyebrow">WEBINAR</span>
-    <h1>배우는 데 돈을 쓰지 마세요</h1>
+    <span class="eyebrow">WEBINAR · CLASS</span>
+    <h1>웨비나는 무료로,<br class="mbr"> 클래스는 깊게 배우세요</h1>
     <p class="lead">
       퍼플 유니버스가 여는 웨비나는 전부 무료입니다.<br>
-      쓰던 자료도 그대로 드리고, 못 오신 분께는 녹화본을 보내드려요.
+      쓰던 자료도 그대로 드리고, 못 오신 분께는 녹화본을 보내드려요.<br>
+      클래스는 퍼플 유니버스 자체 클래스 혹은 외부 협업으로 진행하는 클래스들이 있습니다.
     </p>
     <div class="promise">
-      <div><span class="chk">✓</span> <b>참가비 없음</b></div>
+      <div><span class="chk">✓</span> <b>웨비나는 참가비 없음</b></div>
       <div><span class="chk">✓</span> <b>자료 전부 제공</b></div>
       <div><span class="chk">✓</span> <b>녹화본 제공</b></div>
+      <div class="note"><span class="dot">₩</span> <b>클래스는 참가비 있을 수 있음</b></div>
     </div>
   </div>
 </section>
 
 <div class="wrap" id="content"></div>
-<p class="no-result" id="noResult">아직 등록된 웨비나가 없어요.</p>
+<p class="no-result" id="noResult">아직 등록된 웨비나·클래스가 없어요.</p>
 
 <footer>
   <div class="wrap">
@@ -407,11 +450,20 @@ const WEBINARS = Array.isArray(window.WEBINARS) ? window.WEBINARS : [];
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
 
 const SECTIONS = [
-  { key:'fixed',  title:'정기 웨비나',
-    desc:'매달 같은 자리에서 엽니다. 처음 오셔도 따라올 수 있게 구성합니다.' },
-  { key:'client', title:'기업 · 클라이언트 웨비나',
-    desc:'기업과 함께 여는 자리입니다. 그달의 주제에 따라 내용이 달라집니다.' }
+  { key:'webinar', title:'웨비나', unit:'회', rest:'다른 웨비나',
+    desc:'매달 무료로 엽니다. 처음 오셔도 따라올 수 있게 구성합니다.',
+    empty:'다음 웨비나를 준비하고 있어요' },
+  { key:'class',   title:'클래스', unit:'개', rest:'다른 클래스',
+    desc:'퍼플 유니버스 자체 클래스 혹은 외부 협업으로 진행하는 클래스들이 있습니다.',
+    empty:'첫 클래스를 준비하고 있어요' }
 ];
+/* 예전 분류(fixed · client)는 모두 웨비나로 봅니다 */
+const kindOf = w => w.cat === 'class' ? 'class' : 'webinar';
+const KW = w => kindOf(w) === 'class' ? '클래스' : '웨비나';
+const feeOf = w => kindOf(w) === 'class' ? (String(w.price || '').trim() || '별도 안내') : '없음';
+const badgeOf = w => kindOf(w) === 'class'
+  ? '<span class="w-free paid">' + esc(String(w.price || '').trim() || '유료') + '</span>'
+  : '<span class="w-free">무료</span>';
 
 const $ = id => document.getElementById(id);
 const modalBack  = $('modalBack');
@@ -469,24 +521,38 @@ function blockHTML(b){
   }
 }
 
-/* ---------- 목록 ---------- */
+/* ---------- 목록: 칸마다 대표 1개 크게 + 나머지 좌우 스크롤 ---------- */
+function pickOrder(list){
+  const up   = list.filter(w => !isPast(w.date)).sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  const done = list.filter(w =>  isPast(w.date)).sort((a,b) => a.date < b.date ? 1 : a.date > b.date ? -1 : 0);
+  return up.concat(done);          // 가장 가까운 예정 → 그다음 예정 → 최근 종료 순
+}
 function render(){
   const box = $('content');
-  const sorted = WEBINARS.slice().sort((a,b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-  if(!sorted.length){ box.innerHTML = ''; $('noResult').style.display = 'block'; return; }
-  $('noResult').style.display = 'none';
+  $('noResult').style.display = WEBINARS.length ? 'none' : 'block';
+  if(!WEBINARS.length){ box.innerHTML = ''; return; }
 
-  let html = '';
+  let html = '<div class="duo">';
   SECTIONS.forEach(sec => {
-    const list = sorted.filter(w => (w.cat || 'fixed') === sec.key);
-    if(!list.length) return;
-    html += '<section class="sec">' +
+    const list = pickOrder(WEBINARS.filter(w => kindOf(w) === sec.key));
+    html += '<section class="sec" id="sec-' + sec.key + '">' +
       '<div class="sec-head"><h2>' + sec.title + '</h2>' +
-      '<span class="count">' + list.length + '회</span>' +
-      '<p>' + sec.desc + '</p></div>' +
-      '<div class="w-grid">' + list.map(cardHTML).join('') + '</div></section>';
+      (list.length ? '<span class="count">' + list.length + sec.unit + '</span>' : '') +
+      '<p>' + sec.desc + '</p></div>';
+    if(!list.length){
+      html += '<div class="empty-card"><b>' + sec.empty + '</b>열리면 이 자리에서 가장 먼저 알려드릴게요.</div>';
+    }else{
+      html += '<div class="feat">' + cardHTML(list[0]) + '</div>';
+      if(list.length > 1){
+        html += '<div class="rail-head"><span>' + sec.rest + ' ' + (list.length - 1) + '</span>' +
+          (list.length > 3 ? '<div class="rail-btns"><button type="button" data-rail="' + sec.key + '" data-dir="-1" aria-label="이전">←</button>' +
+          '<button type="button" data-rail="' + sec.key + '" data-dir="1" aria-label="다음">→</button></div>' : '') + '</div>' +
+          '<div class="rail" id="rail-' + sec.key + '">' + list.slice(1).map(cardHTML).join('') + '</div>';
+      }
+    }
+    html += '</section>';
   });
-  box.innerHTML = html;
+  box.innerHTML = html + '</div>';
 
   box.querySelectorAll('.w-card').forEach(c => {
     c.addEventListener('click', () => {
@@ -494,6 +560,10 @@ function render(){
       if(w) openModal(w);
     });
   });
+  box.querySelectorAll('[data-rail]').forEach(b => b.addEventListener('click', () => {
+    const r = $('rail-' + b.dataset.rail);
+    if(r) r.scrollBy({ left: (+b.dataset.dir) * 214 * 2, behavior:'smooth' });
+  }));
 }
 
 function cardHTML(w){
@@ -503,10 +573,10 @@ function cardHTML(w){
     '<div class="w-poster">' +
       (poster
         ? '<img src="' + esc(poster) + '" alt="" loading="lazy">'
-        : '<div class="ph"><span class="big">' + esc(w.title || '웨비나') + '</span>' +
+        : '<div class="ph"><span class="big">' + esc(w.title || KW(w)) + '</span>' +
           (w.host ? '<span class="sm">' + esc(w.host) + '</span>' : '') + '</div>') +
       '<span class="w-state ' + (past ? 'done' : 'soon') + '">' + (past ? '종료' : '모집 중') + '</span>' +
-      '<span class="w-free">무료</span>' +
+      badgeOf(w) +
     '</div>' +
     '<div class="w-body">' +
       '<div class="w-meta">' +
@@ -528,8 +598,8 @@ function openModal(w){
   modalHead.innerHTML =
     '<div class="top">' +
       '<span class="w-state ' + (past ? 'done' : 'soon') + '" style="position:static;">' +
-        (past ? '종료된 웨비나' : '모집 중') + '</span>' +
-      '<span class="w-free" style="position:static;">무료</span>' +
+        (past ? '종료된 ' + KW(w) : '모집 중') + '</span>' +
+      badgeOf(w).replace('<span class="w-free', '<span style="position:static;" class="w-free') +
     '</div>' +
     '<h2>' + esc(w.title) + '</h2>';
 
@@ -537,7 +607,7 @@ function openModal(w){
     '<div class="fact"><dt>일시</dt><dd>' + esc(fmtDate(w.date)) + (w.time ? ' ' + esc(w.time) : '') + '</dd></div>' +
     (w.place ? '<div class="fact"><dt>장소</dt><dd>' + esc(w.place) + '</dd></div>' : '') +
     (w.host  ? '<div class="fact"><dt>함께하는 곳</dt><dd>' + esc(w.host) + '</dd></div>' : '') +
-    '<div class="fact"><dt>참가비</dt><dd style="color:var(--gold-soft);">없음</dd></div>' +
+    '<div class="fact"><dt>참가비</dt><dd style="color:var(--gold-soft);">' + esc(feeOf(w)) + '</dd></div>' +
   '</dl>';
 
   if(past && yt){
@@ -560,9 +630,9 @@ function openModal(w){
   /* 아래 줄 — 안내는 여기서 딱 한 번만 */
   let act = '';
   if(inline){
-    act = '<button class="btn btn-primary" type="button" id="goForm">무료로 신청하기</button>';
+    act = '<button class="btn btn-primary" type="button" id="goForm">' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</button>';
   }else if(!past && w.applyUrl){
-    act = '<a class="btn btn-primary" href="' + esc(w.applyUrl) + '" target="_blank" rel="noopener">무료로 신청하기</a>';
+    act = '<a class="btn btn-primary" href="' + esc(w.applyUrl) + '" target="_blank" rel="noopener">' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</a>';
   }else if(past && yt){
     act = '<a class="btn btn-ghost" href="https://www.youtube.com/watch?v=' + yt + '" target="_blank" rel="noopener">유튜브에서 보기 ↗</a>';
   }
@@ -598,7 +668,7 @@ function openModal(w){
 /* ---------- 신청 폼 ---------- */
 function formHTML(w){
   return '<form class="w-form" id="wForm" novalidate>' +
-    '<h4>무료로 신청하기</h4>' +
+    '<h4>' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</h4>' +
     '<p class="lead">신청하시면 확인 문자를 바로 보내드리고, 시작 10분 전에 입장 링크를 문자로 보내드립니다.</p>' +
     '<div class="f-row">' +
       '<div class="f-field"><label for="fName">이름</label>' +
@@ -609,10 +679,10 @@ function formHTML(w){
         '<input id="fJob" name="job" maxlength="60" placeholder="예) 필라테스 센터 운영, 1인 브랜드 준비 중"></div>' +
     '</div>' +
     '<label class="f-check"><input type="checkbox" id="fAgree">' +
-      '<span><b>[필수]</b> 웨비나 안내 문자 수신 및 개인정보 수집에 동의합니다.' +
-      '<small>이름·휴대폰 번호는 이번 웨비나 안내(신청 확인·입장 링크·녹화본)에만 쓰고, 신청일로부터 4개월 뒤 자동으로 지웁니다.</small></span></label>' +
+      '<span><b>[필수]</b> ' + KW(w) + ' 안내 문자 수신 및 개인정보 수집에 동의합니다.' +
+      '<small>이름·휴대폰 번호는 이번 ' + KW(w) + ' 안내(신청 확인·입장 링크·녹화본)에만 쓰고, 신청일로부터 4개월 뒤 자동으로 지웁니다.</small></span></label>' +
     '<label class="f-check"><input type="checkbox" id="fNews">' +
-      '<span>[선택] 다음 웨비나 소식도 문자로 받아볼게요.' +
+      '<span>[선택] 다음 웨비나·클래스 소식도 문자로 받아볼게요.' +
       '<small>동의하시면 번호를 소식 안내용으로 계속 보관하고, 문자 속 수신거부로 언제든 멈출 수 있습니다.</small></span></label>' +
     '<button class="btn btn-primary f-submit" type="submit" id="fSubmit">신청 완료하기</button>' +
     '<p class="f-msg" id="fMsg" role="alert"></p>' +
