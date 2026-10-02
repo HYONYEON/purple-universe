@@ -16,21 +16,5 @@ window.WEBINARS = [
     "replayYt": "",
     "materialUrl": "",
     "body": []
-  },
-  {
-    "no": 3,
-    "cat": "webinar",
-    "price": "",
-    "title": "2027년 AI 시대에도 살아남을 '콘텐츠 차별화 전략'",
-    "host": "",
-    "date": "2026-10-02",
-    "time": "밤 9시",
-    "place": "온라인 (Zoom)",
-    "poster": "images/1790944154417_y4p99_______________v4_______.mp4",
-    "desc": "",
-    "applyUrl": "",
-    "replayYt": "",
-    "materialUrl": "",
-    "body": []
   }
 ];
