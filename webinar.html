@@ -159,6 +159,7 @@
   .feat .w-poster{width:46%; flex:none; border-bottom:none; border-right:1px solid var(--border);}
   .feat .w-body{padding:26px 24px; justify-content:center; gap:12px;}
   .feat .w-card h3{font-size:21px;}
+  .feat .w-meta{font-size:19.5px;}   /* 대표 카드의 일시 · 시간은 크게 */
   .feat .w-card p{font-size:15px;}
   @media(max-width:560px){
     .feat .w-card{flex-direction:column;}
@@ -235,7 +236,7 @@
   .w-when{color:var(--purple-bright); font-weight:600; font-variant-numeric:tabular-nums;}
   .w-host{color:var(--text-faint);}
   .w-card h3{font-size:19px; font-weight:700; line-height:1.45;}
-  .w-card p{font-size:14.5px; color:var(--text-dim); line-height:1.6;}
+  .w-card p{font-size:14.5px; color:var(--text-dim); line-height:1.6; white-space:pre-line;}   /* 관리 페이지에서 친 줄바꿈 그대로 */
   .w-more{margin-top:auto; padding-top:8px; font-size:14.5px; font-weight:600; color:var(--gold-soft);}
 
   .no-result{display:none; color:var(--text-faint); font-size:15.5px; padding:40px 4px; text-align:center;}
@@ -279,7 +280,8 @@
   }
   .fact dd{font-size:15px; font-weight:600;}
 
-  .m-poster{border-radius:14px; border:1px solid var(--border); margin-bottom:22px; width:100%;}
+  .m-poster{border-radius:14px; border:1px solid var(--border); margin-bottom:22px; width:100%; display:block;}
+  .m-poster + .w-form{margin-top:0;}
   .m-embed{width:100%; aspect-ratio:16/9; border:0; border-radius:14px; margin-bottom:22px;}
 
   .modal-scroll h4{font-size:18px; font-weight:700; margin:24px 0 10px;}
