@@ -239,9 +239,10 @@
           <div class="field">
             <label>포스터 이미지 <span style="color:var(--text-faint); font-weight:400;">(선택 · 세로 4:5 권장)</span></label>
             <div class="drop" id="posterDrop">클릭하거나 이미지를 여기로 끌어다 놓으세요</div>
-            <input type="file" id="posterFile" accept="image/*" style="display:none;">
+            <input type="file" id="posterFile" accept="image/*,video/mp4" style="display:none;">
             <img class="thumb-prev" id="posterPrev" style="display:none;">
-            <p class="hint">넣지 않으면 보라색 배경에 제목이 크게 들어간 카드로 표시됩니다.</p>
+            <video class="thumb-prev" id="posterVid" style="display:none;" muted loop autoplay playsinline></video>
+            <p class="hint">넣지 않으면 보라색 배경에 제목이 크게 들어간 카드로 표시됩니다. 움직이는 포스터는 <b>MP4</b>로 올리면 자동 재생됩니다(GIF보다 훨씬 가벼움).</p>
           </div>
 
           <div class="row3">
@@ -401,9 +402,19 @@ async function loadData(){
 }
 
 /* ---------- 이미지 ---------- */
+/* 포스터 미리보기 — 이미지든 영상이든 */
+function showPoster(src){
+  const im = $('posterPrev'), vd = $('posterVid');
+  const vid = /^data:video|\.(mp4|webm)(\?|$)/i.test(src || '');
+  im.style.display = (src && !vid) ? 'block' : 'none';
+  vd.style.display = (src && vid) ? 'block' : 'none';
+  if(src && vid){ vd.src = src; } else { vd.removeAttribute('src'); }
+  if(src && !vid){ im.src = src; } else { im.src = ''; }
+}
 function pickImage(file, cb){
   if(!file) return;
-  if(file.size > 4 * 1024 * 1024){ toast('이미지는 4MB 이하로 올려주세요.', false); return; }
+  const isVideo = /^video\//.test(file.type);
+  if(file.size > (isVideo ? 10 : 4) * 1024 * 1024){ toast(isVideo ? '영상은 10MB 이하로 올려주세요.' : '이미지는 4MB 이하로 올려주세요.', false); return; }
   const rd = new FileReader();
   rd.onload = () => {
     const dataUrl = rd.result;
@@ -530,7 +541,7 @@ function resetForm(){
   $('fTime').value = '밤 9시';
   $('fPlace').value = '온라인 (Zoom)';
   $('blocks').innerHTML = '';
-  const p = $('posterPrev'); p.style.display = 'none'; p.src = '';
+  showPoster('');
   $('posterDrop').textContent = '클릭하거나 이미지를 여기로 끌어다 놓으세요';
   renderList();
   if(typeof renderSms === 'function') renderSms();
@@ -550,9 +561,8 @@ function editItem(i){
   $('fYt').value    = w.replayYt || '';
   $('fMat').value   = w.materialUrl || '';
   posterData = null;
-  const p = $('posterPrev');
-  if(w.poster){ p.src = '/' + String(w.poster).replace(/^\//,''); p.style.display = 'block'; $('posterDrop').textContent = '기존 포스터 — 바꾸려면 클릭'; }
-  else { p.style.display = 'none'; $('posterDrop').textContent = '클릭하거나 이미지를 여기로 끌어다 놓으세요'; }
+  if(w.poster){ showPoster('/' + String(w.poster).replace(/^\//,'')); $('posterDrop').textContent = '기존 포스터 — 바꾸려면 클릭'; }
+  else { showPoster(''); $('posterDrop').textContent = '클릭하거나 이미지를 여기로 끌어다 놓으세요'; }
   $('blocks').innerHTML = '';
   (w.body || []).forEach(b => addBlock(b.t, b.t === 'img' ? b.v : b.v));
   renderList();
@@ -726,7 +736,7 @@ document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => addBlock(
 
 (function(){
   const drop = $('posterDrop'), file = $('posterFile'), prev = $('posterPrev');
-  const set = d => { posterData = d; prev.src = d.dataUrl; prev.style.display = 'block'; drop.textContent = '포스터 선택됨 — 바꾸려면 클릭'; };
+  const set = d => { posterData = d; showPoster(d.dataUrl); drop.textContent = '포스터 선택됨 — 바꾸려면 클릭'; };
   drop.onclick = () => file.click();
   file.onchange = e => pickImage(e.target.files[0], set);
   dropZone(drop, f => pickImage(f, set));
