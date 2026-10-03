@@ -58,6 +58,7 @@
   .chip{font-size:13.5px; padding:6px 13px; border-radius:100px; background:var(--surface);
     border:1px solid var(--border); color:var(--text-dim);}
   .chip b{color:var(--text);}
+  .chip.pc{border-color:rgba(169,139,255,.4); background:rgba(124,77,255,.12); color:var(--purple-pale);}
 
   /* 업데이트 띠 */
   .news{display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:14px 18px; border-radius:14px;
@@ -213,7 +214,11 @@
     .locks{grid-template-columns:1fr;}
     .tpls{grid-template-columns:1fr;}
   }
+  .me-more{display:none; margin-top:12px; width:100%; padding:11px; border-radius:11px; cursor:pointer;
+    background:transparent; border:1px dashed var(--border-strong); color:var(--purple-pale); font-size:14.5px; font-weight:600;}
   @media(max-width:560px){
+    .me-more{display:block;}
+    .me:not(.open) .f.more{display:none;}
     .wrap{padding:0 18px;}
     .me-grid{grid-template-columns:1fr;}
     .hero{padding:42px 0 24px;}
@@ -240,6 +245,7 @@
       <span class="chip">마지막 업데이트 <b id="lastUp"></b></span>
       <span class="chip" id="visitChip" style="display:none;"></span>
       <span class="chip">참가비도, 가입도 <b>없음</b></span>
+      <span class="chip pc">💻 <b>PC에서 보시는 걸 권장드립니다</b></span>
     </div>
   </section>
 
@@ -255,6 +261,7 @@
       <span class="me-state" id="meState"></span>
     </div>
     <div class="me-grid" id="meGrid"></div>
+    <button class="me-more" id="meMore" type="button">나머지 4칸도 적기 ▾</button>
     <p class="me-foot">적은 내용은 이 브라우저에만 저장되고, 퍼플 유니버스를 포함해 어디에도 전송되지 않습니다.</p>
   </section>
 
@@ -527,8 +534,8 @@ $('news').innerHTML = '<span class="tag">UPDATE</span><ul>' +
 
 /* ---------- 내 정보 ---------- */
 let ME = LS.get('pu_kit_me', {});
-$('meGrid').innerHTML = KIT.fields.map(f =>
-  '<div class="f"><label for="me-' + f.k + '">' + f.label + '</label>' +
+$('meGrid').innerHTML = KIT.fields.map((f, i) =>
+  '<div class="f' + (i >= 2 ? ' more' : '') + '"><label for="me-' + f.k + '">' + f.label + '</label>' +
   '<input id="me-' + f.k + '" data-k="' + f.k + '" placeholder="' + esc(f.ph) + '" value="' + esc(ME[f.k] || '') + '"></div>').join('');
 function meState(){
   const n = KIT.fields.filter(f => (ME[f.k] || '').trim()).length;
@@ -542,6 +549,14 @@ $('meGrid').addEventListener('input', e => {
   meState(); renderPrompts(true);
 });
 meState();
+/* 모바일: 처음엔 2칸만 보이고 나머지는 펼쳐서 (이미 적은 게 있으면 펼친 상태로) */
+(function(){
+  const me = $('me'), btn = $('meMore');
+  const filledMore = KIT.fields.slice(2).some(f => (ME[f.k] || '').trim());
+  const set = on => { me.classList.toggle('open', on); btn.textContent = on ? '접기 ▴' : '나머지 4칸도 적기 ▾'; };
+  set(filledMore);
+  btn.onclick = () => set(!me.classList.contains('open'));
+})();
 
 /* ---------- 프롬프트 ---------- */
 const LBL = Object.fromEntries(KIT.fields.map(f => [f.k, f.label]));

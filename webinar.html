@@ -156,6 +156,8 @@
   .duo{display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:70px; align-items:start;}
   .duo .sec{margin-top:0; min-width:0;}
   .feat .w-card{cursor:pointer;}
+  .feat{max-width:80%;}                     /* PC에선 대표 카드 20% 작게 */
+  @media(max-width:900px){ .feat{max-width:none;} }
   /* 대표 카드: 위 포스터(잘림 없이 4:5 그대로) · 아래 문구 */
   .feat .w-body{padding:24px 26px 26px; gap:12px;}
   .feat .w-card h3{font-size:21px;}
@@ -375,9 +377,24 @@
     .modal{width:100%; max-height:94vh;}
     .modal-head{padding:20px 58px 16px 20px;}
     .modal-scroll{padding:20px 20px 8px;}
-    .m-foot{padding:16px 20px 20px;}
+    .m-foot{padding:12px 20px 16px;}
+    .m-foot .after{display:none;}            /* 좁은 화면에선 아래 고정 영역을 버튼만 남기고 */
+    .after-m{display:block !important;}     /* 같은 안내는 스크롤 맨 끝으로 */
     .btn{width:100%;}
+    .modal-head h2{font-size:19px;}
+    /* 일시 · 장소 · 참가비: 한 줄씩 가로로 */
+    .facts{grid-template-columns:1fr !important; gap:0; border:1px solid var(--border); border-radius:13px; overflow:hidden;}
+    .fact{display:flex; justify-content:space-between; align-items:center; gap:12px; border:none; border-radius:0;
+      padding:11px 14px; border-bottom:1px solid var(--border);}
+    .fact:last-child{border-bottom:none;}
+    .fact dt{margin-bottom:0;}
+    .fact dd{text-align:right;}
+    /* 아직 클래스가 없을 때 빈 카드는 낮게 */
+    .empty-card{aspect-ratio:auto; padding:34px 20px;}
+    .w-hero .lead{font-size:16.5px;}
   }
+  .after-m{display:none; font-size:13.5px; color:var(--text-faint); line-height:1.6; margin:18px 0 6px; text-align:center;}
+  .after-m a{color:var(--purple-bright);}
 </style>
 </head>
 <body>
@@ -639,6 +656,7 @@ function openModal(w){
   /* 모집 중이면 팝업 안에서 바로 신청 (따로 신청 링크를 넣은 경우만 그 링크로) */
   const inline = !past && !w.applyUrl;
   if(inline) rest += formHTML(w);
+  rest += '<p class="after-m">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 <a href="/#trust">멤버십</a>을 둘러보세요.</p>';
 
   /* 포스터가 있으면 PC에선 왼쪽 포스터 · 오른쪽 내용 두 칸으로 (스크롤 줄이기) */
   if(media && !(past && yt)){
@@ -699,7 +717,7 @@ function formHTML(w){
       '<div class="f-field"><label for="fPhone">휴대폰 번호</label>' +
         '<input id="fPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-0000-0000" maxlength="13" required></div>' +
       '<div class="f-field full"><label for="fJob">' + KW(w) + '를 듣고 싶은 이유<span class="opt">(선택)</span></label>' +
-        '<input id="fJob" name="job" maxlength="150" placeholder="예) 콘텐츠를 꾸준히 올리는데 반응이 없어서 방향을 잡고 싶어요"></div>' +
+        '<input id="fJob" name="job" maxlength="150" placeholder="예) 콘텐츠 방향을 잡고 싶어요"></div>' +
     '</div>' +
     '<label class="f-check"><input type="checkbox" id="fAgree">' +
       '<span><b>[필수]</b> ' + KW(w) + ' 안내 문자 수신 및 개인정보 수집에 동의합니다.' +
