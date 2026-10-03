@@ -22,6 +22,38 @@ window.NOTES = [
   },
   {
     "cat": "marketing",
+    "date": "2026-09-28",
+    "title": "8년 리뷰어의 첫 향수 브랜드, 세포라 6시간 완판",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1791011418845_dd0dk_2026-09-28_01.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791011420872_6swhr_2026-09-28_02.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791011423081_nw7tx_2026-09-28_03.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791011425446_tfhzj_2026-09-28_04.png"
+      }
+    ],
+    "no": 12,
+    "imgtop": 0.106,
+    "ogimg": "images/1791011427346_uikxq_og-12.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
     "date": "2026-09-26",
     "title": "이번 주 잘 팔린 말은 브랜드가 아니라 손님이 만들었습니다",
     "desc": "",
