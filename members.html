@@ -239,7 +239,7 @@
   .cal-legend .lg-cand{color:var(--text-faint);}
   .cal-wrap{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
   .cal-t{font-weight:700; font-size:15px; margin-bottom:8px;}
-  .cal-g{display:grid; grid-template-columns:repeat(7,1fr); gap:3px;}
+  .cal-g{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px;}
   .cal-h{font-size:11px; text-align:center; color:var(--text-faint); padding:3px 0;}
   .cal-h.sun, .cal-c.sun .cal-d{color:#FF8A8A;} .cal-h.sat, .cal-c.sat .cal-d{color:#8FB8FF;}
   .cal-c{min-height:46px; border-radius:7px; background:var(--surface); padding:3px; display:flex; flex-direction:column; gap:2px; overflow:hidden;}
@@ -247,6 +247,24 @@
   .cal-c.past{opacity:.4;}
   .cal-c.today{outline:1.5px solid var(--purple-bright);}
   .cal-d{font-size:11px; color:var(--text-dim); font-weight:600; padding-left:2px;}
+  .cal-c.brk{overflow:visible; position:relative;}
+  .cal-break{position:absolute; left:3px; top:21px; z-index:2; display:block; height:18px; line-height:18px; padding:0 8px; border-radius:6px; font-size:10.5px; font-weight:700;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#2a1a05;
+    background:linear-gradient(90deg,#F3D89A,#E8B85E);}
+  .cal-break-sp{display:block; height:18px;}
+  /* 페이지에 크게 보이는 3개월 달력 */
+  .page-cal{margin-top:6px; padding:20px 22px 22px; border-radius:20px; background:var(--surface); border:1px solid var(--border);}
+  .page-cal .cal-legend{font-size:14px; margin-bottom:16px;}
+  .page-cal .cal-wrap{gap:24px;}
+  .page-cal .cal-t{font-size:18px; margin-bottom:10px;}
+  .page-cal .cal-h{font-size:13px; padding:5px 0;}
+  .page-cal .cal-g{gap:4px;}
+  .page-cal .cal-c{min-height:72px; padding:5px; border-radius:9px; gap:3px;}
+  .page-cal .cal-d{font-size:13.5px;}
+  .page-cal .cal-tag{font-size:12px; padding:2px 4px;}
+  .page-cal .cal-break{top:27px; height:22px; line-height:22px; font-size:12px; left:4px;}
+  .page-cal .cal-break-sp{height:22px;}
+  @media(max-width:900px){ .page-cal{padding:14px;} .page-cal .cal-c{min-height:58px;} }
   .cal-tag{font-size:10px; font-weight:700; line-height:1.3; padding:1px 2px; border-radius:4px; white-space:nowrap; overflow:hidden; text-align:center; letter-spacing:-.3px;}
   .cal-tag.fix{background:var(--c); color:#120a22;}
   .cal-tag.cand{border:1px dashed var(--c); color:var(--c); cursor:pointer;}
@@ -653,11 +671,7 @@
         <span class="vote-cta-t"><b>모임 일정 · 날짜 투표</b><small id="voteCtaSub">가능한 날짜를 눌러주세요</small></span>
         <span class="vote-cta-go">투표하기 →</span>
       </button>
-      <div id="schedSummary"></div>
-      <div id="schedList"></div>
-      <p class="sched-note">
-        일정은 사정에 따라 조정될 수 있어요. 오프라인 모임의 장소는 멤버 안내로만 공유합니다.
-      </p>
+      <div class="page-cal" id="pageCal"><p class="vote-empty">일정을 불러오는 중…</p></div>
     </div>
   </section>
 
@@ -1082,7 +1096,6 @@
   let D = { types:Object.keys(COLORS), members:[], candidates:[], votes:[] }, loaded = false;
   let me = null; try{ me = localStorage.getItem('pu_vote_me'); }catch(e){}
   let tab = null;
-  const picked = new Set();     // 여러 날짜 한 번에 응답할 때 고른 날짜
   const now = new Date();
   const today = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
 
@@ -1140,7 +1153,6 @@
       const best = ok.length && ok.length === maxOk;
       return '<div class="vrow' + (best ? ' best' : '') + '" id="vr-' + c.date + '">' +
         '<div class="vrow-top">' +
-          '<label class="vpick" title="여러 날짜를 골라 한 번에 응답"><input type="checkbox" data-pick="' + esc(tab) + '|' + c.date + '"' + (picked.has(tab + '|' + c.date) ? ' checked' : '') + '><span></span></label>' +
           '<span class="vrow-d">' + fmtD(c.date) + '</span>' +
           (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') +
           (best ? '<span class="vbadge best">가장 많이 가능</span>' : '') +
@@ -1157,29 +1169,23 @@
       '</div>';
     }).join('');
     $('voteFoot').textContent = '같은 버튼을 한 번 더 누르면 취소돼요. 일정이 바뀌어도 언제든 다시 눌러 바꿀 수 있어요.';
-    if(opens.length){
-      $('voteList').insertAdjacentHTML('beforeend',
-        '<div class="adm-bar"><span>' + (picked.size ? '고른 날짜 <b>' + picked.size + '개</b>를 한 번에' : '☐ 체크해서 <b>여러 날짜</b>를 한 번에 응답할 수 있어요') + '</span>' +
-        '<span class="bulk-btns"><button class="vbtn ok on" type="button" data-bulk="가능"' + (picked.size ? '' : ' disabled') + '>모두 가능</button>' +
-        '<button class="vbtn no on" type="button" data-bulk="어려움"' + (picked.size ? '' : ' disabled') + '>모두 어려움</button></span></div>');
-    }
   }
-  /* 체크한 여러 날짜에 한 번에 가능/어려움 */
-  async function bulkVote(status){
-    if(!me){ alert('먼저 내 이름을 골라주세요'); return; }
-    if(!picked.size) return;
-    const items = [...picked].map(k => { const [type, date] = k.split('|'); return { type, date, status }; });
-    items.forEach(it => {
-      D.votes = D.votes.filter(v => !(v.type === it.type && v.date === it.date && v.name === me));
-      D.votes.push({ name:me, type:it.type, date:it.date, status });
-    });
-    picked.clear(); renderList(); renderCal();
-    try{
-      const r = await (await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action:'vote', name:me, items }) })).json();
-      if(!r.ok) throw new Error(r.error || 'fail');
-    }catch(e){ alert('일부 날짜를 저장하지 못했어요. 다시 눌러주세요.'); load(); }
+  /* 달력에 길게 표시할 기간 (쉬는 기간 등) — 여기에 한 줄씩 추가 */
+  const CAL_BREAKS = [
+    { from:'2026-12-23', to:'2027-01-03', text:'연말/연초는 가족과 함께 합시다 :)' }
+  ];
+  const ymdOf = (y, m, d) => y + '-' + pad(m + 1) + '-' + pad(d);
+  function breakBar(key, y, m, d, w, days){
+    const b = CAL_BREAKS.find(x => key >= x.from && key <= x.to);
+    if(!b) return '';
+    const start = key === b.from || w === 0 || d === 1;           // 줄이 바뀌거나 달이 바뀌면 막대를 새로 시작
+    if(!start) return '<span class="cal-break-sp"></span>';
+    let n = 1;
+    while(w + n <= 6 && d + n <= days && ymdOf(y, m, d + n) <= b.to) n++;
+    return '<span class="cal-break-sp"></span><span class="cal-break" style="width:calc(' + n + '00% + ' + (n - 1) * 3 + 'px - 6px)" title="' + esc(b.text) + '">' +
+           (n >= 2 || key === b.from ? esc(b.text) : '') + '</span>';
   }
+
   /* 아래 3개월 달력 — 일정 종류별 색 라벨 + 가능 인원 (누르면 그 날짜로 이동) */
   function renderCal(){
     const items = D.candidates;
@@ -1196,13 +1202,16 @@
           const ok = vOf(c.type, c.date).filter(v => v.status === '가능').length;
           return '<span class="cal-tag cand" style="--c:' + col + '" data-jump="' + esc(c.type) + '|' + c.date + '">' + esc(SHORT[c.type] || c.type) + (ok ? ' ' + ok : '') + '</span>';
         }).join('');
-        cells += '<div class="cal-c' + (key === today ? ' today' : '') + (key < today ? ' past' : '') + (w === 0 ? ' sun' : w === 6 ? ' sat' : '') + '"><span class="cal-d">' + d + '</span>' + tags + '</div>';
+        const bar = breakBar(key, y, m, d, w, days);
+        cells += '<div class="cal-c' + (bar ? ' brk' : '') + (key === today ? ' today' : '') + (key < today ? ' past' : '') + (w === 0 ? ' sun' : w === 6 ? ' sat' : '') + '"><span class="cal-d">' + d + '</span>' + bar + tags + '</div>';
       }
       html += '<div class="cal-m"><div class="cal-t">' + y + '년 ' + (m+1) + '월</div><div class="cal-g">' + cells + '</div></div>';
     }
     const legend = D.types.map(t => '<span><i style="background:' + (COLORS[t] || '#A98BFF') + '"></i>' + esc(t) + '</span>').join('') +
-                   '<span class="lg-cand">숫자 = 가능 인원 · 누르면 그 날짜로 이동</span>';
-    $('voteCal').innerHTML = '<div class="cal-legend">' + legend + '</div><div class="cal-wrap">' + html + '</div>';
+                   '<span class="lg-cand">숫자 = 가능 인원 · 누르면 투표로 이동</span>';
+    const out = '<div class="cal-legend">' + legend + '</div><div class="cal-wrap">' + html + '</div>';
+    $('voteCal').innerHTML = out;
+    if($('pageCal')) $('pageCal').innerHTML = out;     // 페이지 '앞으로 3개월 모임 일정'에도 같은 달력을 크게
   }
   async function vote(date, status){
     if(!me){ alert('먼저 내 이름을 골라주세요'); return; }
@@ -1220,9 +1229,7 @@
 
   $('voteBack').addEventListener('click', e => {
     if(e.target === $('voteBack')) $('voteBack').classList.remove('show');
-    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v],[data-jump],[data-pick],[data-bulk]'); if(!t) return;
-    if(t.dataset.bulk){ bulkVote(t.dataset.bulk); return; }
-    if(t.dataset.pick) return;                                           // 체크는 아래 change 에서 처리
+    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v],[data-jump]'); if(!t) return;
     if(t.dataset.me){ me = t.dataset.me; try{ localStorage.setItem('pu_vote_me', me); }catch(_){} render(); }
     else if(t.hasAttribute('data-change')){ me = null; try{ localStorage.removeItem('pu_vote_me'); }catch(_){} render(); }
     else if(t.dataset.tab){ tab = t.dataset.tab; render(); }
@@ -1232,9 +1239,12 @@
       const row = document.getElementById('vr-' + dt); if(row){ row.scrollIntoView({ behavior:'smooth', block:'center' }); row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 1200); }
     }
   });
-  $('voteBack').addEventListener('change', e => {
-    const k = e.target.dataset && e.target.dataset.pick; if(!k) return;
-    e.target.checked ? picked.add(k) : picked.delete(k); renderList();
+  if($('pageCal')) $('pageCal').addEventListener('click', e => {
+    const t = e.target.closest('[data-jump]'); if(!t) return;
+    if(document.body.classList.contains('peek')){ const lm = $('lockModal'); if(lm) lm.classList.add('show'); return; }
+    const [ty, dt] = t.dataset.jump.split('|'); tab = ty;
+    $('voteBack').classList.add('show'); render();
+    setTimeout(() => { const row = document.getElementById('vr-' + dt); if(row){ row.scrollIntoView({ behavior:'smooth', block:'center' }); row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 1200); } }, 80);
   });
   $('voteClose').addEventListener('click', () => $('voteBack').classList.remove('show'));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') $('voteBack').classList.remove('show'); });
