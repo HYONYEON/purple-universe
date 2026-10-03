@@ -121,6 +121,7 @@
     border:1px solid var(--border-strong); border-radius:22px; padding:28px 26px 24px; box-shadow:0 30px 70px rgba(0,0,0,.7);}
   .net-box h3{font-size:22px; margin:8px 40px 6px 0;}
   .net-body{display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:18px; align-items:start;}
+  .net-inline{margin-top:6px;}
   .net-stage{border-radius:18px; border:1px solid var(--border);
     background:radial-gradient(circle at 50% 50%, rgba(124,77,255,.18), transparent 60%), var(--bg);}
   #netSvg{width:100%; height:auto; display:block;}
@@ -261,7 +262,7 @@
   .page-cal .cal-g{gap:4px;}
   .page-cal .cal-c{min-height:72px; padding:5px; border-radius:9px; gap:3px;}
   .page-cal .cal-d{font-size:13.5px;}
-  .page-cal .cal-tag{font-size:12px; padding:2px 4px;}
+  .page-cal .cal-tag{font-size:11.5px; padding:2px 1px; letter-spacing:-.5px;}
   .page-cal .cal-break{top:27px; height:22px; line-height:22px; font-size:12px; left:4px;}
   .page-cal .cal-break-sp{height:22px;}
   @media(max-width:900px){ .page-cal{padding:14px;} .page-cal .cal-c{min-height:58px;} }
@@ -561,20 +562,6 @@
 </div>
 
 <!-- MAIN CONTENT — 미리보기에서도 보이고, 내용만 흐리게 가려진다 -->
-<!-- ===== 멤버 협업 맵 팝업 ===== -->
-<div class="net-back" id="netBack">
-  <div class="net-box" role="dialog" aria-label="멤버 협업 맵">
-    <button class="vote-x" id="netClose" type="button" aria-label="닫기">✕</button>
-    <span class="eyebrow">COLLAB MAP</span>
-    <h3>멤버 협업 맵</h3>
-    <p class="vote-lead">멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요. 빛나는 선이 협업이 가능한 관계예요.</p>
-    <div class="net-body">
-      <div class="net-stage"><svg id="netSvg" viewBox="0 0 800 640" aria-hidden="true"></svg></div>
-      <aside class="net-side" id="netSide"></aside>
-    </div>
-  </div>
-</div>
-
 <!-- ===== 날짜 투표 팝업 ===== -->
 <div class="vote-back" id="voteBack">
   <div class="vote-box" role="dialog" aria-label="모임 날짜 투표">
@@ -617,45 +604,6 @@
     </div>
   </section>
 
-  <!-- ===== 전체 줌미팅 다시보기 (멤버 전용) — 맨 위 ===== -->
-  <section class="m-section gated">
-    <div class="wrap">
-      <span class="eyebrow">ZOOM ARCHIVE</span>
-      <h2>전체 줌미팅 다시보기</h2>
-      <p>매주 일요일 밤 진행하는 전체 줌미팅 녹화본을 여기서 다시 볼 수 있어요.</p>
-      <!--
-        ▼ 영상 넣는 법
-        유튜브 영상 주소가 https://www.youtube.com/watch?v=ABC123 이면
-        data-yt="ABC123"  ← v= 뒤의 값만 넣어주세요. (일부공개 영상도 그대로 됩니다)
-        새 회차를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하세요.
-      -->
-      <div class="resource-grid" id="zoomGrid">
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-date">2026.08.02</span>
-          <h4>8월 첫째 주 전체 줌미팅</h4>
-          <p>8월 콘텐츠 트렌드, 멤버 비즈니스 업데이트 공유</p>
-        </div>
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-date">2026.07.26</span>
-          <h4>7월 넷째 주 전체 줌미팅</h4>
-          <p>여름 시즌 숏폼 기획 브레인스토밍</p>
-        </div>
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-date">2026.07.19</span>
-          <h4>7월 셋째 주 전체 줌미팅</h4>
-          <p>신규 멤버 소개 및 사업 카테고리별 스터디</p>
-        </div>
-      </div>
-      <p class="no-result" id="zoomNoResult">검색 결과가 없어요.</p>
-    </div>
-  </section>
-
-
-  <div class="wrap"><div class="m-divider"></div></div>
-
   <!-- ===== 모임 일정 (공개) =====
        내용이 아니라 '얼마나 자주 모이는지'만 보여주는 자리.
        구체적인 장소는 넣지 않습니다. 날짜·시간·종류만.
@@ -677,20 +625,69 @@
 
   <div class="wrap"><div class="m-divider"></div></div>
 
+  <!-- ===== 전체 줌미팅 다시보기 (멤버 전용) — 맨 위 ===== -->
+  <section class="m-section gated">
+    <div class="wrap">
+      <span class="eyebrow">ZOOM ARCHIVE</span>
+      <h2>전체 줌미팅 다시보기</h2>
+      <p>매주 일요일 밤 진행하는 전체 줌미팅 녹화본을 여기서 다시 볼 수 있어요.</p>
+      <!--
+        ▼ 영상 넣는 법
+        유튜브 영상 주소가 https://www.youtube.com/watch?v=ABC123 이면
+        data-yt="ABC123"  ← v= 뒤의 값만 넣어주세요. (일부공개 영상도 그대로 됩니다)
+        새 회차를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하세요.
+      -->
+      <div class="resource-grid" id="zoomGrid">
+        <!-- 최신순(왼쪽이 최신). 새 녹화본은 맨 위에 카드 한 개를 복사해 넣으면 됩니다 -->
+        <div class="resource-card">
+          <div class="resource-embed" data-yt="P_XjmVSGdw4"></div>
+          <span class="resource-date">2026.09.20</span>
+          <h4>9월 20일 전체 줌미팅</h4>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt="T-5mM1732Qk"></div>
+          <span class="resource-date">2026.09.13</span>
+          <h4>9월 13일 전체 줌미팅</h4>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt="atI3RsONvyg"></div>
+          <span class="resource-date">2026.08.23</span>
+          <h4>8월 23일 전체 줌미팅</h4>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt="jkH8Q0JP5h8"></div>
+          <span class="resource-date">2026.08.09</span>
+          <h4>8월 9일 전체 줌미팅</h4>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt="5gb_WttJ9yw"></div>
+          <span class="resource-date">2026.08.02</span>
+          <h4>8월 2일 전체 줌미팅</h4>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt="ZxtiFjvpFlU"></div>
+          <span class="resource-date">2026.07.12</span>
+          <h4>7월 12일 전체 줌미팅</h4>
+        </div>
+      </div>
+      </div>
+      <p class="no-result" id="zoomNoResult">검색 결과가 없어요.</p>
+    </div>
+  </section>
+
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
   <!-- ===== 멤버 협업 맵 (멤버 전용) =====
        멤버 사업과 협업 연결은 아래 스크립트의 NET_MEMBERS / NET_LINKS 에서 고칩니다. -->
   <section class="m-section gated">
     <div class="wrap">
       <span class="eyebrow">COLLAB MAP</span>
       <h2>멤버 협업 맵</h2>
-      <p>멤버 각자의 사업을 거미줄처럼 연결했어요. 누구와 어떤 협업이 가능한지 한눈에 보고, 바로 이야기를 시작해 보세요.</p>
-      <div class="roadmap-entry" id="roadmapEntry" data-lock>
-        <div class="roadmap-ico">🕸️</div>
-        <div class="roadmap-text">
-          <h4>협업 맵 열기</h4>
-          <p>멤버를 누르면 그 사람과 연결된 협업 아이디어가 보여요.</p>
-        </div>
-        <span class="roadmap-go">열기 →</span>
+      <p>멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.</p>
+      <div class="net-body net-inline">
+        <div class="net-stage"><svg id="netSvg" viewBox="0 0 800 640" aria-hidden="true"></svg></div>
+        <aside class="net-side" id="netSide"></aside>
       </div>
     </div>
   </section>
@@ -930,7 +927,7 @@
   })();
 
   /* 협업 맵 입구 — 멤버 상태에서 누르면 팝업 */
-  const roadmapEntry = document.getElementById('roadmapEntry');
+  const roadmapEntry = null;   // 협업 맵은 이제 페이지에 바로 보임
   if(roadmapEntry){
     roadmapEntry.addEventListener('click', function(){
       if(document.body.classList.contains('peek')) return;   // 미리보기는 위에서 처리됨
@@ -1122,7 +1119,7 @@
   function render(){
     // 내 이름
     if(!me){
-      $('voteMe').innerHTML = '<div class="lb">① 내 이름을 먼저 골라주세요</div><div class="chips">' +
+      $('voteMe').innerHTML = '<div class="lb">① 내 이름을 먼저 골라주세요. <span style="color:#FF9C9C">다른 멤버 이름은 선택하지 마세요!</span></div><div class="chips">' +
         (D.members.length ? D.members.map(n => '<button class="vchip" type="button" data-me="' + esc(n) + '">' + esc(n) + '</button>').join('')
                           : '<span style="font-size:13.5px;color:var(--text-faint)">' + (loaded ? '멤버 명단이 아직 비어 있어요' : '불러오는 중…') + '</span>') + '</div>';
     }else{
@@ -1345,10 +1342,7 @@
   function pick(n){ sel = (sel === n ? null : n); draw(); }
   $('netSvg').addEventListener('click', e => { const g = e.target.closest('[data-n]'); if(g) pick(g.dataset.n); else if(e.target.closest('[data-hub]')){ sel = null; draw(); } });
   $('netSide').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if(b){ sel = b.dataset.go; draw(); } });
-  $('netClose').addEventListener('click', () => $('netBack').classList.remove('show'));
-  $('netBack').addEventListener('click', e => { if(e.target === $('netBack')) $('netBack').classList.remove('show'); });
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') $('netBack').classList.remove('show'); });
-  window.openNetMap = () => { sel = null; draw(); $('netBack').classList.add('show'); };
+  draw();                                                   // 페이지에 바로 그림
 })();
 </script>
 </body>
