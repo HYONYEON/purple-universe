@@ -113,6 +113,42 @@
   .popup-box li b{color:var(--gold-soft);}
   .popup-note{font-size:13.5px; color:var(--text-faint);}
 
+  /* ---------- 협업 맵 ---------- */
+  .net-back{position:fixed; inset:0; z-index:260; display:none; align-items:center; justify-content:center; padding:20px;
+    background:rgba(4,2,10,.82); backdrop-filter:blur(7px);}
+  .net-back.show{display:flex;}
+  .net-box{position:relative; width:min(1180px,100%); max-height:94vh; overflow-y:auto; background:var(--bg-alt2);
+    border:1px solid var(--border-strong); border-radius:22px; padding:28px 26px 24px; box-shadow:0 30px 70px rgba(0,0,0,.7);}
+  .net-box h3{font-size:22px; margin:8px 40px 6px 0;}
+  .net-body{display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:18px; align-items:start;}
+  .net-stage{border-radius:18px; border:1px solid var(--border);
+    background:radial-gradient(circle at 50% 50%, rgba(124,77,255,.18), transparent 60%), var(--bg);}
+  #netSvg{width:100%; height:auto; display:block;}
+  .net-node{cursor:pointer;}
+  .net-node circle.ring{fill:var(--bg-alt2); stroke:var(--border-strong); stroke-width:1.5; transition:all .2s;}
+  .net-node text{fill:var(--text); font-size:15px; font-weight:700; text-anchor:middle; pointer-events:none; font-family:inherit;}
+  .net-node text.biz{fill:var(--text-faint); font-size:11.5px; font-weight:500;}
+  .net-node.todo circle.ring{stroke-dasharray:4 4;}
+  .net-node:hover circle.ring{stroke:var(--purple-bright);}
+  .net-node.on circle.ring{stroke:var(--gold); stroke-width:3; fill:#24173f;}
+  .net-node.dim{opacity:.28;}
+  .net-hub circle{fill:url(#hubGrad); stroke:var(--purple-bright); stroke-width:2;}
+  .net-hub text{fill:#fff; font-size:15px; font-weight:800; text-anchor:middle; pointer-events:none;}
+  .net-spoke{stroke:rgba(169,139,255,.14); stroke-width:1;}
+  .net-link{fill:none; stroke:var(--purple-bright); stroke-width:2; opacity:.55; transition:all .2s;}
+  .net-link.on{stroke:var(--gold); stroke-width:3.2; opacity:1;}
+  .net-link.dim{opacity:.08;}
+  .net-side{border-radius:16px; border:1px solid var(--border); background:var(--surface); padding:18px; min-height:200px;}
+  .net-side h4{font-size:19px; margin-bottom:2px;}
+  .net-side .biz{font-size:13.5px; color:var(--gold-soft); margin-bottom:12px;}
+  .net-side .lb{font-size:12.5px; font-weight:700; color:var(--text-faint); margin:12px 0 7px; letter-spacing:.04em;}
+  .net-side ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .net-side li{font-size:13.5px; line-height:1.55; color:var(--text-dim); padding:10px 12px; border-radius:11px; background:var(--bg-alt); border:1px solid var(--border);}
+  .net-side li b{color:var(--text); cursor:pointer;}
+  .net-side .hint{font-size:13.5px; color:var(--text-faint); line-height:1.7;}
+  .net-side .todo{font-size:12.5px; color:var(--text-faint); margin-top:12px;}
+  @media(max-width:900px){ .net-body{grid-template-columns:1fr;} }
+
   /* ---------- 날짜 투표 ---------- */
   :root{--ok:#5FD08A;}
   .vote-cta{display:flex; align-items:center; gap:14px; width:100%; margin:6px 0 18px; padding:16px 18px; cursor:pointer;
@@ -172,6 +208,13 @@
   .vrow-n{font-size:12.5px; color:var(--text-faint); line-height:1.55;}
   .vrow-n b{color:var(--ok); font-weight:700;}
   .vote-empty{font-size:14.5px; color:var(--text-faint); text-align:center; padding:26px 10px; border:1.5px dashed var(--border-strong); border-radius:14px;}
+  .vwho{display:flex; flex-direction:column; gap:5px; margin-top:4px; font-size:13px; color:var(--text-dim); line-height:1.55;}
+  .vwho .k{display:inline-block; min-width:62px; font-size:11.5px; font-weight:700; margin-right:8px; padding:1px 8px; border-radius:6px; text-align:center;}
+  .vwho .k.ok{background:rgba(95,208,138,.16); color:var(--ok);}
+  .vwho .k.no{background:rgba(255,138,138,.14); color:#FF9C9C;}
+  .vwho .k.na{background:var(--surface-2); color:var(--text-faint);}
+  .vwho em{font-style:normal; color:var(--text-faint);}
+  .cal-tag.cand{background:color-mix(in srgb, var(--c) 18%, transparent); border:1px solid var(--c);}
   .vote-foot{font-size:12.5px; color:var(--text-faint); margin-top:14px; line-height:1.6;}
   .vrow.flash{box-shadow:0 0 0 3px var(--gold-soft);}
   .vote-me .who > span:last-child{display:flex; gap:14px; align-items:center;}
@@ -500,13 +543,27 @@
 </div>
 
 <!-- MAIN CONTENT — 미리보기에서도 보이고, 내용만 흐리게 가려진다 -->
+<!-- ===== 멤버 협업 맵 팝업 ===== -->
+<div class="net-back" id="netBack">
+  <div class="net-box" role="dialog" aria-label="멤버 협업 맵">
+    <button class="vote-x" id="netClose" type="button" aria-label="닫기">✕</button>
+    <span class="eyebrow">COLLAB MAP</span>
+    <h3>멤버 협업 맵</h3>
+    <p class="vote-lead">멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요. 빛나는 선이 협업이 가능한 관계예요.</p>
+    <div class="net-body">
+      <div class="net-stage"><svg id="netSvg" viewBox="0 0 800 640" aria-hidden="true"></svg></div>
+      <aside class="net-side" id="netSide"></aside>
+    </div>
+  </div>
+</div>
+
 <!-- ===== 날짜 투표 팝업 ===== -->
 <div class="vote-back" id="voteBack">
   <div class="vote-box" role="dialog" aria-label="모임 날짜 투표">
     <button class="vote-x" id="voteClose" type="button" aria-label="닫기">✕</button>
     <span class="eyebrow">DATE VOTE</span>
     <h3>모임 일정 · 날짜 투표</h3>
-    <p class="vote-lead">확정된 일정은 <b>✓ 확정</b>으로, 날짜를 정하는 중인 일정은 <b>가능 / 어려움</b>을 눌러주세요. 가장 많이 가능한 날로 정해서 단톡방에 안내드려요.</p>
+    <p class="vote-lead">일정마다 <b>가능 / 어려움</b>을 눌러주세요. 날짜별로 누가 가능하고 누가 어려운지 모두 함께 볼 수 있어요.</p>
 
     <div class="vote-me" id="voteMe"></div>
     <div class="vote-tabs" id="voteTabs"></div>
@@ -541,6 +598,44 @@
       </div>
     </div>
   </section>
+
+  <!-- ===== 전체 줌미팅 다시보기 (멤버 전용) — 맨 위 ===== -->
+  <section class="m-section gated">
+    <div class="wrap">
+      <span class="eyebrow">ZOOM ARCHIVE</span>
+      <h2>전체 줌미팅 다시보기</h2>
+      <p>매주 일요일 밤 진행하는 전체 줌미팅 녹화본을 여기서 다시 볼 수 있어요.</p>
+      <!--
+        ▼ 영상 넣는 법
+        유튜브 영상 주소가 https://www.youtube.com/watch?v=ABC123 이면
+        data-yt="ABC123"  ← v= 뒤의 값만 넣어주세요. (일부공개 영상도 그대로 됩니다)
+        새 회차를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하세요.
+      -->
+      <div class="resource-grid" id="zoomGrid">
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-date">2026.08.02</span>
+          <h4>8월 첫째 주 전체 줌미팅</h4>
+          <p>8월 콘텐츠 트렌드, 멤버 비즈니스 업데이트 공유</p>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-date">2026.07.26</span>
+          <h4>7월 넷째 주 전체 줌미팅</h4>
+          <p>여름 시즌 숏폼 기획 브레인스토밍</p>
+        </div>
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-date">2026.07.19</span>
+          <h4>7월 셋째 주 전체 줌미팅</h4>
+          <p>신규 멤버 소개 및 사업 카테고리별 스터디</p>
+        </div>
+      </div>
+      <p class="no-result" id="zoomNoResult">검색 결과가 없어요.</p>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
 
   <!-- ===== 멤버 인터뷰 (공개) =====
        유튜브에 공개로 올라가는 영상이라 미리보기에서도 그대로 보입니다.
@@ -577,7 +672,7 @@
       <!-- 멤버 날짜 투표 (Vote.gs) -->
       <button class="vote-cta" id="voteOpen" type="button">
         <span class="vote-cta-ic">🗳</span>
-        <span class="vote-cta-t"><b>모임 일정 · 날짜 투표</b><small id="voteCtaSub">확정 일정 확인 · 날짜 투표</small></span>
+        <span class="vote-cta-t"><b>모임 일정 · 날짜 투표</b><small id="voteCtaSub">가능한 날짜를 눌러주세요</small></span>
         <span class="vote-cta-go">투표하기 →</span>
       </button>
       <div id="schedSummary"></div>
@@ -590,19 +685,18 @@
 
   <div class="wrap"><div class="m-divider"></div></div>
 
-  <!-- ===== 비즈니스 1년 로드맵 (멤버 전용) =====
-       내용은 노션에 두고 여기서는 문만 엽니다.
-       노션 주소가 정해지면 아래 스크립트의 ROADMAP_URL 한 줄만 채우면 됩니다. -->
+  <!-- ===== 멤버 협업 맵 (멤버 전용) =====
+       멤버 사업과 협업 연결은 아래 스크립트의 NET_MEMBERS / NET_LINKS 에서 고칩니다. -->
   <section class="m-section gated">
     <div class="wrap">
-      <span class="eyebrow">ROADMAP</span>
-      <h2>비즈니스 1년 로드맵</h2>
-      <p>멤버 각자가 1년 동안 어떤 사업을 어떤 순서로 펼칠지 정리한 계획서예요. 서로의 로드맵을 보며 연결점을 찾습니다.</p>
+      <span class="eyebrow">COLLAB MAP</span>
+      <h2>멤버 협업 맵</h2>
+      <p>멤버 각자의 사업을 거미줄처럼 연결했어요. 누구와 어떤 협업이 가능한지 한눈에 보고, 바로 이야기를 시작해 보세요.</p>
       <div class="roadmap-entry" id="roadmapEntry" data-lock>
-        <div class="roadmap-ico">🗺️</div>
+        <div class="roadmap-ico">🕸️</div>
         <div class="roadmap-text">
-          <h4>멤버 로드맵 모아보기</h4>
-          <p>멤버 전원의 1년 계획서를 한곳에서 볼 수 있어요.</p>
+          <h4>협업 맵 열기</h4>
+          <p>멤버를 누르면 그 사람과 연결된 협업 아이디어가 보여요.</p>
         </div>
         <span class="roadmap-go">열기 →</span>
       </div>
@@ -611,40 +705,6 @@
 
   <div class="wrap"><div class="m-divider"></div></div>
 
-  <section class="m-section gated">
-    <div class="wrap">
-      <span class="eyebrow">ZOOM ARCHIVE</span>
-      <h2>전체 줌미팅 다시보기</h2>
-      <p>매주 일요일 밤 진행하는 전체 줌미팅 녹화본을 여기서 다시 볼 수 있어요.</p>
-      <!--
-        ▼ 영상 넣는 법
-        유튜브 영상 주소가 https://www.youtube.com/watch?v=ABC123 이면
-        data-yt="ABC123"  ← v= 뒤의 값만 넣어주세요. (일부공개 영상도 그대로 됩니다)
-        새 회차를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하세요.
-      -->
-      <div class="resource-grid" id="zoomGrid">
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-date">2026.08.02</span>
-          <h4>8월 첫째 주 전체 줌미팅</h4>
-          <p>8월 콘텐츠 트렌드, 멤버 비즈니스 업데이트 공유</p>
-        </div>
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-date">2026.07.26</span>
-          <h4>7월 넷째 주 전체 줌미팅</h4>
-          <p>여름 시즌 숏폼 기획 브레인스토밍</p>
-        </div>
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-date">2026.07.19</span>
-          <h4>7월 셋째 주 전체 줌미팅</h4>
-          <p>신규 멤버 소개 및 사업 카테고리별 스터디</p>
-        </div>
-      </div>
-      <p class="no-result" id="zoomNoResult">검색 결과가 없어요.</p>
-    </div>
-  </section>
 
   <div class="wrap"><div class="m-divider"></div></div>
 
@@ -857,12 +917,12 @@
     }
   })();
 
-  /* 로드맵 입구 — 멤버 상태에서 누르면 노션으로 */
+  /* 협업 맵 입구 — 멤버 상태에서 누르면 팝업 */
   const roadmapEntry = document.getElementById('roadmapEntry');
   if(roadmapEntry){
     roadmapEntry.addEventListener('click', function(){
       if(document.body.classList.contains('peek')) return;   // 미리보기는 위에서 처리됨
-      if(ROADMAP_URL) window.open(ROADMAP_URL, '_blank', 'noopener');
+      if(window.openNetMap) window.openNetMap();
     });
   }
 
@@ -1024,17 +1084,14 @@
   let D = { types:Object.keys(COLORS), members:[], candidates:[], votes:[] }, loaded = false;
   let me = null; try{ me = localStorage.getItem('pu_vote_me'); }catch(e){}
   let tab = null;
-  /* 확정 권한 — 운영진 이름으로 들어오고, 운영진 열쇠(관리 페이지의 신청 조회 키)가 있을 때만 */
-  const ADMIN_NAME = '김효년';
-  let admin = false; const picked = new Set();
-  const adminKey = () => { try{ return localStorage.getItem('pu_apply_key') || ''; }catch(e){ return ''; } };
+  const picked = new Set();     // 여러 날짜 한 번에 응답할 때 고른 날짜
   const now = new Date();
   const today = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
 
   function fmtD(s){ const p = s.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]); return p[1] + '월 ' + p[2] + '일 (' + DOW[d.getDay()] + ')'; }
-  const shown = c => c.confirmed || c.date >= today;                 // 지난 투표 후보는 숨김
+  const shown = c => c.date >= today;                                  // 지난 날짜는 목록에서 숨김 (달력엔 흐리게)
   const candsOf = t => D.candidates.filter(c => c.type === t && shown(c)).sort((a,b) => a.date < b.date ? -1 : 1);
-  const openOf = t => candsOf(t).filter(c => !c.confirmed);
+  const openOf = t => candsOf(t);
   const vOf = (t, d) => D.votes.filter(v => v.type === t && v.date === d);
 
   async function load(){
@@ -1049,7 +1106,7 @@
   }
   function cta(){
     const n = D.types.filter(t => openOf(t).length).length;
-    $('voteCtaSub').textContent = !loaded ? '확정 일정 확인 · 날짜 투표' : n ? n + '개 일정 날짜 투표 진행 중 · 확정 일정도 함께 보기' : '확정된 모임 일정 보기';
+    $('voteCtaSub').textContent = !loaded ? '가능한 날짜를 눌러주세요' : n ? n + '개 일정 투표 진행 중 · 누가 오는지 함께 보기' : '지금은 진행 중인 투표가 없어요';
   }
   function render(){
     // 내 이름
@@ -1058,14 +1115,12 @@
         (D.members.length ? D.members.map(n => '<button class="vchip" type="button" data-me="' + esc(n) + '">' + esc(n) + '</button>').join('')
                           : '<span style="font-size:13.5px;color:var(--text-faint)">' + (loaded ? '멤버 명단이 아직 비어 있어요' : '불러오는 중…') + '</span>') + '</div>';
     }else{
-      $('voteMe').innerHTML = '<div class="who"><span><b>' + esc(me) + '</b> 님으로 투표 중</span><span>' +
-        (me === ADMIN_NAME ? '<button type="button" data-admin class="adm-btn' + (admin ? ' on' : '') + '">' + (admin ? '🔑 확정 관리 끄기' : '🔑 확정 관리') + '</button>' : '') +
-        '<button type="button" data-change>이름 바꾸기</button></span></div>';
+      $('voteMe').innerHTML = '<div class="who"><span><b>' + esc(me) + '</b> 님으로 투표 중</span><span><button type="button" data-change>이름 바꾸기</button></span></div>';
     }
     // 탭
     $('voteTabs').innerHTML = D.types.map(t => {
       const op = openOf(t).length, all = candsOf(t).length;
-      const tag = op ? '투표 ' + op : all ? '확정' : '준비 중';
+      const tag = op ? '투표 ' + op : '준비 중';
       return '<button class="vtab' + (t === tab ? ' on' : '') + (op ? ' live' : '') + '" type="button" data-tab="' + esc(t) + '" style="--c:' + (COLORS[t] || '#A98BFF') + '"><i></i>' + esc(t) + '<small>' + tag + '</small></button>';
     }).join('');
     renderList(); renderCal();
@@ -1075,16 +1130,14 @@
     if(!loaded){ $('voteList').innerHTML = '<p class="vote-empty">일정을 불러오지 못했어요. 잠시 후 다시 열어주세요.</p>'; $('voteFoot').textContent=''; return; }
     if(!cs.length){ $('voteList').innerHTML = '<p class="vote-empty">' + esc(tab) + ' 일정을 준비하고 있어요.</p>'; $('voteFoot').textContent = ''; return; }
     const total = D.members.length || 1;
-    const opens = cs.filter(c => !c.confirmed);
-    const maxOk = opens.length ? Math.max(...opens.map(c => vOf(tab, c.date).filter(v => v.status === '가능').length)) : 0;
+    const opens = cs;
+    const maxOk = Math.max(...cs.map(c => vOf(tab, c.date).filter(v => v.status === '가능').length));
+    const names = arr => arr.map(v => esc(v.name)).join(', ');
     $('voteList').innerHTML = cs.map(c => {
       const when = [c.time, c.memo].filter(Boolean).join(' · ');
-      if(c.confirmed){
-        return '<div class="vrow fix" id="vr-' + c.date + '"><div class="vrow-top"><span class="vrow-d">' + fmtD(c.date) + '</span>' +
-          (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') + '<span class="vbadge fix">✓ 확정</span>' +
-          (admin ? '<span class="vrow-btns"><button class="vbtn" type="button" data-unfix="' + c.date + '">확정 취소</button></span>' : '') + '</div></div>';
-      }
       const vs = vOf(tab, c.date), ok = vs.filter(v => v.status === '가능'), no = vs.filter(v => v.status === '어려움');
+      const answered = new Set(vs.map(v => v.name));
+      const none = D.members.filter(n => !answered.has(n));
       const mine = (vs.find(v => v.name === me) || {}).status || '';
       const best = ok.length && ok.length === maxOk;
       return '<div class="vrow' + (best ? ' best' : '') + '" id="vr-' + c.date + '">' +
@@ -1094,16 +1147,18 @@
           (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') +
           (best ? '<span class="vbadge best">가장 많이 가능</span>' : '') +
           '<span class="vrow-btns">' +
-            (admin ? '<button class="vbtn fixb" type="button" data-fix="' + c.date + '">✓ 확정</button>' : '') +
             '<button class="vbtn ok' + (mine === '가능' ? ' on' : '') + '" type="button" data-v="가능" data-d="' + c.date + '">가능</button>' +
             '<button class="vbtn no' + (mine === '어려움' ? ' on' : '') + '" type="button" data-v="어려움" data-d="' + c.date + '">어려움</button></span>' +
         '</div>' +
         '<div class="vbar"><i style="width:' + Math.round(ok.length / total * 100) + '%"></i></div>' +
-        '<div class="vrow-n">가능 <b>' + ok.length + '명</b>' + (ok.length ? ' · ' + ok.map(v => esc(v.name)).join(', ') : '') +
-          (no.length ? ' &nbsp;|&nbsp; 어려움 ' + no.length + '명' : '') + ' &nbsp;|&nbsp; 미응답 ' + Math.max(0, D.members.length - ok.length - no.length) + '명</div>' +
+        '<div class="vwho">' +
+          '<div><span class="k ok">가능 ' + ok.length + '</span>' + (ok.length ? names(ok) : '<em>아직 없음</em>') + '</div>' +
+          '<div><span class="k no">어려움 ' + no.length + '</span>' + (no.length ? names(no) : '<em>없음</em>') + '</div>' +
+          '<div><span class="k na">미응답 ' + none.length + '</span>' + (none.length ? none.map(esc).join(', ') : '<em>모두 응답</em>') + '</div>' +
+        '</div>' +
       '</div>';
     }).join('');
-    $('voteFoot').textContent = opens.length ? '같은 버튼을 한 번 더 누르면 취소돼요. 날짜가 정해지면 초록색 ✓ 확정으로 바뀝니다.' : '';
+    $('voteFoot').textContent = '같은 버튼을 한 번 더 누르면 취소돼요. 일정이 바뀌어도 언제든 다시 눌러 바꿀 수 있어요.';
     if(opens.length){
       $('voteList').insertAdjacentHTML('beforeend',
         '<div class="adm-bar"><span>' + (picked.size ? '고른 날짜 <b>' + picked.size + '개</b>를 한 번에' : '☐ 체크해서 <b>여러 날짜</b>를 한 번에 응답할 수 있어요') + '</span>' +
@@ -1127,25 +1182,9 @@
       if(!r.ok) throw new Error(r.error || 'fail');
     }catch(e){ alert('일부 날짜를 저장하지 못했어요. 다시 눌러주세요.'); load(); }
   }
-  async function setConfirm(items){
-    let key = adminKey();
-    if(!key){ key = (prompt('운영진 열쇠(관리 페이지의 신청 조회 키)를 입력해주세요') || '').trim(); if(!key) return; }
-    try{
-      const r = await (await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action:'voteConfirm', key, items }) })).json();
-      if(!r.ok) throw new Error(r.error);
-      try{ localStorage.setItem('pu_apply_key', key); }catch(e){}
-      items.forEach(it => D.candidates.forEach(c => { if(c.type === it.type && c.date === it.date) c.confirmed = it.on !== false; }));
-      items.forEach(it => picked.delete(it.type + '|' + it.date));
-      render(); cta();
-    }catch(e){
-      if(String(e.message).includes('unauthorized')){ try{ localStorage.removeItem('pu_apply_key'); }catch(_){} alert('운영진 열쇠가 맞지 않아요.'); }
-      else alert('확정하지 못했어요. 다시 눌러주세요.');
-    }
-  }
-  /* 아래 3개월 달력 — 확정 일정은 색 라벨, 투표 중인 후보는 점선 + 가능 인원 */
+  /* 아래 3개월 달력 — 일정 종류별 색 라벨 + 가능 인원 (누르면 그 날짜로 이동) */
   function renderCal(){
-    const items = D.candidates.filter(c => c.confirmed || c.date >= today);
+    const items = D.candidates;
     let html = '';
     for(let k = 0; k < 3; k++){
       const first = new Date(now.getFullYear(), now.getMonth() + k, 1);
@@ -1154,10 +1193,8 @@
       for(let i = 0; i < first.getDay(); i++) cells += '<div class="cal-c empty"></div>';
       for(let d = 1; d <= days; d++){
         const key = y + '-' + pad(m+1) + '-' + pad(d), w = new Date(y, m, d).getDay();
-        const its = items.filter(c => c.date === key);
-        const tags = its.map(c => {
+        const tags = items.filter(c => c.date === key).map(c => {
           const col = COLORS[c.type] || '#A98BFF';
-          if(c.confirmed) return '<span class="cal-tag fix" style="--c:' + col + '">' + esc(SHORT[c.type] || c.type) + '</span>';
           const ok = vOf(c.type, c.date).filter(v => v.status === '가능').length;
           return '<span class="cal-tag cand" style="--c:' + col + '" data-jump="' + esc(c.type) + '|' + c.date + '">' + esc(SHORT[c.type] || c.type) + (ok ? ' ' + ok : '') + '</span>';
         }).join('');
@@ -1166,7 +1203,7 @@
       html += '<div class="cal-m"><div class="cal-t">' + y + '년 ' + (m+1) + '월</div><div class="cal-g">' + cells + '</div></div>';
     }
     const legend = D.types.map(t => '<span><i style="background:' + (COLORS[t] || '#A98BFF') + '"></i>' + esc(t) + '</span>').join('') +
-                   '<span class="lg-cand">점선 = 투표 중 (숫자는 가능 인원)</span>';
+                   '<span class="lg-cand">숫자 = 가능 인원 · 누르면 그 날짜로 이동</span>';
     $('voteCal').innerHTML = '<div class="cal-legend">' + legend + '</div><div class="cal-wrap">' + html + '</div>';
   }
   async function vote(date, status){
@@ -1185,14 +1222,11 @@
 
   $('voteBack').addEventListener('click', e => {
     if(e.target === $('voteBack')) $('voteBack').classList.remove('show');
-    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v],[data-jump],[data-admin],[data-pick],[data-bulk],[data-fix],[data-unfix]'); if(!t) return;
+    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v],[data-jump],[data-pick],[data-bulk]'); if(!t) return;
     if(t.dataset.bulk){ bulkVote(t.dataset.bulk); return; }
-    if(t.dataset.fix){ if(confirm(tab + ' · ' + fmtD(t.dataset.fix) + ' 로 확정할까요?')) setConfirm([{ type:tab, date:t.dataset.fix, on:true }]); return; }
-    if(t.hasAttribute('data-admin')){ admin = !admin; render(); return; }
     if(t.dataset.pick) return;                                           // 체크는 아래 change 에서 처리
-    if(t.dataset.unfix){ if(confirm(tab + ' · ' + fmtD(t.dataset.unfix) + ' 확정을 취소할까요?')) setConfirm([{ type:tab, date:t.dataset.unfix, on:false }]); return; }
-    if(t.dataset.me){ me = t.dataset.me; admin = false; try{ localStorage.setItem('pu_vote_me', me); }catch(_){} render(); }
-    else if(t.hasAttribute('data-change')){ me = null; admin = false; try{ localStorage.removeItem('pu_vote_me'); }catch(_){} render(); }
+    if(t.dataset.me){ me = t.dataset.me; try{ localStorage.setItem('pu_vote_me', me); }catch(_){} render(); }
+    else if(t.hasAttribute('data-change')){ me = null; try{ localStorage.removeItem('pu_vote_me'); }catch(_){} render(); }
     else if(t.dataset.tab){ tab = t.dataset.tab; render(); }
     else if(t.dataset.v){ vote(t.dataset.d, t.dataset.v); }
     else if(t.dataset.jump){                                              // 달력에서 후보 날짜 누르면 그 줄로
@@ -1211,6 +1245,102 @@
     $('voteBack').classList.add('show'); load();
   });
   load();
+})();
+</script>
+
+<script>
+/* ===================== 멤버 협업 맵 =====================
+   NET_MEMBERS : 이름 · 사업(한 줄)
+   NET_LINKS   : [멤버A, 멤버B, '협업 아이디어']  ← 여기에 한 줄씩 추가하면 선이 생깁니다.
+   ※ 사업을 모르는 멤버는 biz 를 비워두면 '사업 입력 필요'로 점선 표시됩니다. */
+(function(){
+  const NET_HUB = { name:'퍼플 유니버스', sub:'콘텐츠 기획 · 영상 제작' };
+  const NET_MEMBERS = [
+    { name:'김효년', biz:'콘텐츠 기획 (퍼플 유니버스)' },
+    { name:'구주인', biz:'영상 제작 (주인씨필름)' },
+    { name:'김미경', biz:'' },
+    { name:'김성아', biz:'' },
+    { name:'김승리', biz:'' },
+    { name:'김정연', biz:'암웨이 사업' },
+    { name:'김주식', biz:'' },
+    { name:'노미경', biz:'부동산 운영' },
+    { name:'박헌관', biz:'웰니스 브랜드' },
+    { name:'신유진', biz:'' },
+    { name:'윤정하', biz:'구강 호흡기 제품 제조·유통' },
+    { name:'정성애', biz:'' },
+    { name:'정유진', biz:'퍼플 유니버스 코치' },
+    { name:'허준수', biz:'레스토랑 운영 · 셰프' },
+    { name:'홍윤표', biz:'' }
+  ];
+  const NET_LINKS = [
+    ['허준수', '박헌관', '웰니스 식단 메뉴 공동 개발 · 레스토랑 웰니스 클래스'],
+    ['허준수', '노미경', '2호점·팝업 매장 입지 상담'],
+    ['박헌관', '윤정하', '건강 관리 제품 번들 · 웰니스 프로그램 공동 운영'],
+    ['윤정하', '김정연', '건강 제품 유통 채널 연결'],
+    ['박헌관', '김정연', '웰니스 커뮤니티 공동 행사'],
+    ['노미경', '김정연', '고객 네트워크 상호 소개'],
+    ['구주인', '허준수', '매장 브랜드 영상 · 메뉴 숏폼 촬영'],
+    ['구주인', '노미경', '매물 소개 영상 · 지역 콘텐츠'],
+    ['김효년', '박헌관', '웰니스 브랜드 콘텐츠 기획'],
+    ['김효년', '윤정하', '제품 상세페이지 · 숏폼 기획']
+  ];
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const W = 800, H = 640, CX = W/2, CY = H/2, R = 250;
+  let sel = null;
+  const pos = {};
+  NET_MEMBERS.forEach((m, i) => {
+    const a = -Math.PI/2 + i * 2*Math.PI / NET_MEMBERS.length;
+    pos[m.name] = { x: CX + R*Math.cos(a), y: CY + R*0.92*Math.sin(a) };
+  });
+  const linksOf = n => NET_LINKS.filter(l => l[0] === n || l[1] === n);
+
+  function draw(){
+    const svg = $('netSvg'); let h = '<defs><radialGradient id="hubGrad"><stop offset="0" stop-color="#9B6BFF"/><stop offset="1" stop-color="#4b2a9e"/></radialGradient></defs>';
+    NET_MEMBERS.forEach(m => { const p = pos[m.name]; h += '<line class="net-spoke" x1="' + CX + '" y1="' + CY + '" x2="' + p.x + '" y2="' + p.y + '"/>'; });
+    const act = sel ? new Set(linksOf(sel).flatMap(l => [l[0], l[1]])) : null;
+    NET_LINKS.forEach(l => {
+      const a = pos[l[0]], b = pos[l[1]]; if(!a || !b) return;
+      const mx = (a.x + b.x)/2, my = (a.y + b.y)/2;          // 가운데 쪽으로 휘는 곡선
+      const qx = mx + (CX - mx)*0.45, qy = my + (CY - my)*0.45;
+      const on = sel && (l[0] === sel || l[1] === sel);
+      h += '<path class="net-link' + (on ? ' on' : sel ? ' dim' : '') + '" d="M' + a.x + ',' + a.y + ' Q' + qx + ',' + qy + ' ' + b.x + ',' + b.y + '"/>';
+    });
+    h += '<g class="net-hub" data-hub><circle cx="' + CX + '" cy="' + CY + '" r="62"/><text x="' + CX + '" y="' + (CY-2) + '">' + esc(NET_HUB.name) + '</text>' +
+         '<text x="' + CX + '" y="' + (CY+18) + '" style="font-size:11px;font-weight:500;fill:#E4DAFF">' + esc(NET_HUB.sub) + '</text></g>';
+    NET_MEMBERS.forEach(m => {
+      const p = pos[m.name], cls = 'net-node' + (m.biz ? '' : ' todo') + (sel === m.name ? ' on' : act && !act.has(m.name) ? ' dim' : '');
+      const biz = m.biz ? (m.biz.length > 11 ? m.biz.slice(0, 11) + '…' : m.biz) : '사업 입력 필요';
+      h += '<g class="' + cls + '" data-n="' + esc(m.name) + '"><circle class="ring" cx="' + p.x + '" cy="' + p.y + '" r="40"/>' +
+           '<text x="' + p.x + '" y="' + (p.y + 2) + '">' + esc(m.name) + '</text>' +
+           '<text class="biz" x="' + p.x + '" y="' + (p.y + 58) + '">' + esc(biz) + '</text>' +
+           (linksOf(m.name).length ? '<circle cx="' + (p.x + 29) + '" cy="' + (p.y - 29) + '" r="10" fill="#E8B85E"/><text x="' + (p.x + 29) + '" y="' + (p.y - 25) + '" style="font-size:11px;fill:#1a1030">' + linksOf(m.name).length + '</text>' : '') + '</g>';
+    });
+    svg.innerHTML = h;
+    side();
+  }
+  function side(){
+    const box = $('netSide');
+    if(!sel){
+      box.innerHTML = '<h4>협업 맵 보는 법</h4><p class="hint">· 동그라미 = 멤버, 노란 숫자 = 연결된 협업 수<br>· 멤버를 누르면 연결선이 빛나고, 여기에 협업 아이디어가 나와요<br>· 점선 동그라미는 아직 사업 정보가 없는 멤버예요</p>' +
+        '<div class="lb">전체 협업 아이디어 ' + NET_LINKS.length + '개</div><ul>' +
+        NET_LINKS.slice(0, 4).map(l => '<li><b data-go="' + esc(l[0]) + '">' + esc(l[0]) + '</b> × <b data-go="' + esc(l[1]) + '">' + esc(l[1]) + '</b><br>' + esc(l[2]) + '</li>').join('') + '</ul>';
+      return;
+    }
+    const m = NET_MEMBERS.find(x => x.name === sel), ls = linksOf(sel);
+    box.innerHTML = '<h4>' + esc(m.name) + '</h4><div class="biz">' + esc(m.biz || '사업 정보를 아직 받지 못했어요') + '</div>' +
+      '<div class="lb">이런 협업이 가능해요 · ' + ls.length + '</div>' +
+      (ls.length ? '<ul>' + ls.map(l => { const o = l[0] === sel ? l[1] : l[0]; return '<li><b data-go="' + esc(o) + '">' + esc(o) + '</b> · ' + esc((NET_MEMBERS.find(x => x.name === o) || {}).biz || '') + '<br>' + esc(l[2]) + '</li>'; }).join('') + '</ul>'
+                 : '<p class="hint">아직 연결된 협업이 없어요. 줌미팅에서 사업을 소개해 주시면 연결을 이어드릴게요.</p>');
+  }
+  function pick(n){ sel = (sel === n ? null : n); draw(); }
+  $('netSvg').addEventListener('click', e => { const g = e.target.closest('[data-n]'); if(g) pick(g.dataset.n); else if(e.target.closest('[data-hub]')){ sel = null; draw(); } });
+  $('netSide').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if(b){ sel = b.dataset.go; draw(); } });
+  $('netClose').addEventListener('click', () => $('netBack').classList.remove('show'));
+  $('netBack').addEventListener('click', e => { if(e.target === $('netBack')) $('netBack').classList.remove('show'); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') $('netBack').classList.remove('show'); });
+  window.openNetMap = () => { sel = null; draw(); $('netBack').classList.add('show'); };
 })();
 </script>
 </body>
