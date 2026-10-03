@@ -247,23 +247,28 @@
             <p class="hint">넣지 않으면 보라색 배경에 제목이 크게 들어간 카드로 표시됩니다. 움직이는 포스터는 <b>MP4</b>로 올리면 자동 재생됩니다(GIF보다 훨씬 가벼움).</p>
           </div>
 
-          <div class="row3">
-            <div class="field">
-              <label>신청 링크 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
-              <input type="text" id="fApply" placeholder="비워두면 사이트에서 바로 신청">
-              <p class="hint">비워두면 웨비나 페이지 안에서 신청받고 문자가 자동으로 나갑니다.</p>
+          <div class="row" id="linkRow">
+            <div class="field" id="applyField" style="display:none;">
+              <label>결제 · 신청 페이지 링크 <span style="color:var(--text-faint); font-weight:400;">(클래스만 · 선택)</span></label>
+              <input type="text" id="fApply" placeholder="유료 클래스 결제 페이지 주소">
+              <p class="hint">비워두면 사이트 신청 폼으로 받습니다. 넣으면 '신청하기' 버튼이 이 주소로 연결돼요.</p>
             </div>
             <div class="field">
-              <label>녹화본 유튜브 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
-              <input type="text" id="fYt" placeholder="https://youtu.be/...">
+              <label>웨비나 녹화본 페이지 링크 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
+              <input type="text" id="fYt" placeholder="30X 퍼플 노트 녹화본 주소">
+              <p class="hint">웨비나가 끝난 뒤 30X 퍼플 노트의 녹화본 글 주소를 넣어주세요.</p>
             </div>
             <div class="field">
-              <label>자료 링크 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
-              <input type="text" id="fMat" placeholder="드라이브·노션 주소">
+              <label style="display:flex; justify-content:space-between; align-items:center;">
+                <span>자료 링크 <span style="color:var(--text-faint); font-weight:400;">· 무료 툴킷 고정</span></span>
+                <button type="button" id="matLock" class="btn btn-ghost" style="padding:3px 11px; font-size:12px;">🔒 수정</button>
+              </label>
+              <input type="text" id="fMat" readonly style="opacity:.7; cursor:not-allowed;">
             </div>
           </div>
           <p class="hint" style="margin:-8px 0 20px;">
-            날짜가 지나면 자동으로 '종료'로 바뀌고, 녹화본을 넣어두면 팝업에서 바로 재생됩니다.
+            날짜가 지나면 자동으로 '종료'로 바뀌고, 녹화본을 넣어두면 팝업에서 바로 재생됩니다.<br>
+            <b>자료 링크</b>는 사이트에 보이지 않고, 아래 <b>'녹화본 · 자료 문자 보내기'</b>로 신청자에게만 나갑니다.
           </p>
 
           <div class="field">
@@ -538,6 +543,7 @@ function resetForm(){
   editIndex = -1; posterData = null;
   $('formTitle').textContent = '새 웨비나 등록';
   ['fTitle','fDesc','fHost','fTime','fPlace','fApply','fYt','fMat','fPrice'].forEach(id => $(id).value = '');
+  $('fMat').value = KIT_URL; lockMat(true);
   $('fCat').value = 'webinar'; syncCat();
   $('fDate').value = new Date().toISOString().slice(0,10);
   $('fTime').value = '밤 9시';
@@ -561,7 +567,7 @@ function editItem(i){
   $('fDesc').value  = w.desc || '';
   $('fApply').value = w.applyUrl || '';
   $('fYt').value    = w.replayYt || '';
-  $('fMat').value   = w.materialUrl || '';
+  $('fMat').value   = w.materialUrl || KIT_URL; lockMat(true);
   posterData = null;
   if(w.poster){ showPoster('/' + String(w.poster).replace(/^\//,'')); $('posterDrop').textContent = '기존 포스터 — 바꾸려면 클릭'; }
   else { showPoster(''); $('posterDrop').textContent = '클릭하거나 이미지를 여기로 끌어다 놓으세요'; }
@@ -600,9 +606,9 @@ async function save(){
       place: $('fPlace').value.trim(),
       poster: poster,
       desc : $('fDesc').value.trim(),
-      applyUrl   : $('fApply').value.trim(),
+      applyUrl   : $('fCat').value === 'class' ? $('fApply').value.trim() : '',   // 웨비나는 항상 사이트 신청 폼
       replayYt   : $('fYt').value.trim(),
-      materialUrl: $('fMat').value.trim(),
+      materialUrl: $('fMat').value.trim() || KIT_URL,
       body : blocks
     };
 
@@ -727,7 +733,12 @@ $('matBtn').onclick = async () => {
   finally{ b.disabled = false; b.textContent = '녹화본 · 자료 문자 보내기'; }
 };
 
-function syncCat(){ $('priceField').style.display = $('fCat').value === 'class' ? '' : 'none'; }
+function syncCat(){
+  const cls = $('fCat').value === 'class';
+  $('priceField').style.display = cls ? '' : 'none';
+  $('applyField').style.display = cls ? '' : 'none';
+  $('linkRow').className = cls ? 'row3' : 'row';
+}
 $('fCat').addEventListener('change', syncCat);
 
 /* ════════════════════════════════════════════════
@@ -854,6 +865,17 @@ async function makeOg(quiet){
     if(btn){ btn.disabled = false; btn.textContent = '미리보기 이미지 새로 만들기'; }
   }
 }
+
+/* 자료 링크 — 평소엔 툴킷 주소로 잠가두고, '수정'을 눌렀을 때만 바꿀 수 있게 */
+const KIT_URL = 'https://purpleuniverse.net/kit-bs6e3ec7';
+function lockMat(on){
+  const f = $('fMat'), b = $('matLock');
+  f.readOnly = on; f.style.opacity = on ? '.7' : '1'; f.style.cursor = on ? 'not-allowed' : 'text';
+  b.textContent = on ? '🔒 수정' : '🔓 잠그기';
+  if(on && !f.value.trim()) f.value = KIT_URL;
+  if(!on) f.focus();
+}
+$('matLock').onclick = () => lockMat(!$('fMat').readOnly);
 
 /* ---------- 이벤트 ---------- */
 $('loginBtn').onclick = connect;

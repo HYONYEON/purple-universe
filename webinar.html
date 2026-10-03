@@ -676,10 +676,10 @@ function openModal(w){
     act = '<a class="btn btn-primary" href="' + esc(w.applyUrl) + '" target="_blank" rel="noopener">' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</a>';
   }else if(past && yt){
     act = '<a class="btn btn-ghost" href="https://www.youtube.com/watch?v=' + yt + '" target="_blank" rel="noopener">유튜브에서 보기 ↗</a>';
+  }else if(past && /^(https?:)?\/\/|^\//.test(String(w.replayYt || '').trim())){
+    act = '<a class="btn btn-primary" href="' + esc(String(w.replayYt).trim()) + '">녹화본 보기 →</a>';   // 30X 퍼플 노트 녹화본
   }
-  if(w.materialUrl){
-    act += '<a class="btn btn-ghost" href="' + esc(w.materialUrl) + '" target="_blank" rel="noopener">자료 받기</a>';
-  }
+  /* 자료 링크(툴킷)는 사이트에 보이지 않게 — 참석자에게 '녹화본·자료 문자'로만 보냅니다 */
   modalFoot.innerHTML = act +
     '<p class="after">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 ' +
     '<a href="/">멤버십</a>을 둘러보세요.</p>';
