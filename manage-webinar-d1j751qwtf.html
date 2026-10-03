@@ -171,6 +171,7 @@
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <a class="btn btn-ghost btn-sm" href="https://purpleuniverse.net/webinar" target="_blank" rel="noopener">사이트 보기 ↗</a>
+        <button class="btn btn-ghost btn-sm" id="ogBtn" type="button" title="카톡 미리보기 이미지를 지금 다시 만듭니다">미리보기 이미지 새로 만들기</button>
         <button class="btn btn-ghost btn-sm" id="logoutBtn">연결 해제</button>
       </div>
     </div>
@@ -298,7 +299,7 @@
 
           <div class="stat" id="smsStat"></div>
           <div class="tbl-wrap"><table class="ap">
-            <thead><tr><th>신청 시간</th><th>이름</th><th>연락처</th><th>하는 일</th><th title="신청완료 · 당일안내 · 입장링크 · 자료">문자 (완료·당일·링크·자료)</th><th>소식</th></tr></thead>
+            <thead><tr><th>신청 시간</th><th>이름</th><th>연락처</th><th>듣고 싶은 이유</th><th title="신청완료 · 당일안내 · 입장링크 · 자료">문자 (완료·당일·링크·자료)</th><th>소식</th></tr></thead>
             <tbody id="apBody"></tbody>
           </table></div>
 
@@ -613,6 +614,7 @@ async function save(){
     dataSha = res.content.sha;
 
     toast('발행 완료 — 1~2분 뒤 사이트에 반영됩니다');
+    makeOg(true);
     resetForm();
   }catch(e){
     toast('실패: ' + e.message, false);
@@ -630,6 +632,7 @@ async function removeItem(i){
     dataSha = res.content.sha;
     if(editIndex === i) resetForm();
     toast('삭제했습니다'); renderList();
+    makeOg(true);
   }catch(e){ toast('실패: ' + e.message, false); await loadData(); }
 }
 
@@ -726,11 +729,125 @@ $('matBtn').onclick = async () => {
 function syncCat(){ $('priceField').style.display = $('fCat').value === 'class' ? '' : 'none'; }
 $('fCat').addEventListener('change', syncCat);
 
+/* ════════════════════════════════════════════════
+   카톡 미리보기 이미지 (og-webinar.png) 자동 생성
+   ─ 발행·삭제할 때마다, 가장 가까운 웨비나 포스터로 1200×630 이미지를 다시 그려 올립니다.
+   ─ 포스터가 영상(mp4)이면 첫 장면을 씁니다.
+   ════════════════════════════════════════════════ */
+const OG_FILE = 'og-webinar.png';
+function ogPick(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dt = w => { const p = String(w.date||'').split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); };
+  const list = LIST.filter(w => w.cat !== 'class' && w.poster);
+  const up = list.filter(w => dt(w) >= today).sort((a,b) => dt(a) - dt(b));
+  const past = list.filter(w => dt(w) < today).sort((a,b) => dt(b) - dt(a));
+  return up[0] || past[0] || null;
+}
+async function rawBlob(path){
+  const r = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + encodeURI(path) + '?ref=' + BRANCH,
+    { headers:{ 'Authorization':'Bearer ' + TOKEN, 'Accept':'application/vnd.github.raw' } });
+  if(!r.ok) throw new Error('포스터를 못 읽었어요 (' + r.status + ')');
+  return r.blob();
+}
+function loadPosterDrawable(blob, isVideo){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(blob);
+    if(isVideo){
+      const v = document.createElement('video');
+      v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+      v.onloadeddata = () => { v.currentTime = 0.05; };
+      v.onseeked = () => res({ el:v, w:v.videoWidth, h:v.videoHeight });
+      v.onerror = () => rej(new Error('영상 포스터를 못 열었어요'));
+    }else{
+      const im = new Image();
+      im.onload = () => res({ el:im, w:im.naturalWidth, h:im.naturalHeight });
+      im.onerror = () => rej(new Error('포스터 이미지를 못 열었어요'));
+      im.src = url;
+    }
+  });
+}
+function rr(ctx, x, y, w, h, r){
+  ctx.beginPath(); ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r); ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r); ctx.arcTo(x, y, x+w, y, r); ctx.closePath();
+}
+async function drawOg(poster){
+  const W = 1200, H = 630, S = 2;
+  const c = document.createElement('canvas'); c.width = W*S; c.height = H*S;
+  const x = c.getContext('2d'); x.scale(S, S);
+  try{ await Promise.all([document.fonts.load('700 66px "IBM Plex Sans KR"'), document.fonts.load('400 24px "IBM Plex Sans KR"')]); }catch(e){}
+  const FB = '"IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif';
+  // 배경
+  x.fillStyle = '#08050F'; x.fillRect(0, 0, W, H);
+  const g1 = x.createRadialGradient(W*0.30, H*0.35, 0, W*0.30, H*0.35, W*0.55);
+  g1.addColorStop(0, 'rgba(124,77,255,0.55)'); g1.addColorStop(1, 'rgba(124,77,255,0)');
+  x.fillStyle = g1; x.fillRect(0, 0, W, H);
+  const g2 = x.createRadialGradient(W*0.82, H*0.95, 0, W*0.82, H*0.95, W*0.45);
+  g2.addColorStop(0, 'rgba(232,184,94,0.12)'); g2.addColorStop(1, 'rgba(232,184,94,0)');
+  x.fillStyle = g2; x.fillRect(0, 0, W, H);
+  // 별 (글자 자리는 비움)
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  x.fillStyle = 'rgba(200,190,255,0.8)';
+  for(let i = 0; i < 140; i++){
+    const sx = rnd()*W, sy = rnd()*H, r = [0.5,0.5,1,1,1.5][Math.floor(rnd()*5)];
+    if(sx > 60 && sx < 650 && sy > 100 && sy < 600) continue;
+    x.beginPath(); x.arc(sx, sy, r, 0, Math.PI*2); x.fill();
+  }
+  // 포스터 (오른쪽)
+  const ph = Math.round(H*0.86), pw = Math.round(ph * poster.w / poster.h);
+  const px = W - pw - 70, py = Math.round((H - ph) / 2);
+  x.save(); x.shadowColor = 'rgba(0,0,0,0.6)'; x.shadowBlur = 40; x.shadowOffsetY = 16;
+  rr(x, px, py, pw, ph, 22); x.fillStyle = '#000'; x.fill(); x.restore();
+  x.save(); rr(x, px, py, pw, ph, 22); x.clip(); x.drawImage(poster.el, px, py, pw, ph); x.restore();
+  rr(x, px, py, pw, ph, 22); x.lineWidth = 2; x.strokeStyle = 'rgba(169,139,255,0.9)'; x.stroke();
+  // 글자
+  const lx = 78; x.textBaseline = 'top';
+  x.fillStyle = '#A98BFF'; x.font = '700 20px ' + FB; x.fillText('PURPLE UNIVERSE  ·  WEBINAR', lx, 132);
+  x.fillStyle = '#F4F1FC'; x.font = '700 66px ' + FB;
+  x.fillText('웨비나는', lx, 172); x.fillText('전부 무료입니다', lx, 254);
+  const tw = x.measureText('전부 무료입니다').width;
+  rr(x, lx, 350, tw, 10, 5); x.fillStyle = '#DEFF4A'; x.fill();
+  x.fillStyle = '#B7ACD1'; x.font = '400 24px ' + FB;
+  x.fillText('모든 녹화본은 30X 퍼플 노트에서 다시 볼 수 있어요.', lx, 390);
+  let cx = lx; const cy = 458;
+  [['✓ 참가비 없음','#5FD08A'],['✓ 녹화본 제공','#5FD08A'],['클래스도 열려요','#F3D89A']].forEach(([t,col]) => {
+    x.font = '700 21px ' + FB; const w = x.measureText(t).width, pad = 18;
+    rr(x, cx, cy, w + pad*2, 48, 24); x.fillStyle = 'rgb(24,18,40)'; x.fill();
+    x.lineWidth = 2; x.strokeStyle = 'rgb(70,58,110)'; x.stroke();
+    x.fillStyle = col; x.fillText(t, cx + pad, cy + 11); cx += w + pad*2 + 12;
+  });
+  x.fillStyle = '#756A94'; x.font = '400 19px ' + FB; x.fillText('purpleuniverse.net/webinar', lx, 548);
+  // 1200×630으로 줄여서 내보내기
+  const out = document.createElement('canvas'); out.width = W; out.height = H;
+  const o = out.getContext('2d'); o.imageSmoothingQuality = 'high'; o.drawImage(c, 0, 0, W, H);
+  return out.toDataURL('image/png').split(',')[1];
+}
+async function makeOg(quiet){
+  const btn = $('ogBtn');
+  try{
+    const w = ogPick();
+    if(!w){ if(!quiet) toast('포스터가 등록된 웨비나가 없어서 미리보기 이미지를 그대로 뒀어요.', false); return; }
+    if(btn){ btn.disabled = true; btn.textContent = '미리보기 만드는 중…'; }
+    const path = String(w.poster).replace(/^\//, '');
+    const isVideo = /\.(mp4|webm)$/i.test(path);
+    const poster = await loadPosterDrawable(await rawBlob(path), isVideo);
+    const b64 = await drawOg(poster);
+    let sha = null;
+    try{ sha = (await gh('/contents/' + OG_FILE + '?ref=' + BRANCH)).sha; }catch(e){}
+    await putFile(OG_FILE, b64, sha, '카톡 미리보기 이미지 갱신: ' + (w.title || ''));
+    toast('카톡 미리보기 이미지도 "' + (w.title || '') + '" 포스터로 바꿨어요. 카카오 공유 디버거에서 캐시 초기화를 눌러주세요.');
+  }catch(e){
+    toast('미리보기 이미지 만들기 실패: ' + e.message, false);
+  }finally{
+    if(btn){ btn.disabled = false; btn.textContent = '미리보기 이미지 새로 만들기'; }
+  }
+}
+
 /* ---------- 이벤트 ---------- */
 $('loginBtn').onclick = connect;
 $('tokenInput').addEventListener('keydown', e => { if(e.key === 'Enter') connect(); });
 $('logoutBtn').onclick = () => { localStorage.removeItem('pu_admin'); location.reload(); };
 $('saveBtn').onclick = save;
+$('ogBtn').onclick = () => makeOg(false);
 $('resetBtn').onclick = resetForm;
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => addBlock(b.dataset.add));
 
