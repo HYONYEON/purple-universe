@@ -74,7 +74,11 @@
   .hero h1{font-size:clamp(24px,3.3vw,40px); word-break:keep-all; line-height:1.25; font-weight:700; margin:14px 0 14px; letter-spacing:-.01em;}
   .hero h1 em{font-style:normal; background:linear-gradient(90deg,var(--purple-pale),var(--gold-soft));
     -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .hero p{color:var(--text-dim); font-size:17px; max-width:640px;}
+  .hero p{color:var(--text-dim); font-size:16.5px;}
+  @media(min-width:1100px){ .hero p{white-space:nowrap;} }
+  .h-meta:not(:has(.chip:not([style*="none"]))){display:none;}
+  .pc-top{position:absolute; top:56px; right:0;}
+  @media(max-width:900px){ .pc-top{position:static; display:inline-block; margin-top:18px;} }
   .h-meta{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px;}
   .chip{font-size:13.5px; padding:6px 13px; border-radius:100px; background:var(--surface);
     border:1px solid var(--border); color:var(--text-dim);}
@@ -82,12 +86,18 @@
   .chip.pc{border-color:rgba(169,139,255,.4); background:rgba(124,77,255,.12); color:var(--purple-pale);}
 
   /* 업데이트 띠 */
-  .news{display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:14px 18px; border-radius:14px;
+  .news{display:flex; align-items:center; gap:14px; padding:14px 18px; overflow:hidden; border-radius:14px;
     background:linear-gradient(90deg,rgba(232,184,94,.12),rgba(232,184,94,.02)); border:1px solid rgba(232,184,94,.28);
     margin-bottom:26px; font-size:14.5px;}
   .news .tag{font-family:'Space Grotesk'; font-weight:700; font-size:12px; letter-spacing:.12em; color:var(--bg);
     background:var(--gold); padding:3px 9px; border-radius:6px;}
-  .news ul{list-style:none; display:flex; gap:18px; flex-wrap:wrap; color:var(--text-dim);}
+  .news .tag{flex:none; position:relative; z-index:1;}
+  .news-track{flex:1; overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 4%,#000 92%,transparent);}
+  .news ul{list-style:none; display:flex; gap:56px; color:var(--text-dim); width:max-content; white-space:nowrap; padding-right:56px;
+    animation:newsRun 40s linear infinite;}
+  .news:hover ul{animation-play-state:paused;}
+  @keyframes newsRun{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @media (prefers-reduced-motion: reduce){ .news ul{animation:none; flex-wrap:wrap; white-space:normal;} }
   .news li b{color:var(--gold-soft); font-weight:600; margin-right:6px;}
 
   /* 내 정보 */
@@ -330,10 +340,9 @@
     <h1><em>콘텐츠 기획력을 30배</em> 올려서 비즈니스에 적용하세요</h1>
     <p>웨비나와 무불보 LIVE에서 다룬 걸, 바로 써먹는 도구로 만들어 두었습니다. 한 번 보고 끝나는 자료가 아니라 계속 채워지는 도구함이에요.</p>
     <div class="h-meta">
-      <span class="chip">마지막 업데이트 <b id="lastUp"></b></span>
       <span class="chip" id="visitChip" style="display:none;"></span>
-      <span class="chip pc">💻 <b>PC에서 보시는 걸 권장드립니다</b></span>
     </div>
+    <span class="chip pc pc-top">💻 <b>PC에서 보시는 걸 권장드립니다</b></span>
   </section>
 
   <div class="news" id="news"></div>
@@ -752,9 +761,13 @@ const isNew = d => !!d && (!LAST_SEEN || d > LAST_SEEN) && !!VISIT;   // 첫 방
   }
 })();
 
-$('lastUp').textContent = fmtD(KIT.updated);
-$('news').innerHTML = '<span class="tag">UPDATE</span><ul>' +
-  KIT.news.slice(0,3).map(n => '<li><b>' + esc(n.d) + '</b>' + esc(n.t) + '</li>').join('') + '</ul>';
+/* 업데이트 띠 — 로고띠처럼 천천히 흐름 (같은 목록을 두 번 이어 붙여 끊김 없이) */
+(function(){
+  const items = KIT.news.map(n => '<li><b>' + esc(n.d) + '</b>' + esc(n.t) + '</li>').join('');
+  $('news').innerHTML = '<span class="tag">UPDATE</span><div class="news-track"><ul class="news-run">' + items + items + '</ul></div>';
+  const run = $('news').querySelector('.news-run');
+  run.style.animationDuration = Math.max(28, KIT.news.length * 16) + 's';
+})();
 
 /* ---------- 내 정보 ---------- */
 let ME = LS.get('pu_kit_me', {});
@@ -807,8 +820,8 @@ function renderPrompts(keep){
         '<span class="hint" data-hint="' + p.id + '"></span></div></div>' +
     '</article>').join('');
 
-  html += '<article class="card' + (openSet.has('k-human') ? ' open' : '') + '" id="k-human">' +
-    '<div class="card-h" data-tog="k-human"><span class="no">' + String(KIT.prompts.length+1).padStart(2,'0') + '</span>' +
+  html += '<article class="card' + (openSet.has('k-tpl') ? ' open' : '') + '" id="k-tpl">' +
+    '<div class="card-h" data-tog="k-tpl"><span class="no">' + String(KIT.prompts.length+1).padStart(2,'0') + '</span>' +
     '<h3>Human 답장 문구 템플릿<small>댓글 · DM에 바로 붙여넣는 사람 냄새 나는 답장</small></h3><span class="badge t">템플릿</span><span class="arr">▾</span></div>' +
     '<div class="card-b"><div class="tpls">' +
       KIT.templates.map((t, i) => '<div class="tpl"><h4>' + esc(t.k) + '</h4><p>' + esc(t.t) + '</p>' +
@@ -893,7 +906,7 @@ document.addEventListener('click', e => { const l = e.target.closest('.linkish[d
 /* 주소로 바로 열기: #month · #k-4h */
 (function(){
   const h = location.hash.slice(1);
-  if(KIT.prompts.some(p => p.id === h) || h === 'k-human') go('prompt', h);
+  if(KIT.prompts.some(p => p.id === h) || h === 'k-tpl') go('prompt', h);
   else go(TABS.some(t => t.k === h) ? h : 'prompt');
 })();
 
