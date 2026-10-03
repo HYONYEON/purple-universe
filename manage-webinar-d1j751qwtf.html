@@ -172,6 +172,7 @@
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <a class="btn btn-ghost btn-sm" href="https://purpleuniverse.net/webinar" target="_blank" rel="noopener">사이트 보기 ↗</a>
         <button class="btn btn-ghost btn-sm" id="ogBtn" type="button" title="카톡 미리보기 이미지를 지금 다시 만듭니다">미리보기 이미지 새로 만들기</button>
+        <button class="btn btn-ghost btn-sm" id="kakaoBtn" type="button" title="웨비나 주소를 복사하고 카카오 공유 디버거를 엽니다">카톡 캐시 초기화 ↗</button>
         <button class="btn btn-ghost btn-sm" id="logoutBtn">연결 해제</button>
       </div>
     </div>
@@ -831,9 +832,21 @@ async function makeOg(quiet){
     const isVideo = /\.(mp4|webm)$/i.test(path);
     const poster = await loadPosterDrawable(await rawBlob(path), isVideo);
     const b64 = await drawOg(poster);
-    let sha = null;
-    try{ sha = (await gh('/contents/' + OG_FILE + '?ref=' + BRANCH)).sha; }catch(e){}
-    await putFile(OG_FILE, b64, sha, '카톡 미리보기 이미지 갱신: ' + (w.title || ''));
+    /* 최신 sha를 매번 새로 읽음 (브라우저가 예전 응답을 기억하면 409가 나서) */
+    const freshSha = async () => {
+      try{
+        const r = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + OG_FILE + '?ref=' + BRANCH + '&t=' + Date.now(),
+          { headers:{ 'Authorization':'Bearer ' + TOKEN, 'Accept':'application/vnd.github+json' }, cache:'no-store' });
+        return r.ok ? (await r.json()).sha : null;
+      }catch(e){ return null; }
+    };
+    const msg = '카톡 미리보기 이미지 갱신: ' + (w.title || '');
+    try{ await putFile(OG_FILE, b64, await freshSha(), msg); }
+    catch(e){
+      if(!/^409/.test(e.message)) throw e;
+      await new Promise(r => setTimeout(r, 1500));          // 잠깐 기다렸다 한 번 더
+      await putFile(OG_FILE, b64, await freshSha(), msg);
+    }
     toast('카톡 미리보기 이미지도 "' + (w.title || '') + '" 포스터로 바꿨어요. 카카오 공유 디버거에서 캐시 초기화를 눌러주세요.');
   }catch(e){
     toast('미리보기 이미지 만들기 실패: ' + e.message, false);
@@ -848,6 +861,13 @@ $('tokenInput').addEventListener('keydown', e => { if(e.key === 'Enter') connect
 $('logoutBtn').onclick = () => { localStorage.removeItem('pu_admin'); location.reload(); };
 $('saveBtn').onclick = save;
 $('ogBtn').onclick = () => makeOg(false);
+/* 카카오 공유 디버거 — 웨비나 주소를 복사해 두고 새 탭으로 엽니다 */
+$('kakaoBtn').onclick = async () => {
+  const url = 'https://purpleuniverse.net/webinar';
+  try{ await navigator.clipboard.writeText(url); }catch(e){}
+  window.open('https://developers.kakao.com/tool/debugger/sharing', '_blank', 'noopener');
+  toast('웨비나 주소를 복사했어요. 열린 창의 입력칸에 붙여넣고(⌘V) → 캐시 초기화를 눌러주세요.');
+};
 $('resetBtn').onclick = resetForm;
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => addBlock(b.dataset.add));
 

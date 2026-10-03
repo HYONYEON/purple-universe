@@ -656,7 +656,7 @@ function openModal(w){
   /* 모집 중이면 팝업 안에서 바로 신청 (따로 신청 링크를 넣은 경우만 그 링크로) */
   const inline = !past && !w.applyUrl;
   if(inline) rest += formHTML(w);
-  rest += '<p class="after-m">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 <a href="/#trust">멤버십</a>을 둘러보세요.</p>';
+  rest += '<p class="after-m">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 <a href="/">멤버십</a>을 둘러보세요.</p>';
 
   /* 포스터가 있으면 PC에선 왼쪽 포스터 · 오른쪽 내용 두 칸으로 (스크롤 줄이기) */
   if(media && !(past && yt)){
@@ -682,7 +682,7 @@ function openModal(w){
   }
   modalFoot.innerHTML = act +
     '<p class="after">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 ' +
-    '<a href="/#trust">멤버십</a>을 둘러보세요.</p>';
+    '<a href="/">멤버십</a>을 둘러보세요.</p>';
 
   const go = $('goForm');
   if(go) go.addEventListener('click', () => {
