@@ -195,6 +195,25 @@
     background:linear-gradient(180deg,rgba(8,5,15,.2),rgba(8,5,15,.7)); text-align:center; padding:14px;}
   .lock .ov b{font-size:15px;} .lock .ov span{font-size:12.5px; color:var(--gold-soft); font-weight:600;}
 
+  /* 왼쪽 고정 배너 — 다음 웨비나 (넓은 화면에서만, 본문 옆 빈 공간에) */
+  .side-ban{display:none;}
+  @media(min-width:1640px){
+    .side-ban.on{
+      display:block; position:fixed; z-index:50; top:110px; width:220px;
+      left:calc((100vw - 1180px) / 4 - 110px);
+      padding:16px; border-radius:20px; text-decoration:none; color:var(--text);
+      background:linear-gradient(180deg,rgba(124,77,255,.22),rgba(124,77,255,.06)); border:1px solid var(--border-strong);
+      box-shadow:0 24px 50px -24px rgba(0,0,0,.8); transition:transform .2s ease, border-color .2s ease;
+    }
+    .side-ban.on:hover{transform:translateY(-3px); border-color:var(--purple-bright, #A98BFF);}
+  }
+  .side-ban .sb-tag{display:block; font-family:'Space Grotesk'; font-size:11px; letter-spacing:.16em; color:var(--gold-soft); font-weight:700; margin-bottom:10px;}
+  .side-ban .sb-img{width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:12px; display:block; margin-bottom:12px; background:rgba(255,255,255,.04);}
+  .side-ban .sb-d{display:block; font-family:'Space Grotesk'; font-weight:700; color:var(--gold-soft); font-size:13px;}
+  .side-ban .sb-t{display:block; font-size:15.5px; font-weight:700; line-height:1.4; margin:4px 0 12px; word-break:keep-all;}
+  .side-ban .sb-btn{display:block; text-align:center; padding:10px 0; border-radius:100px; font-size:14px; font-weight:700;
+    background:linear-gradient(135deg,#8B5CF6,#7C4DFF); color:#fff;}
+
   footer{margin-top:80px; padding:40px 0 50px; border-top:1px solid var(--border); text-align:center; color:var(--text-faint); font-size:14px;}
   footer p + p{margin-top:6px;}
 
@@ -768,6 +787,19 @@ $('shareAll').onclick = () => share('', '');
       (up.time ? ' · ' + esc(up.time) : '') + '</span><h3>' + esc(up.title) + '</h3><small>' + esc(up.desc || '참가비 없음 · 녹화본 제공') + '</small></div>' +
       '<a class="btn btn-p" href="/webinar#w' + up.no + '">무료로 신청하기</a>';
     $('nextSec').style.display = '';
+
+    // 왼쪽 고정 배너
+    const ban = document.createElement('a');
+    ban.className = 'side-ban on'; ban.href = '/webinar#w' + up.no;
+    const ps = String(up.poster || '').trim(), vid = /\.(mp4|webm|mov)(\?|$)/i.test(ps);
+    const media = !ps ? '' : vid
+      ? '<video class="sb-img" src="' + esc(ps) + '" autoplay muted loop playsinline preload="metadata"></video>'
+      : '<img class="sb-img" src="' + esc(ps) + '" alt="">';
+    ban.innerHTML = '<span class="sb-tag">NEXT ' + (up.cat === 'class' ? 'CLASS' : 'WEBINAR') + '</span>' + media +
+      '<span class="sb-d">' + p[1] + '월 ' + p[2] + '일 (' + '일월화수목금토'[d.getDay()] + ')' + (up.time ? ' · ' + esc(up.time) : '') + '</span>' +
+      '<span class="sb-t">' + esc(up.title) + '</span>' +
+      '<span class="sb-btn">' + (up.cat === 'class' ? '자세히 보기' : '무료로 신청하기') + '</span>';
+    document.body.appendChild(ban);
   };
   document.body.appendChild(s);
 })();
