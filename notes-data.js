@@ -3,6 +3,19 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "insight",
+    "date": "2026-10-03",
+    "title": "기획의 모든 것ㅣ무빙워터",
+    "desc": "",
+    "yt": "https://youtu.be/ZSzWRCz5hHc",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [],
+    "no": 11,
+    "ogv": 2
+  },
+  {
     "cat": "marketing",
     "date": "2026-09-26",
     "title": "이번 주 잘 팔린 말은 브랜드가 아니라 손님이 만들었습니다",
