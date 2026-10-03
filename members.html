@@ -174,6 +174,20 @@
   .vote-empty{font-size:14.5px; color:var(--text-faint); text-align:center; padding:26px 10px; border:1.5px dashed var(--border-strong); border-radius:14px;}
   .vote-foot{font-size:12.5px; color:var(--text-faint); margin-top:14px; line-height:1.6;}
   .vrow.flash{box-shadow:0 0 0 3px var(--gold-soft);}
+  .vote-me .who > span:last-child{display:flex; gap:14px; align-items:center;}
+  .adm-btn{color:var(--gold-soft) !important;}
+  .adm-btn.on{color:#FF9C9C !important;}
+  .vpick{display:inline-flex; cursor:pointer;}
+  .vpick input{display:none;}
+  .vpick span{width:20px; height:20px; border-radius:6px; border:2px solid var(--border-strong); display:inline-flex; align-items:center; justify-content:center;}
+  .vpick input:checked + span{background:var(--gold); border-color:var(--gold);}
+  .vpick input:checked + span::after{content:'✓'; color:#1a1030; font-size:13px; font-weight:800;}
+  .adm-bar{position:sticky; bottom:-22px; margin-top:6px; padding:12px 14px; border-radius:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    background:#2a1d10; border:1px solid rgba(232,184,94,.5); font-size:14px; color:var(--gold-soft);}
+  .adm-bar b{color:#fff;}
+  .adm-bar .vbtn[disabled]{opacity:.4; cursor:not-allowed;}
+  .bulk-btns{display:flex; gap:6px;}
+  .vbtn.fixb{border-color:rgba(232,184,94,.6); color:var(--gold-soft);}
   .vtab.live small{color:var(--gold-soft);} .vtab.on.live small{color:#8a5a00;}
   /* 3개월 달력 */
   .vote-cal{margin-top:22px; padding-top:18px; border-top:1px solid var(--border);}
@@ -636,37 +650,6 @@
 
   <section class="m-section gated">
     <div class="wrap">
-      <span class="eyebrow">CURATED</span>
-      <h2>비즈니스에 도움되는 콘텐츠</h2>
-      <p>멤버들의 비즈니스에 실질적으로 도움이 될 유튜브 영상과 정리 노트예요.</p>
-      <div class="resource-grid" id="curatedGrid">
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-tag">유튜브</span>
-          <h4>콘텐츠 심리학으로 전환율 높이는 법</h4>
-          <p>핵심 요약: 구매 전환을 만드는 3가지 심리 트리거와 적용 사례</p>
-        </div>
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-tag">유튜브</span>
-          <h4>해외 비즈니스 모델 탐색 EP.1</h4>
-          <p>핵심 요약: 국내에 아직 없는 해외 수익화 구조 3가지</p>
-        </div>
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-tag">유튜브</span>
-          <h4>행동경제학으로 보는 가격 설계</h4>
-          <p>핵심 요약: 앵커링 효과를 활용한 가격표 설계 방법</p>
-        </div>
-      </div>
-      <p class="no-result" id="curatedNoResult">검색 결과가 없어요.</p>
-    </div>
-  </section>
-
-  <div class="wrap"><div class="m-divider"></div></div>
-
-  <section class="m-section gated">
-    <div class="wrap">
       <span class="eyebrow">AI AGENT</span>
       <h2>콘텐츠 기획 AI 에이전트</h2>
       <p>내 비즈니스에 맞는 콘텐츠 아이디어와 기획을 도와주는 전용 에이전트예요. (현재 UI만 먼저 준비된 상태이고, 실제 AI 연결은 곧 추가될 예정이에요.)</p>
@@ -1041,6 +1024,10 @@
   let D = { types:Object.keys(COLORS), members:[], candidates:[], votes:[] }, loaded = false;
   let me = null; try{ me = localStorage.getItem('pu_vote_me'); }catch(e){}
   let tab = null;
+  /* 확정 권한 — 운영진 이름으로 들어오고, 운영진 열쇠(관리 페이지의 신청 조회 키)가 있을 때만 */
+  const ADMIN_NAME = '김효년';
+  let admin = false; const picked = new Set();
+  const adminKey = () => { try{ return localStorage.getItem('pu_apply_key') || ''; }catch(e){ return ''; } };
   const now = new Date();
   const today = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
 
@@ -1056,7 +1043,7 @@
       if(!r.ok || !r.members) throw new Error(r.error || 'old');
       D = r; loaded = true;
       if(me && D.members.indexOf(me) < 0) me = null;
-    }catch(e){ loaded = false; }
+    }catch(e){ if(!D.members.length) loaded = false; }      // 한 번 불러온 뒤엔 재시도 실패해도 화면 유지
     if(!tab || !candsOf(tab).length){ tab = D.types.find(t => openOf(t).length) || D.types.find(t => candsOf(t).length) || D.types[0]; }
     render(); cta();
   }
@@ -1071,7 +1058,9 @@
         (D.members.length ? D.members.map(n => '<button class="vchip" type="button" data-me="' + esc(n) + '">' + esc(n) + '</button>').join('')
                           : '<span style="font-size:13.5px;color:var(--text-faint)">' + (loaded ? '멤버 명단이 아직 비어 있어요' : '불러오는 중…') + '</span>') + '</div>';
     }else{
-      $('voteMe').innerHTML = '<div class="who"><span><b>' + esc(me) + '</b> 님으로 투표 중</span><button type="button" data-change>이름 바꾸기</button></div>';
+      $('voteMe').innerHTML = '<div class="who"><span><b>' + esc(me) + '</b> 님으로 투표 중</span><span>' +
+        (me === ADMIN_NAME ? '<button type="button" data-admin class="adm-btn' + (admin ? ' on' : '') + '">' + (admin ? '🔑 확정 관리 끄기' : '🔑 확정 관리') + '</button>' : '') +
+        '<button type="button" data-change>이름 바꾸기</button></span></div>';
     }
     // 탭
     $('voteTabs').innerHTML = D.types.map(t => {
@@ -1092,16 +1081,20 @@
       const when = [c.time, c.memo].filter(Boolean).join(' · ');
       if(c.confirmed){
         return '<div class="vrow fix" id="vr-' + c.date + '"><div class="vrow-top"><span class="vrow-d">' + fmtD(c.date) + '</span>' +
-          (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') + '<span class="vbadge fix">✓ 확정</span></div></div>';
+          (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') + '<span class="vbadge fix">✓ 확정</span>' +
+          (admin ? '<span class="vrow-btns"><button class="vbtn" type="button" data-unfix="' + c.date + '">확정 취소</button></span>' : '') + '</div></div>';
       }
       const vs = vOf(tab, c.date), ok = vs.filter(v => v.status === '가능'), no = vs.filter(v => v.status === '어려움');
       const mine = (vs.find(v => v.name === me) || {}).status || '';
       const best = ok.length && ok.length === maxOk;
       return '<div class="vrow' + (best ? ' best' : '') + '" id="vr-' + c.date + '">' +
-        '<div class="vrow-top"><span class="vrow-d">' + fmtD(c.date) + '</span>' +
+        '<div class="vrow-top">' +
+          '<label class="vpick" title="여러 날짜를 골라 한 번에 응답"><input type="checkbox" data-pick="' + esc(tab) + '|' + c.date + '"' + (picked.has(tab + '|' + c.date) ? ' checked' : '') + '><span></span></label>' +
+          '<span class="vrow-d">' + fmtD(c.date) + '</span>' +
           (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') +
           (best ? '<span class="vbadge best">가장 많이 가능</span>' : '') +
           '<span class="vrow-btns">' +
+            (admin ? '<button class="vbtn fixb" type="button" data-fix="' + c.date + '">✓ 확정</button>' : '') +
             '<button class="vbtn ok' + (mine === '가능' ? ' on' : '') + '" type="button" data-v="가능" data-d="' + c.date + '">가능</button>' +
             '<button class="vbtn no' + (mine === '어려움' ? ' on' : '') + '" type="button" data-v="어려움" data-d="' + c.date + '">어려움</button></span>' +
         '</div>' +
@@ -1111,6 +1104,44 @@
       '</div>';
     }).join('');
     $('voteFoot').textContent = opens.length ? '같은 버튼을 한 번 더 누르면 취소돼요. 날짜가 정해지면 초록색 ✓ 확정으로 바뀝니다.' : '';
+    if(opens.length){
+      $('voteList').insertAdjacentHTML('beforeend',
+        '<div class="adm-bar"><span>' + (picked.size ? '고른 날짜 <b>' + picked.size + '개</b>를 한 번에' : '☐ 체크해서 <b>여러 날짜</b>를 한 번에 응답할 수 있어요') + '</span>' +
+        '<span class="bulk-btns"><button class="vbtn ok on" type="button" data-bulk="가능"' + (picked.size ? '' : ' disabled') + '>모두 가능</button>' +
+        '<button class="vbtn no on" type="button" data-bulk="어려움"' + (picked.size ? '' : ' disabled') + '>모두 어려움</button></span></div>');
+    }
+  }
+  /* 체크한 여러 날짜에 한 번에 가능/어려움 */
+  async function bulkVote(status){
+    if(!me){ alert('먼저 내 이름을 골라주세요'); return; }
+    if(!picked.size) return;
+    const items = [...picked].map(k => { const [type, date] = k.split('|'); return { type, date, status }; });
+    items.forEach(it => {
+      D.votes = D.votes.filter(v => !(v.type === it.type && v.date === it.date && v.name === me));
+      D.votes.push({ name:me, type:it.type, date:it.date, status });
+    });
+    picked.clear(); renderList(); renderCal();
+    try{
+      const r = await (await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action:'vote', name:me, items }) })).json();
+      if(!r.ok) throw new Error(r.error || 'fail');
+    }catch(e){ alert('일부 날짜를 저장하지 못했어요. 다시 눌러주세요.'); load(); }
+  }
+  async function setConfirm(items){
+    let key = adminKey();
+    if(!key){ key = (prompt('운영진 열쇠(관리 페이지의 신청 조회 키)를 입력해주세요') || '').trim(); if(!key) return; }
+    try{
+      const r = await (await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action:'voteConfirm', key, items }) })).json();
+      if(!r.ok) throw new Error(r.error);
+      try{ localStorage.setItem('pu_apply_key', key); }catch(e){}
+      items.forEach(it => D.candidates.forEach(c => { if(c.type === it.type && c.date === it.date) c.confirmed = it.on !== false; }));
+      items.forEach(it => picked.delete(it.type + '|' + it.date));
+      render(); cta();
+    }catch(e){
+      if(String(e.message).includes('unauthorized')){ try{ localStorage.removeItem('pu_apply_key'); }catch(_){} alert('운영진 열쇠가 맞지 않아요.'); }
+      else alert('확정하지 못했어요. 다시 눌러주세요.');
+    }
   }
   /* 아래 3개월 달력 — 확정 일정은 색 라벨, 투표 중인 후보는 점선 + 가능 인원 */
   function renderCal(){
@@ -1154,15 +1185,24 @@
 
   $('voteBack').addEventListener('click', e => {
     if(e.target === $('voteBack')) $('voteBack').classList.remove('show');
-    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v],[data-jump]'); if(!t) return;
-    if(t.dataset.me){ me = t.dataset.me; try{ localStorage.setItem('pu_vote_me', me); }catch(_){} render(); }
-    else if(t.hasAttribute('data-change')){ me = null; try{ localStorage.removeItem('pu_vote_me'); }catch(_){} render(); }
+    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v],[data-jump],[data-admin],[data-pick],[data-bulk],[data-fix],[data-unfix]'); if(!t) return;
+    if(t.dataset.bulk){ bulkVote(t.dataset.bulk); return; }
+    if(t.dataset.fix){ if(confirm(tab + ' · ' + fmtD(t.dataset.fix) + ' 로 확정할까요?')) setConfirm([{ type:tab, date:t.dataset.fix, on:true }]); return; }
+    if(t.hasAttribute('data-admin')){ admin = !admin; render(); return; }
+    if(t.dataset.pick) return;                                           // 체크는 아래 change 에서 처리
+    if(t.dataset.unfix){ if(confirm(tab + ' · ' + fmtD(t.dataset.unfix) + ' 확정을 취소할까요?')) setConfirm([{ type:tab, date:t.dataset.unfix, on:false }]); return; }
+    if(t.dataset.me){ me = t.dataset.me; admin = false; try{ localStorage.setItem('pu_vote_me', me); }catch(_){} render(); }
+    else if(t.hasAttribute('data-change')){ me = null; admin = false; try{ localStorage.removeItem('pu_vote_me'); }catch(_){} render(); }
     else if(t.dataset.tab){ tab = t.dataset.tab; render(); }
     else if(t.dataset.v){ vote(t.dataset.d, t.dataset.v); }
     else if(t.dataset.jump){                                              // 달력에서 후보 날짜 누르면 그 줄로
       const [ty, dt] = t.dataset.jump.split('|'); tab = ty; render();
       const row = document.getElementById('vr-' + dt); if(row){ row.scrollIntoView({ behavior:'smooth', block:'center' }); row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 1200); }
     }
+  });
+  $('voteBack').addEventListener('change', e => {
+    const k = e.target.dataset && e.target.dataset.pick; if(!k) return;
+    e.target.checked ? picked.add(k) : picked.delete(k); renderList();
   });
   $('voteClose').addEventListener('click', () => $('voteBack').classList.remove('show'));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') $('voteBack').classList.remove('show'); });
