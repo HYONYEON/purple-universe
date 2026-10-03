@@ -233,7 +233,7 @@
   .vbtn.fixb{border-color:rgba(232,184,94,.6); color:var(--gold-soft);}
   .vtab.live small{color:var(--gold-soft);} .vtab.on.live small{color:#8a5a00;}
   /* 3개월 달력 */
-  .vote-cal{margin-top:22px; padding-top:18px; border-top:1px solid var(--border);}
+  .vote-cal{margin:4px 0 16px; padding:14px 16px 16px; border-radius:16px; background:var(--surface); border:1px solid var(--border);}
   .cal-legend{display:flex; flex-wrap:wrap; gap:14px; font-size:12.5px; color:var(--text-dim); margin-bottom:12px;}
   .cal-legend i{display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:5px; vertical-align:-1px;}
   .cal-legend .lg-cand{color:var(--text-faint);}
@@ -242,12 +242,12 @@
   .cal-g{display:grid; grid-template-columns:repeat(7,1fr); gap:3px;}
   .cal-h{font-size:11px; text-align:center; color:var(--text-faint); padding:3px 0;}
   .cal-h.sun, .cal-c.sun .cal-d{color:#FF8A8A;} .cal-h.sat, .cal-c.sat .cal-d{color:#8FB8FF;}
-  .cal-c{min-height:54px; border-radius:7px; background:var(--surface); padding:3px; display:flex; flex-direction:column; gap:2px; overflow:hidden;}
+  .cal-c{min-height:46px; border-radius:7px; background:var(--surface); padding:3px; display:flex; flex-direction:column; gap:2px; overflow:hidden;}
   .cal-c.empty{background:transparent;}
   .cal-c.past{opacity:.4;}
   .cal-c.today{outline:1.5px solid var(--purple-bright);}
   .cal-d{font-size:11px; color:var(--text-dim); font-weight:600; padding-left:2px;}
-  .cal-tag{font-size:9.5px; font-weight:700; line-height:1.35; padding:1px 3px; border-radius:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .cal-tag{font-size:10px; font-weight:700; line-height:1.3; padding:1px 2px; border-radius:4px; white-space:nowrap; overflow:hidden; text-align:center; letter-spacing:-.3px;}
   .cal-tag.fix{background:var(--c); color:#120a22;}
   .cal-tag.cand{border:1px dashed var(--c); color:var(--c); cursor:pointer;}
   .cal-tag.cand:hover{background:rgba(255,255,255,.06);}
@@ -567,9 +567,9 @@
 
     <div class="vote-me" id="voteMe"></div>
     <div class="vote-tabs" id="voteTabs"></div>
+    <div class="vote-cal" id="voteCal"></div>
     <div class="vote-list" id="voteList"><p class="vote-empty">불러오는 중…</p></div>
     <p class="vote-foot" id="voteFoot"></p>
-    <div class="vote-cal" id="voteCal"></div>
   </div>
 </div>
 
@@ -635,28 +635,6 @@
     </div>
   </section>
 
-  <div class="wrap"><div class="m-divider"></div></div>
-
-  <!-- ===== 멤버 인터뷰 (공개) =====
-       유튜브에 공개로 올라가는 영상이라 미리보기에서도 그대로 보입니다.
-       새 인터뷰를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하고
-       data-yt="" 안에 유튜브 주소의 v= 뒤 값만 넣어주세요. -->
-  <section class="m-section">
-    <div class="wrap">
-      <span class="eyebrow">MEMBER INTERVIEW</span>
-      <h2>멤버 인터뷰</h2>
-      <p>퍼플 유니버스 멤버들이 각자의 사업을 어떻게 키워왔는지, 직접 이야기합니다.</p>
-      <div class="resource-grid" id="interviewGrid">
-        <div class="resource-card">
-          <div class="resource-embed" data-yt=""></div>
-          <span class="resource-tag">INTERVIEW</span>
-          <h4>첫 번째 인터뷰가 곧 올라갑니다</h4>
-          <p>촬영이 끝난 순서대로 이 자리에 채워집니다.</p>
-        </div>
-      </div>
-      <p class="no-result" id="interviewNoResult">검색 결과가 없어요.</p>
-    </div>
-  </section>
 
   <div class="wrap"><div class="m-divider"></div></div>
 
@@ -705,9 +683,6 @@
 
   <div class="wrap"><div class="m-divider"></div></div>
 
-
-  <div class="wrap"><div class="m-divider"></div></div>
-
   <section class="m-section gated">
     <div class="wrap">
       <span class="eyebrow">AI AGENT</span>
@@ -725,6 +700,29 @@
       </div>
       </div>
       <p class="agent-note">* 지금은 화면만 완성된 상태예요. 실제 AI 응답이 연결되면 안내드릴게요.</p>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <!-- ===== 멤버 인터뷰 (공개) =====
+       유튜브에 공개로 올라가는 영상이라 미리보기에서도 그대로 보입니다.
+       새 인터뷰를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하고
+       data-yt="" 안에 유튜브 주소의 v= 뒤 값만 넣어주세요. -->
+  <section class="m-section">
+    <div class="wrap">
+      <span class="eyebrow">MEMBER INTERVIEW</span>
+      <h2>멤버 인터뷰</h2>
+      <p>퍼플 유니버스 멤버들이 각자의 사업을 어떻게 키워왔는지, 직접 이야기합니다.</p>
+      <div class="resource-grid" id="interviewGrid">
+        <div class="resource-card">
+          <div class="resource-embed" data-yt=""></div>
+          <span class="resource-tag">INTERVIEW</span>
+          <h4>첫 번째 인터뷰가 곧 올라갑니다</h4>
+          <p>촬영이 끝난 순서대로 이 자리에 채워집니다.</p>
+        </div>
+      </div>
+      <p class="no-result" id="interviewNoResult">검색 결과가 없어요.</p>
     </div>
   </section>
 
@@ -1076,7 +1074,7 @@
 (function(){
   const API = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
   const COLORS = {'전체 줌미팅':'#A98BFF','오프라인(해커톤)':'#FF8A65','오프라인(세미나)':'#4FB3FF','웰니스 프로그램':'#5FD08A'};
-  const SHORT  = {'전체 줌미팅':'줌미팅','오프라인(해커톤)':'해커톤','오프라인(세미나)':'세미나','웰니스 프로그램':'웰니스'};
+  const SHORT  = {'전체 줌미팅':'줌','오프라인(해커톤)':'해커톤','오프라인(세미나)':'세미나','웰니스 프로그램':'웰니스'};
   const DOW = ['일','월','화','수','목','금','토'];
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
