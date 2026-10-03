@@ -3,6 +3,38 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "marketing",
+    "date": "2026-10-03",
+    "title": "하루의 완판 뒤엔 몇 달, 몇 년의 반복이 있었습니다",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1791015298243_ztrrm_1003_W_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791015300599_lsc2s_1003_W_02_cases.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791015303962_8ezsw_1003_W_03_why.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791015306415_5gxr1_1003_W_04_check.png"
+      }
+    ],
+    "no": 14,
+    "imgtop": 0.106,
+    "ogimg": "images/1791015307905_lbtav_og-14.jpg",
+    "ogv": 2
+  },
+  {
     "cat": "insight",
     "date": "2026-10-03",
     "title": "기획의 모든 것 (무엇을, 무엇으로, 어떻게)ㅣ무빙워터",
