@@ -283,7 +283,7 @@
   .m-poster + .w-form{margin-top:0;}
   /* 포스터 왼쪽 · 내용 오른쪽 */
   .m-split{display:grid; grid-template-columns:minmax(0,38%) minmax(0,1fr); gap:26px; align-items:start;}
-  .m-left{position:sticky; top:0;}
+  .m-left{position:static;}   /* 화면이 낮을 때 안내 박스가 가려지지 않게 고정 해제 */
   .m-left .m-poster{margin-bottom:0;}
   .m-right > .facts{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
   .m-right .w-form{margin-top:4px;}

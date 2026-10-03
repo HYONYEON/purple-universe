@@ -314,12 +314,12 @@
         <input type="text" id="fTitle" placeholder="예: 숏폼 알고리즘 흐름 요약">
       </div>
 
-      <div class="field">
+      <div class="field" id="descField">
         <label>카드에 보일 한 줄 요약</label>
         <textarea id="fDesc" rows="2" placeholder="목록 카드에 표시될 짧은 설명"></textarea>
       </div>
 
-      <div class="row">
+      <div class="row" id="ytRow">
         <div class="field">
           <label>유튜브 주소 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
           <input type="text" id="fYt" placeholder="https://youtu.be/...">
@@ -859,6 +859,7 @@ function editItem(i){
   document.getElementById('fDesc').value=n.desc||'';
   document.getElementById('fYt').value=n.yt||'';
   document.getElementById('fLink').value=n.link||'';
+  syncCat();
   const prev=document.getElementById('thumbPrev');
   if(n.img){ prev.src=n.img; prev.style.display='block'; } else { prev.style.display='none'; }
   thumbData=null;
@@ -867,6 +868,14 @@ function editItem(i){
   renderList();                                  // 선택 표시 갱신
   window.scrollTo({top:0, behavior:'smooth'});
 }
+
+/* 마케팅 뉴스클리핑(카드뉴스)은 요약 · 유튜브 · 원문 칸이 필요 없어서 숨김 */
+function syncCat(){
+  const mk = document.getElementById('fCat').value === 'marketing';
+  document.getElementById('descField').style.display = mk ? 'none' : '';
+  document.getElementById('ytRow').style.display = mk ? 'none' : '';
+}
+document.getElementById('fCat').addEventListener('change', syncCat);
 
 function resetForm(){
   editIndex=-1; thumbData=null;
@@ -877,6 +886,7 @@ function resetForm(){
   document.getElementById('thumbPrev').style.display='none';
   document.getElementById('thumbDrop').textContent='클릭하거나 이미지를 여기로 끌어다 놓으세요';
   addBlock('p');
+  syncCat();
   if(typeof NOTES !== 'undefined' && NOTES.length) renderList();   // 선택 표시 해제
 }
 
