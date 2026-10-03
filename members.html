@@ -127,7 +127,7 @@
   .vote-back{position:fixed; inset:0; z-index:260; display:none; align-items:center; justify-content:center; padding:20px;
     background:rgba(4,2,10,.8); backdrop-filter:blur(7px);}
   .vote-back.show{display:flex;}
-  .vote-box{position:relative; width:min(620px,100%); max-height:92vh; overflow-y:auto; background:var(--bg-alt2);
+  .vote-box{position:relative; width:min(1080px,100%); max-height:92vh; overflow-y:auto; background:var(--bg-alt2);
     border:1px solid var(--border-strong); border-radius:22px; padding:28px 26px 22px; box-shadow:0 30px 70px rgba(0,0,0,.7);}
   .vote-x{position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:50%; cursor:pointer;
     background:var(--surface-2); border:1px solid var(--border); color:var(--text); font-size:15px;}
@@ -173,6 +173,28 @@
   .vrow-n b{color:var(--ok); font-weight:700;}
   .vote-empty{font-size:14.5px; color:var(--text-faint); text-align:center; padding:26px 10px; border:1.5px dashed var(--border-strong); border-radius:14px;}
   .vote-foot{font-size:12.5px; color:var(--text-faint); margin-top:14px; line-height:1.6;}
+  .vrow.flash{box-shadow:0 0 0 3px var(--gold-soft);}
+  .vtab.live small{color:var(--gold-soft);} .vtab.on.live small{color:#8a5a00;}
+  /* 3개월 달력 */
+  .vote-cal{margin-top:22px; padding-top:18px; border-top:1px solid var(--border);}
+  .cal-legend{display:flex; flex-wrap:wrap; gap:14px; font-size:12.5px; color:var(--text-dim); margin-bottom:12px;}
+  .cal-legend i{display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:5px; vertical-align:-1px;}
+  .cal-legend .lg-cand{color:var(--text-faint);}
+  .cal-wrap{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .cal-t{font-weight:700; font-size:15px; margin-bottom:8px;}
+  .cal-g{display:grid; grid-template-columns:repeat(7,1fr); gap:3px;}
+  .cal-h{font-size:11px; text-align:center; color:var(--text-faint); padding:3px 0;}
+  .cal-h.sun, .cal-c.sun .cal-d{color:#FF8A8A;} .cal-h.sat, .cal-c.sat .cal-d{color:#8FB8FF;}
+  .cal-c{min-height:54px; border-radius:7px; background:var(--surface); padding:3px; display:flex; flex-direction:column; gap:2px; overflow:hidden;}
+  .cal-c.empty{background:transparent;}
+  .cal-c.past{opacity:.4;}
+  .cal-c.today{outline:1.5px solid var(--purple-bright);}
+  .cal-d{font-size:11px; color:var(--text-dim); font-weight:600; padding-left:2px;}
+  .cal-tag{font-size:9.5px; font-weight:700; line-height:1.35; padding:1px 3px; border-radius:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .cal-tag.fix{background:var(--c); color:#120a22;}
+  .cal-tag.cand{border:1px dashed var(--c); color:var(--c); cursor:pointer;}
+  .cal-tag.cand:hover{background:rgba(255,255,255,.06);}
+  @media(max-width:900px){ .cal-wrap{grid-template-columns:1fr;} .cal-c{min-height:48px;} .cal-tag{font-size:10.5px;} }
   @media(max-width:560px){
     .vote-box{padding:24px 18px 18px;}
     .vrow-btns{margin-left:0; width:100%;}
@@ -469,13 +491,14 @@
   <div class="vote-box" role="dialog" aria-label="모임 날짜 투표">
     <button class="vote-x" id="voteClose" type="button" aria-label="닫기">✕</button>
     <span class="eyebrow">DATE VOTE</span>
-    <h3>다음 모임 날짜 투표</h3>
-    <p class="vote-lead">후보 날짜마다 <b>가능 / 어려움</b>만 눌러주세요. 가장 많이 가능한 날로 확정해서 단톡방에 안내드려요.</p>
+    <h3>모임 일정 · 날짜 투표</h3>
+    <p class="vote-lead">확정된 일정은 <b>✓ 확정</b>으로, 날짜를 정하는 중인 일정은 <b>가능 / 어려움</b>을 눌러주세요. 가장 많이 가능한 날로 정해서 단톡방에 안내드려요.</p>
 
     <div class="vote-me" id="voteMe"></div>
     <div class="vote-tabs" id="voteTabs"></div>
     <div class="vote-list" id="voteList"><p class="vote-empty">불러오는 중…</p></div>
     <p class="vote-foot" id="voteFoot"></p>
+    <div class="vote-cal" id="voteCal"></div>
   </div>
 </div>
 
@@ -540,7 +563,7 @@
       <!-- 멤버 날짜 투표 (Vote.gs) -->
       <button class="vote-cta" id="voteOpen" type="button">
         <span class="vote-cta-ic">🗳</span>
-        <span class="vote-cta-t"><b>다음 모임 날짜 투표</b><small id="voteCtaSub">가능한 날짜를 눌러주세요</small></span>
+        <span class="vote-cta-t"><b>모임 일정 · 날짜 투표</b><small id="voteCtaSub">확정 일정 확인 · 날짜 투표</small></span>
         <span class="vote-cta-go">투표하기 →</span>
       </button>
       <div id="schedSummary"></div>
@@ -1005,36 +1028,41 @@
 </script>
 <script>
 /* ===================== 멤버 날짜 투표 (Vote.gs) =====================
-   후보 날짜는 구글 시트 '투표후보' 탭에서, 멤버 이름은 '투표멤버' 탭에서 읽어옵니다. */
+   후보 날짜는 구글 시트 '투표후보' 탭에서, 멤버 이름은 '투표멤버' 탭에서 읽어옵니다.
+   '확정' 칸에 O 가 있으면 투표 없이 확정 일정으로 보여주고, 아래 3개월 달력에 표시합니다. */
 (function(){
   const API = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
   const COLORS = {'전체 줌미팅':'#A98BFF','오프라인(해커톤)':'#FF8A65','오프라인(세미나)':'#4FB3FF','웰니스 프로그램':'#5FD08A'};
+  const SHORT  = {'전체 줌미팅':'줌미팅','오프라인(해커톤)':'해커톤','오프라인(세미나)':'세미나','웰니스 프로그램':'웰니스'};
   const DOW = ['일','월','화','수','목','금','토'];
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const pad = n => String(n).padStart(2,'0');
   let D = { types:Object.keys(COLORS), members:[], candidates:[], votes:[] }, loaded = false;
   let me = null; try{ me = localStorage.getItem('pu_vote_me'); }catch(e){}
   let tab = null;
-  const today = (() => { const t = new Date(); return t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0'); })();
+  const now = new Date();
+  const today = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
 
   function fmtD(s){ const p = s.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]); return p[1] + '월 ' + p[2] + '일 (' + DOW[d.getDay()] + ')'; }
-  const open = c => !c.confirmed ? c.date >= today : true;          // 지난 후보는 숨김 (확정된 건 보여줌)
-  const candsOf = t => D.candidates.filter(c => c.type === t && open(c)).sort((a,b) => a.date < b.date ? -1 : 1);
+  const shown = c => c.confirmed || c.date >= today;                 // 지난 투표 후보는 숨김
+  const candsOf = t => D.candidates.filter(c => c.type === t && shown(c)).sort((a,b) => a.date < b.date ? -1 : 1);
+  const openOf = t => candsOf(t).filter(c => !c.confirmed);
   const vOf = (t, d) => D.votes.filter(v => v.type === t && v.date === d);
 
   async function load(){
     try{
       const r = await (await fetch(API + '?action=vote&t=' + Date.now(), { cache:'no-store' })).json();
-      if(!r.ok) throw new Error(r.error);
+      if(!r.ok || !r.members) throw new Error(r.error || 'old');
       D = r; loaded = true;
       if(me && D.members.indexOf(me) < 0) me = null;
     }catch(e){ loaded = false; }
-    if(!tab || !candsOf(tab).length){ tab = D.types.find(t => candsOf(t).length) || D.types[0]; }
+    if(!tab || !candsOf(tab).length){ tab = D.types.find(t => openOf(t).length) || D.types.find(t => candsOf(t).length) || D.types[0]; }
     render(); cta();
   }
   function cta(){
-    const n = D.types.filter(t => candsOf(t).some(c => !c.confirmed)).length;
-    $('voteCtaSub').textContent = !loaded ? '가능한 날짜를 눌러주세요' : n ? n + '개 일정 투표 진행 중' : '지금은 진행 중인 투표가 없어요';
+    const n = D.types.filter(t => openOf(t).length).length;
+    $('voteCtaSub').textContent = !loaded ? '확정 일정 확인 · 날짜 투표' : n ? n + '개 일정 날짜 투표 진행 중 · 확정 일정도 함께 보기' : '확정된 모임 일정 보기';
   }
   function render(){
     // 내 이름
@@ -1047,33 +1075,68 @@
     }
     // 탭
     $('voteTabs').innerHTML = D.types.map(t => {
-      const n = candsOf(t).length;
-      return '<button class="vtab' + (t === tab ? ' on' : '') + '" type="button" data-tab="' + esc(t) + '" style="--c:' + (COLORS[t] || '#A98BFF') + '"><i></i>' + esc(t) + '<small>' + (n ? n : '준비 중') + '</small></button>';
+      const op = openOf(t).length, all = candsOf(t).length;
+      const tag = op ? '투표 ' + op : all ? '확정' : '준비 중';
+      return '<button class="vtab' + (t === tab ? ' on' : '') + (op ? ' live' : '') + '" type="button" data-tab="' + esc(t) + '" style="--c:' + (COLORS[t] || '#A98BFF') + '"><i></i>' + esc(t) + '<small>' + tag + '</small></button>';
     }).join('');
-    // 후보 목록
+    renderList(); renderCal();
+  }
+  function renderList(){
     const cs = candsOf(tab);
-    if(!loaded){ $('voteList').innerHTML = '<p class="vote-empty">투표를 불러오지 못했어요. 잠시 후 다시 열어주세요.</p>'; return; }
-    if(!cs.length){ $('voteList').innerHTML = '<p class="vote-empty">' + esc(tab) + ' 후보 날짜를 준비하고 있어요.</p>'; $('voteFoot').textContent = ''; return; }
+    if(!loaded){ $('voteList').innerHTML = '<p class="vote-empty">일정을 불러오지 못했어요. 잠시 후 다시 열어주세요.</p>'; $('voteFoot').textContent=''; return; }
+    if(!cs.length){ $('voteList').innerHTML = '<p class="vote-empty">' + esc(tab) + ' 일정을 준비하고 있어요.</p>'; $('voteFoot').textContent = ''; return; }
     const total = D.members.length || 1;
-    const maxOk = Math.max(...cs.map(c => vOf(tab, c.date).filter(v => v.status === '가능').length));
+    const opens = cs.filter(c => !c.confirmed);
+    const maxOk = opens.length ? Math.max(...opens.map(c => vOf(tab, c.date).filter(v => v.status === '가능').length)) : 0;
     $('voteList').innerHTML = cs.map(c => {
+      const when = [c.time, c.memo].filter(Boolean).join(' · ');
+      if(c.confirmed){
+        return '<div class="vrow fix" id="vr-' + c.date + '"><div class="vrow-top"><span class="vrow-d">' + fmtD(c.date) + '</span>' +
+          (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') + '<span class="vbadge fix">✓ 확정</span></div></div>';
+      }
       const vs = vOf(tab, c.date), ok = vs.filter(v => v.status === '가능'), no = vs.filter(v => v.status === '어려움');
       const mine = (vs.find(v => v.name === me) || {}).status || '';
-      const best = !c.confirmed && ok.length && ok.length === maxOk;
-      return '<div class="vrow' + (c.confirmed ? ' fix' : best ? ' best' : '') + '">' +
+      const best = ok.length && ok.length === maxOk;
+      return '<div class="vrow' + (best ? ' best' : '') + '" id="vr-' + c.date + '">' +
         '<div class="vrow-top"><span class="vrow-d">' + fmtD(c.date) + '</span>' +
-          (c.time || c.memo ? '<span class="vrow-t">' + esc([c.time, c.memo].filter(Boolean).join(' · ')) + '</span>' : '') +
-          (c.confirmed ? '<span class="vbadge fix">✓ 확정</span>' : best ? '<span class="vbadge best">가장 많이 가능</span>' : '') +
-          (c.confirmed ? '' : '<span class="vrow-btns">' +
+          (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') +
+          (best ? '<span class="vbadge best">가장 많이 가능</span>' : '') +
+          '<span class="vrow-btns">' +
             '<button class="vbtn ok' + (mine === '가능' ? ' on' : '') + '" type="button" data-v="가능" data-d="' + c.date + '">가능</button>' +
-            '<button class="vbtn no' + (mine === '어려움' ? ' on' : '') + '" type="button" data-v="어려움" data-d="' + c.date + '">어려움</button></span>') +
+            '<button class="vbtn no' + (mine === '어려움' ? ' on' : '') + '" type="button" data-v="어려움" data-d="' + c.date + '">어려움</button></span>' +
         '</div>' +
         '<div class="vbar"><i style="width:' + Math.round(ok.length / total * 100) + '%"></i></div>' +
         '<div class="vrow-n">가능 <b>' + ok.length + '명</b>' + (ok.length ? ' · ' + ok.map(v => esc(v.name)).join(', ') : '') +
           (no.length ? ' &nbsp;|&nbsp; 어려움 ' + no.length + '명' : '') + ' &nbsp;|&nbsp; 미응답 ' + Math.max(0, D.members.length - ok.length - no.length) + '명</div>' +
       '</div>';
     }).join('');
-    $('voteFoot').textContent = '같은 버튼을 한 번 더 누르면 취소돼요. 확정된 날짜는 초록색으로 표시됩니다.';
+    $('voteFoot').textContent = opens.length ? '같은 버튼을 한 번 더 누르면 취소돼요. 날짜가 정해지면 초록색 ✓ 확정으로 바뀝니다.' : '';
+  }
+  /* 아래 3개월 달력 — 확정 일정은 색 라벨, 투표 중인 후보는 점선 + 가능 인원 */
+  function renderCal(){
+    const items = D.candidates.filter(c => c.confirmed || c.date >= today);
+    let html = '';
+    for(let k = 0; k < 3; k++){
+      const first = new Date(now.getFullYear(), now.getMonth() + k, 1);
+      const y = first.getFullYear(), m = first.getMonth(), days = new Date(y, m + 1, 0).getDate();
+      let cells = DOW.map((d, i) => '<div class="cal-h' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '">' + d + '</div>').join('');
+      for(let i = 0; i < first.getDay(); i++) cells += '<div class="cal-c empty"></div>';
+      for(let d = 1; d <= days; d++){
+        const key = y + '-' + pad(m+1) + '-' + pad(d), w = new Date(y, m, d).getDay();
+        const its = items.filter(c => c.date === key);
+        const tags = its.map(c => {
+          const col = COLORS[c.type] || '#A98BFF';
+          if(c.confirmed) return '<span class="cal-tag fix" style="--c:' + col + '">' + esc(SHORT[c.type] || c.type) + '</span>';
+          const ok = vOf(c.type, c.date).filter(v => v.status === '가능').length;
+          return '<span class="cal-tag cand" style="--c:' + col + '" data-jump="' + esc(c.type) + '|' + c.date + '">' + esc(SHORT[c.type] || c.type) + (ok ? ' ' + ok : '') + '</span>';
+        }).join('');
+        cells += '<div class="cal-c' + (key === today ? ' today' : '') + (key < today ? ' past' : '') + (w === 0 ? ' sun' : w === 6 ? ' sat' : '') + '"><span class="cal-d">' + d + '</span>' + tags + '</div>';
+      }
+      html += '<div class="cal-m"><div class="cal-t">' + y + '년 ' + (m+1) + '월</div><div class="cal-g">' + cells + '</div></div>';
+    }
+    const legend = D.types.map(t => '<span><i style="background:' + (COLORS[t] || '#A98BFF') + '"></i>' + esc(t) + '</span>').join('') +
+                   '<span class="lg-cand">점선 = 투표 중 (숫자는 가능 인원)</span>';
+    $('voteCal').innerHTML = '<div class="cal-legend">' + legend + '</div><div class="cal-wrap">' + html + '</div>';
   }
   async function vote(date, status){
     if(!me){ alert('먼저 내 이름을 골라주세요'); return; }
@@ -1081,7 +1144,7 @@
     const next = cur === status ? '' : status;                          // 같은 버튼 다시 누르면 취소
     D.votes = D.votes.filter(v => !(v.type === tab && v.date === date && v.name === me));
     if(next) D.votes.push({ name:me, type:tab, date, status:next });
-    render();
+    renderList(); renderCal();
     try{
       const r = await (await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
         body: JSON.stringify({ action:'vote', name:me, type:tab, date, status:next }) })).json();
@@ -1091,11 +1154,15 @@
 
   $('voteBack').addEventListener('click', e => {
     if(e.target === $('voteBack')) $('voteBack').classList.remove('show');
-    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v]'); if(!t) return;
+    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v],[data-jump]'); if(!t) return;
     if(t.dataset.me){ me = t.dataset.me; try{ localStorage.setItem('pu_vote_me', me); }catch(_){} render(); }
     else if(t.hasAttribute('data-change')){ me = null; try{ localStorage.removeItem('pu_vote_me'); }catch(_){} render(); }
     else if(t.dataset.tab){ tab = t.dataset.tab; render(); }
     else if(t.dataset.v){ vote(t.dataset.d, t.dataset.v); }
+    else if(t.dataset.jump){                                              // 달력에서 후보 날짜 누르면 그 줄로
+      const [ty, dt] = t.dataset.jump.split('|'); tab = ty; render();
+      const row = document.getElementById('vr-' + dt); if(row){ row.scrollIntoView({ behavior:'smooth', block:'center' }); row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 1200); }
+    }
   });
   $('voteClose').addEventListener('click', () => $('voteBack').classList.remove('show'));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') $('voteBack').classList.remove('show'); });
