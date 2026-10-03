@@ -319,16 +319,14 @@
         <textarea id="fDesc" rows="2" placeholder="목록 카드에 표시될 짧은 설명"></textarea>
       </div>
 
-      <div class="row" id="ytRow">
+      <div id="ytRow">
         <div class="field">
           <label>유튜브 주소 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
           <input type="text" id="fYt" placeholder="https://youtu.be/...">
           <p class="hint">넣으면 카드와 팝업에서 영상이 바로 재생돼요.</p>
         </div>
-        <div class="field">
-          <label>원문 링크 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
-          <input type="text" id="fLink" placeholder="노션·블로그 주소">
-        </div>
+        <!-- 원문 링크 칸은 뺐습니다 (예전 글에 들어 있던 값은 그대로 유지) -->
+        <input type="hidden" id="fLink">
       </div>
 
       <div class="field">
