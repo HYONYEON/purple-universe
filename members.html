@@ -99,19 +99,28 @@
   }
   .popup-overlay.show{display:flex;}
   .popup-box{
-    max-width:480px; width:100%; background:var(--bg-alt2); border:1px solid var(--border-strong);
-    border-radius:22px; padding:34px 30px; position:relative;
+    max-width:880px; width:100%; max-height:calc(100vh - 48px); overflow:auto;
+    background:var(--bg-alt2); border:1px solid var(--border-strong);
+    border-radius:28px; padding:60px 64px 54px; position:relative;
     box-shadow:0 30px 60px -20px rgba(0,0,0,.7);
   }
+  .popup-box .eyebrow{font-size:16px;}
   .popup-close{
-    position:absolute; top:16px; right:18px; background:none; border:none; color:var(--text-faint);
-    font-size:20px; cursor:pointer;
+    position:absolute; top:24px; right:28px; background:none; border:none; color:var(--text-faint);
+    font-size:28px; cursor:pointer;
   }
-  .popup-box h3{font-size:21px; margin-top:10px; margin-bottom:18px;}
-  .popup-box ul{display:flex; flex-direction:column; gap:12px; margin-bottom:18px;}
-  .popup-box li{font-size:15px; color:var(--text-dim); line-height:1.55;}
+  .popup-box h3{font-size:34px; line-height:1.35; margin-top:16px; margin-bottom:32px;}
+  .popup-box ul{display:flex; flex-direction:column; gap:22px; margin-bottom:32px;}
+  .popup-box li{font-size:21px; color:var(--text-dim); line-height:1.6;}
   .popup-box li b{color:var(--gold-soft);}
-  .popup-note{font-size:13.5px; color:var(--text-faint);}
+  .popup-note{font-size:17px; color:var(--text-faint); line-height:1.6;}
+  @media (max-width:720px){
+    .popup-box{padding:44px 26px 36px; border-radius:22px;}
+    .popup-box h3{font-size:24px; margin-bottom:22px;}
+    .popup-box li{font-size:17px;}
+    .popup-box ul{gap:16px;}
+    .popup-note{font-size:14.5px;}
+  }
 
   /* ---------- 협업 맵 ---------- */
   .net-back{position:fixed; inset:0; z-index:260; display:none; align-items:center; justify-content:center; padding:20px;
@@ -393,6 +402,17 @@
     border-bottom:1px solid var(--border-strong); backdrop-filter:blur(10px);
   }
   body.peek .peek-bar{display:block;}
+  /* 협업 맵 — 미리보기에선 통째로 숨기고 잠금 안내만 */
+  .net-locked{display:none;}
+  body.peek .net-tabs, body.peek .net-body.net-inline{display:none !important;}
+  body.peek .net-locked{
+    display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
+    margin-top:22px; padding:70px 24px; border-radius:22px; cursor:pointer;
+    border:1px dashed var(--border-strong); background:var(--surface);
+  }
+  body.peek .net-locked .nl-ico{font-size:30px;}
+  body.peek .net-locked b{font-size:18px;}
+  body.peek .net-locked span{font-size:14.5px; color:var(--text-dim);}
   .peek-inner{
     display:flex; align-items:center; justify-content:center; gap:16px;
     flex-wrap:wrap; padding:12px 24px; text-align:center;
@@ -601,8 +621,8 @@
 <div class="popup-overlay" id="weeklyPopup">
   <div class="popup-box">
     <button class="popup-close" id="popupClose">✕</button>
-    <span class="eyebrow">🔔 이번 주 멤버 알림 🔔</span>
-    <h3>이번 주, 우리 멤버들은 이런 연결을 찾고 있어요!!</h3>
+    <span class="eyebrow">🔔 이번 달 멤버 알림 🔔</span>
+    <h3>이번 달, 우리 멤버들은 이런 연결을 찾고 있어요!!</h3>
     <ul id="weeklyList">
       <!-- ↓ 매주 이 부분만 새 내용으로 바꿔주면 돼요 -->
       <li><b>윤정하 대표님</b>이 굿숨 신제품을 시범 도입할 병원과 요양원을 연결해 주세요.</li>
@@ -736,6 +756,11 @@
       <span class="eyebrow">COLLAB MAP</span>
       <h2>멤버 협업 맵</h2>
       <p>멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.</p>
+      <div class="net-locked" data-lock>
+        <div class="nl-ico">🔒</div>
+        <b>멤버에게만 공개되는 협업 맵이에요</b>
+        <span>멤버들의 사업과 협업 아이디어는 로그인한 멤버만 볼 수 있어요.</span>
+      </div>
       <div class="net-tabs" id="netTabs"></div>
       <div class="net-body net-inline">
         <div class="net-stage"><svg id="netSvg" viewBox="0 0 800 640" aria-hidden="true"></svg></div>
@@ -1001,10 +1026,11 @@
       document.getElementById('meFootName').textContent = window.PU_MEMBER.name;
       document.getElementById('meFoot').hidden = false;
     }
-    // 세션당 한 번만 이번 주 알림 팝업 표시
-    if(!sessionStorage.getItem('pu_weekly_popup_seen')){
+    // 이번 달 알림 팝업 — 12시간에 한 번만 (마지막으로 보여준 시간을 브라우저에 기억)
+    let lastSeen = 0; try{ lastSeen = Number(localStorage.getItem('pu_popup_seen_at')) || 0; }catch(e){}
+    if(Date.now() - lastSeen >= 12 * 60 * 60 * 1000){
       weeklyPopup.classList.add('show');
-      sessionStorage.setItem('pu_weekly_popup_seen', '1');
+      try{ localStorage.setItem('pu_popup_seen_at', String(Date.now())); }catch(e){}
     }
   }
 
