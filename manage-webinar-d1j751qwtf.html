@@ -543,6 +543,7 @@ function renderList(){
       '<b>' + esc(w.title || '(제목 없음)') + '</b>' +
       '<div class="li-btns">' +
         '<button class="btn btn-ghost" data-edit="' + i + '" type="button">수정</button>' +
+        '<button class="btn btn-ghost" data-share="' + i + '" type="button" title="카톡에 붙여넣으면 이 웨비나 포스터로 미리보기가 나오는 주소">공유 링크</button>' +
         '<button class="btn btn-danger" data-del="' + i + '" type="button">삭제</button>' +
       '</div></div>';
   }).join('');
@@ -551,6 +552,7 @@ function renderList(){
     el.onclick = e => { if(e.target.closest('button')) return; editItem(+el.dataset.open); };
   });
   box.querySelectorAll('[data-edit]').forEach(b => b.onclick = e => { e.stopPropagation(); editItem(+b.dataset.edit); });
+  box.querySelectorAll('[data-share]').forEach(b => b.onclick = e => { e.stopPropagation(); shareLink(+b.dataset.share, b); });
   box.querySelectorAll('[data-del]').forEach(b => b.onclick = e => { e.stopPropagation(); removeItem(+b.dataset.del); });
 }
 function esc(s){
@@ -642,7 +644,7 @@ async function save(){
     dataSha = res.content.sha;
 
     toast('발행 완료 — 1~2분 뒤 사이트에 반영됩니다');
-    makeOg(true);
+    makeOg(true).then(() => makeSharePage(item, true));
     resetForm();
   }catch(e){
     toast('실패: ' + e.message, false);
@@ -926,8 +928,146 @@ async function makeOg(quiet){
   }
 }
 
+/* ════════════════════════════════════════════════
+   웨비나 · 클래스마다 따로 공유 링크 (purpleuniverse.net/w/번호)
+   ─ 카톡은 주소 뒤의 #w3 를 무시하고 페이지 전체 미리보기만 보여줍니다.
+   ─ 그래서 웨비나마다 작은 페이지(w/번호.html)와 미리보기 이미지(og/w번호.png)를 만들어 두고,
+     들어오면 바로 /webinar#w번호 팝업으로 넘겨줍니다. 발행할 때 자동으로 만들어져요.
+   ════════════════════════════════════════════════ */
+const SITE = 'https://purpleuniverse.net';
+const shareUrl = w => SITE + '/w/' + w.no;
+function wrapLines(x, text, maxW, maxLines){
+  const words = String(text).split(/(\s+)/), lines = [];
+  let cur = '';
+  const push = () => { if(cur.trim()) lines.push(cur.trim()); cur = ''; };
+  for(const wd of words){
+    if(x.measureText(cur + wd).width <= maxW){ cur += wd; continue; }
+    if(cur.trim()) push();
+    let piece = wd.trim();
+    while(piece && x.measureText(piece).width > maxW){          // 한 단어가 너무 길면 글자 단위로
+      let k = piece.length; while(k > 1 && x.measureText(piece.slice(0, k)).width > maxW) k--;
+      lines.push(piece.slice(0, k)); piece = piece.slice(k);
+    }
+    cur = piece;
+  }
+  push();
+  if(lines.length > maxLines){ lines.length = maxLines; lines[maxLines-1] = lines[maxLines-1].replace(/.$/, '…'); }
+  return lines;
+}
+function whenText(w){
+  const p = String(w.date || '').split('-').map(Number);
+  if(p.length !== 3) return '';
+  const d = new Date(p[0], p[1]-1, p[2]);
+  return p[1] + '월 ' + p[2] + '일 (' + '일월화수목금토'[d.getDay()] + ')' + (w.time ? ' · ' + w.time : '');
+}
+async function drawShareOg(w, poster){
+  const W = 1200, H = 630, S = 2, cls = catOf(w) === 'class';
+  const c = document.createElement('canvas'); c.width = W*S; c.height = H*S;
+  const x = c.getContext('2d'); x.scale(S, S);
+  try{ await Promise.all([document.fonts.load('700 56px "IBM Plex Sans KR"'), document.fonts.load('400 24px "IBM Plex Sans KR"')]); }catch(e){}
+  const FB = '"IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif';
+  x.fillStyle = '#08050F'; x.fillRect(0, 0, W, H);
+  const g1 = x.createRadialGradient(W*0.28, H*0.3, 0, W*0.28, H*0.3, W*0.6);
+  g1.addColorStop(0, cls ? 'rgba(232,184,94,0.30)' : 'rgba(124,77,255,0.55)'); g1.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = g1; x.fillRect(0, 0, W, H);
+  let textW = 1040;
+  if(poster){
+    const ph = Math.round(H*0.86), pw = Math.round(ph * poster.w / poster.h);
+    const px = W - pw - 64, py = Math.round((H - ph) / 2);
+    x.save(); x.shadowColor = 'rgba(0,0,0,0.6)'; x.shadowBlur = 40; x.shadowOffsetY = 16;
+    rr(x, px, py, pw, ph, 20); x.fillStyle = '#000'; x.fill(); x.restore();
+    x.save(); rr(x, px, py, pw, ph, 20); x.clip(); x.drawImage(poster.el, px, py, pw, ph); x.restore();
+    rr(x, px, py, pw, ph, 20); x.lineWidth = 2; x.strokeStyle = cls ? 'rgba(232,184,94,0.8)' : 'rgba(169,139,255,0.9)'; x.stroke();
+    textW = px - 78 - 40;
+  }
+  const lx = 78; x.textBaseline = 'top';
+  x.fillStyle = cls ? '#F3D89A' : '#A98BFF'; x.font = '700 20px ' + FB;
+  x.fillText('PURPLE UNIVERSE  ·  ' + (cls ? 'CLASS' : 'WEBINAR'), lx, 96);
+  x.fillStyle = '#F4F1FC'; x.font = '700 50px ' + FB;
+  const lines = wrapLines(x, w.title || '', textW, 4);
+  let y = 140; lines.forEach(l => { x.fillText(l, lx, y); y += 66; });
+  y += 18;
+  x.fillStyle = '#F3D89A'; x.font = '700 28px ' + FB; x.fillText(whenText(w), lx, y); y += 44;
+  if(w.place){ x.fillStyle = '#B7ACD1'; x.font = '400 22px ' + FB; wrapLines(x, w.place, textW, 1).forEach(l => x.fillText(l, lx, y)); y += 36; }
+  const badge = cls ? (String(w.price || '').trim() || '클래스') : '참가비 무료';
+  x.font = '700 22px ' + FB; const bw = x.measureText(badge).width + 40, by = Math.min(Math.max(y + 10, 470), 530);
+  rr(x, lx, by, bw, 50, 25); x.fillStyle = cls ? 'rgba(232,184,94,0.16)' : 'rgba(95,208,138,0.16)'; x.fill();
+  x.lineWidth = 2; x.strokeStyle = cls ? 'rgba(232,184,94,0.6)' : 'rgba(95,208,138,0.6)'; x.stroke();
+  x.fillStyle = cls ? '#F3D89A' : '#5FD08A'; x.fillText(badge, lx + 20, by + 12);
+  x.fillStyle = '#756A94'; x.font = '400 19px ' + FB; x.fillText('purpleuniverse.net/w/' + w.no, lx, 580);
+  const out = document.createElement('canvas'); out.width = W; out.height = H;
+  const o = out.getContext('2d'); o.imageSmoothingQuality = 'high'; o.drawImage(c, 0, 0, W, H);
+  return out.toDataURL('image/png').split(',')[1];
+}
+function shareHtml(w, ver){
+  const e = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const cls = catOf(w) === 'class';
+  const desc = [whenText(w), w.place, cls ? (String(w.price || '').trim() || '클래스') : '참가비 무료 · 녹화본 제공'].filter(Boolean).join(' · ');
+  const go = '/webinar#w' + w.no;
+  return '<!DOCTYPE html>\n<html lang="ko">\n<head>\n<meta charset="UTF-8">\n' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+    '<title>' + e(w.title) + ' — 퍼플 유니버스</title>\n' +
+    '<meta name="robots" content="noindex">\n' +
+    '<meta name="description" content="' + e(desc) + '">\n' +
+    '<meta property="og:type" content="website">\n<meta property="og:site_name" content="퍼플 유니버스">\n' +
+    '<meta property="og:title" content="' + e(w.title) + '">\n' +
+    '<meta property="og:description" content="' + e(desc) + '">\n' +
+    '<meta property="og:image" content="' + SITE + '/og/w' + w.no + '.png?v=' + ver + '">\n' +
+    '<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n' +
+    '<meta property="og:url" content="' + SITE + '/w/' + w.no + '">\n' +
+    '<meta name="twitter:card" content="summary_large_image">\n' +
+    '<meta http-equiv="refresh" content="0; url=' + go + '">\n' +
+    '<script>location.replace(' + JSON.stringify(go) + ');<\/script>\n' +
+    '</head>\n<body style="background:#08050F;color:#F4F1FC;font-family:sans-serif;padding:40px;">\n' +
+    '<a href="' + go + '" style="color:#A98BFF;">' + e(w.title) + ' 보러 가기 →</a>\n</body>\n</html>\n';
+}
+async function shaOf(path){
+  try{
+    const r = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + path + '?ref=' + BRANCH + '&t=' + Date.now(),
+      { headers:{ 'Authorization':'Bearer ' + TOKEN, 'Accept':'application/vnd.github+json' }, cache:'no-store' });
+    return r.ok ? (await r.json()).sha : null;
+  }catch(e){ return null; }
+}
+async function putFresh(path, b64, msg){
+  try{ return await putFile(path, b64, await shaOf(path), msg); }
+  catch(e){
+    if(!/^409|^422/.test(e.message)) throw e;
+    await new Promise(r => setTimeout(r, 1500));
+    return putFile(path, b64, await shaOf(path), msg);
+  }
+}
+async function makeSharePage(w, quiet){
+  if(!w || !w.no) return false;
+  try{
+    let poster = null;
+    if(w.poster){
+      const path = String(w.poster).replace(/^\//, '');
+      try{ poster = await loadPosterDrawable(await rawBlob(path), /\.(mp4|webm)$/i.test(path)); }catch(e){ poster = null; }
+    }
+    const ver = Date.now().toString(36);
+    await putFresh('og/w' + w.no + '.png', await drawShareOg(w, poster), '공유 미리보기 이미지: ' + (w.title || ''));
+    await putFresh('w/' + w.no + '.html', b64encode(shareHtml(w, ver)), '공유 링크 페이지: ' + (w.title || ''));
+    if(!quiet) toast('공유 링크 준비 완료 — 1~2분 뒤부터 카톡 미리보기에 이 포스터가 나와요');
+    return true;
+  }catch(e){
+    toast('공유 링크 만들기 실패: ' + e.message, false);
+    return false;
+  }
+}
+async function shareLink(i, btn){
+  const w = LIST[i], url = shareUrl(w);
+  try{ await navigator.clipboard.writeText(url); }catch(e){}
+  if(btn){ btn.disabled = true; btn.textContent = '만드는 중…'; }
+  const ok = await makeSharePage(w, true);
+  if(btn){ btn.disabled = false; btn.textContent = '공유 링크'; }
+  if(ok){
+    try{ await navigator.clipboard.writeText(url); }catch(e){}
+    toast('복사했어요: ' + url.replace('https://', '') + ' — 1~2분 뒤 카톡에 붙여넣으면 이 포스터로 미리보기가 나와요');
+  }
+}
+
 /* 자료 링크 — 평소엔 툴킷 주소로 잠가두고, '수정'을 눌렀을 때만 바꿀 수 있게 */
-const KIT_URL = 'https://purpleuniverse.net/kit-bs6e3ec7';
+const KIT_URL = 'https://purpleuniverse.net/toolkit';
 function lockMat(on){
   const f = $('fMat'), b = $('matLock');
   f.readOnly = on; f.style.opacity = on ? '.7' : '1'; f.style.cursor = on ? 'not-allowed' : 'text';
@@ -945,10 +1085,10 @@ $('saveBtn').onclick = save;
 $('ogBtn').onclick = () => makeOg(false);
 /* 카카오 공유 디버거 — 웨비나 주소를 복사해 두고 새 탭으로 엽니다 */
 $('kakaoBtn').onclick = async () => {
-  const url = 'https://purpleuniverse.net/webinar';
+  const url = editIndex > -1 ? shareUrl(LIST[editIndex]) : 'https://purpleuniverse.net/webinar';
   try{ await navigator.clipboard.writeText(url); }catch(e){}
   window.open('https://developers.kakao.com/tool/debugger/sharing', '_blank', 'noopener');
-  toast('웨비나 주소를 복사했어요. 열린 창의 입력칸에 붙여넣고(⌘V) → 캐시 초기화를 눌러주세요.');
+  toast((editIndex > -1 ? '이 웨비나 공유 주소를' : '웨비나 주소를') + ' 복사했어요. 열린 창의 입력칸에 붙여넣고(⌘V) → 캐시 초기화를 눌러주세요.');
 };
 $('resetBtn').onclick = resetForm;
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => addBlock(b.dataset.add));

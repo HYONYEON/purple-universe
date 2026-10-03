@@ -360,7 +360,13 @@
   .zoom-rail::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:3px;}
   .zoom-rail > .resource-card{flex:0 0 calc((100% - 36px) / 3); scroll-snap-align:start;}
   .zr-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:13.5px; color:var(--text-faint);}
-  .zr-btns{display:flex; gap:8px;}
+  .zr-btns{display:flex; gap:8px; flex:none;}
+  .zr-title{display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:22px;}
+  .zr-title h2{margin-bottom:0 !important;}
+  .net-side .rl{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; margin:16px 0 8px;}
+  .net-side .rl i{width:9px; height:9px; border-radius:50%; background:var(--c);}
+  .net-side .rl small{color:var(--text-faint); font-weight:500;}
+  .net-side li .memo{display:block; font-size:12.5px; color:var(--gold-soft); margin-top:3px;}
   .zr-btn{width:38px; height:38px; border-radius:50%; cursor:pointer; background:var(--surface); border:1px solid var(--border-strong); color:var(--text); font-size:16px;}
   .zr-btn:hover{border-color:var(--purple-bright);}
   .zr-btn:disabled{opacity:.3; cursor:default;}
@@ -658,7 +664,7 @@
       <div style="display:flex; align-items:center; gap:18px;">
         <a href="/webinar" class="m-back" style="color:var(--purple-bright);">웨비나·클래스</a>
         <a href="/notes" class="m-back" style="color:var(--purple-bright);">30X 퍼플 노트</a>
-        <a href="/kit-bs6e3ec7" class="m-back" style="color:var(--purple-bright);">30X 퍼플 툴킷</a>
+        <a href="/toolkit" class="m-back" style="color:var(--purple-bright);">30X 퍼플 툴킷</a>
         <span class="m-tag">MEMBERS ONLY</span>
       </div>
     </div>
@@ -701,7 +707,9 @@
   <section class="m-section gated">
     <div class="wrap">
       <span class="eyebrow">ZOOM ARCHIVE</span>
-      <h2>전체 줌미팅 다시보기</h2>
+      <div class="zr-title"><h2>전체 줌미팅 다시보기</h2><span class="zr-btns">
+          <button class="zr-btn" type="button" data-zr="-1" aria-label="이전">←</button>
+          <button class="zr-btn" type="button" data-zr="1" aria-label="다음">→</button></span></div>
       <!--
         ▼ 영상 넣는 법
         유튜브 영상 주소가 https://www.youtube.com/watch?v=ABC123 이면
@@ -709,9 +717,6 @@
         새 회차를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하세요.
       -->
       <div class="zoom-rail-wrap">
-        <div class="zr-head"><span></span><span class="zr-btns">
-          <button class="zr-btn" type="button" data-zr="-1" aria-label="이전">←</button>
-          <button class="zr-btn" type="button" data-zr="1" aria-label="다음">→</button></span></div>
         <div class="resource-grid zoom-rail" id="zoomGrid">
         <!-- 최신순(왼쪽이 최신). 새 녹화본은 맨 위에 카드 한 개를 복사해 넣으면 됩니다 -->
         <div class="resource-card">
@@ -821,7 +826,9 @@
   // ===== 멤버 로그인 (휴대폰 번호 + 문자 인증, 승인은 구글 시트 '회원' 탭) =====
   const MEMBER_API = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
   function getMember(){ try{ const m = JSON.parse(localStorage.getItem('pu_member') || 'null'); return m && m.token ? m : null; }catch(e){ return null; } }
-  window.PU_MEMBER = getMember();
+  // ?preview=1 로 열면 로그인돼 있어도 '로그아웃된 미리보기 화면'으로 보여줌 (로그인 정보는 그대로 둠)
+  const PREVIEW_TEST = /[?&]preview=1/.test(location.search);
+  window.PU_MEMBER = PREVIEW_TEST ? null : getMember();
   async function memberPost(body){
     const r = await fetch(MEMBER_API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
     return r.json();
@@ -1122,12 +1129,18 @@
 
   // 시작 상태 — 이 브라우저에서 이미 들어왔던 멤버면 그대로, 아니면 미리보기
   // 시작 상태 — 이 브라우저에서 이미 로그인한 멤버면 그대로 (문자 없이), 아니면 미리보기
+  if(PREVIEW_TEST){
+    const tb = document.createElement('a');
+    tb.href = location.pathname; tb.textContent = '👀 미리보기 테스트 화면 · 내 화면으로 돌아가기';
+    tb.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:500;padding:10px 18px;border-radius:100px;background:#E8B85E;color:#1a1030;font-weight:700;font-size:13.5px;text-decoration:none;box-shadow:0 10px 30px -8px rgba(0,0,0,.7);';
+    document.body.appendChild(tb);
+  }
   if(window.PU_MEMBER){
     unlock();
     // 뒤에서 조용히 확인 — 대표님이 승인을 풀었으면 로그아웃 (연결 실패는 그냥 유지)
     memberPost({ action:'memberCheck', phone:window.PU_MEMBER.phone, token:window.PU_MEMBER.token })
       .then(r => {
-        if(r && r.ok === false){ try{ localStorage.removeItem('pu_member'); }catch(e){} alert('로그인이 만료됐어요. 휴대폰 번호로 다시 로그인해 주세요.'); location.reload(); }
+        if(r && r.ok === false && r.error === 'logout'){   // 승인이 풀렸을 때만 로그아웃 (서버 오류 · 연결 문제로는 절대 안 풀림) try{ localStorage.removeItem('pu_member'); }catch(e){} alert('로그인이 만료됐어요. 휴대폰 번호로 다시 로그인해 주세요.'); location.reload(); }
         else if(r && r.ok && r.name && r.name !== window.PU_MEMBER.name){ window.PU_MEMBER.name = r.name; try{ localStorage.setItem('pu_member', JSON.stringify(window.PU_MEMBER)); }catch(e){} }
       }).catch(() => {});
   } else {
@@ -1449,7 +1462,12 @@
   });
   const linksOf = n => NET_LINKS.filter(l => l[0] === n || l[1] === n);
   /* 탭 — '전체 협업' + 구글 시트 '협업그룹' 탭의 그룹들 (예: 웰니스 프로그램) */
-  let GROUPS = { '웰니스 프로그램': [] }, mode = 'all';
+  let GROUPS = { '웰니스 프로그램': [] }, ROLES = {}, mode = 'all';
+  const ROLE_ORDER = ['메인 진행', '체험·진열 홍보', '코치 서포트'];
+  const ROLE_COLOR = { '메인 진행':'#E8B85E', '체험·진열 홍보':'#5FD08A', '코치 서포트':'#4FB3FF' };
+  const roleOf = n => ((ROLES[mode] || {})[n] || {}).role || '';
+  const memoOf = n => ((ROLES[mode] || {})[n] || {}).memo || '';
+  const rColor = n => ROLE_COLOR[roleOf(n)] || '#A98BFF';
   const inGroup = n => mode !== 'all' && (GROUPS[mode] || []).indexOf(n) >= 0;
   function tabs(){
     $('netTabs').innerHTML = ['all'].concat(Object.keys(GROUPS)).map(k =>
@@ -1460,6 +1478,7 @@
   window.addEventListener('pu-vote-data', e => {
     const g = (e.detail && e.detail.groups) || {};
     if(Object.keys(g).length) GROUPS = g;
+    ROLES = (e.detail && e.detail.roles) || {};
     if(mode !== 'all' && !GROUPS[mode]) mode = 'all';
     tabs(); draw();
   });
@@ -1469,7 +1488,7 @@
     NET_MEMBERS.forEach(m => { const p = pos[m.name]; h += '<line class="net-spoke" x1="' + CX + '" y1="' + CY + '" x2="' + p.x + '" y2="' + p.y + '"/>'; });
     const grp = mode !== 'all';
     const act = grp ? new Set(GROUPS[mode] || []) : sel ? new Set(linksOf(sel).flatMap(l => [l[0], l[1]])) : null;
-    if(grp) (GROUPS[mode] || []).forEach(n => { const p = pos[n]; if(p) h += '<line class="net-glink" x1="' + CX + '" y1="' + CY + '" x2="' + p.x + '" y2="' + p.y + '"/>'; });
+    if(grp) (GROUPS[mode] || []).forEach(n => { const p = pos[n]; if(p) h += '<line class="net-glink" style="stroke:' + rColor(n) + (roleOf(n) === '메인 진행' ? ';stroke-width:3.4' : '') + '" x1="' + CX + '" y1="' + CY + '" x2="' + p.x + '" y2="' + p.y + '"/>'; });
     if(!grp) NET_LINKS.forEach(l => {
       const a = pos[l[0]], b = pos[l[1]]; if(!a || !b) return;
       const mx = (a.x + b.x)/2, my = (a.y + b.y)/2;          // 가운데 쪽으로 휘는 곡선
@@ -1481,10 +1500,12 @@
          '<text x="' + CX + '" y="' + (CY+18) + '" style="font-size:11px;font-weight:500;fill:#E4DAFF">' + esc(grp ? (GROUPS[mode] || []).length + '명 참여' : NET_HUB.sub) + '</text></g>';
     NET_MEMBERS.forEach(m => {
       const p = pos[m.name], cls = 'net-node' + (m.biz ? '' : ' todo') + (inGroup(m.name) ? ' grp' : sel === m.name ? ' on' : act && !act.has(m.name) ? ' dim' : '');
-      const biz = m.biz ? (m.biz.length > 11 ? m.biz.slice(0, 11) + '…' : m.biz) : '사업 입력 필요';
-      h += '<g class="' + cls + '" data-n="' + esc(m.name) + '"><circle class="ring" cx="' + p.x + '" cy="' + p.y + '" r="40"/>' +
+      const ig = inGroup(m.name);
+      const biz = ig && roleOf(m.name) ? roleOf(m.name) : m.biz ? (m.biz.length > 11 ? m.biz.slice(0, 11) + '…' : m.biz) : '사업 입력 필요';
+      h += '<g class="' + cls + '" data-n="' + esc(m.name) + '"><circle class="ring" cx="' + p.x + '" cy="' + p.y + '" r="40"' +
+           (ig ? ' style="stroke:' + rColor(m.name) + ';fill:#16112a"' : '') + '/>' +
            '<text x="' + p.x + '" y="' + (p.y + 2) + '">' + esc(m.name) + '</text>' +
-           '<text class="biz" x="' + p.x + '" y="' + (p.y + 58) + '">' + esc(biz) + '</text>' +
+           '<text class="biz" x="' + p.x + '" y="' + (p.y + 58) + '"' + (ig && roleOf(m.name) ? ' style="fill:' + rColor(m.name) + ';font-weight:700"' : '') + '>' + esc(biz) + '</text>' +
            (!grp && linksOf(m.name).length ? '<circle cx="' + (p.x + 29) + '" cy="' + (p.y - 29) + '" r="10" fill="#E8B85E"/><text x="' + (p.x + 29) + '" y="' + (p.y - 25) + '" style="font-size:11px;fill:#1a1030">' + linksOf(m.name).length + '</text>' : '') + '</g>';
     });
     svg.innerHTML = h;
@@ -1494,8 +1515,12 @@
     const box = $('netSide');
     if(mode !== 'all'){
       const list = GROUPS[mode] || [];
+      const order = ROLE_ORDER.concat([...new Set(list.map(roleOf))].filter(r => ROLE_ORDER.indexOf(r) < 0));
+      const li = n => { const b = (NET_MEMBERS.find(x => x.name === n) || {}).biz, mm = memoOf(n);
+        return '<li><b>' + esc(n) + '</b>' + (b ? ' · ' + esc(b) : '') + (mm ? '<span class="memo">✦ ' + esc(mm) + '</span>' : '') + '</li>'; };
       box.innerHTML = '<h4>' + esc(mode) + '</h4><div class="biz">참여 멤버 ' + list.length + '명</div>' +
-        (list.length ? '<ul>' + list.map(n => { const b = (NET_MEMBERS.find(x => x.name === n) || {}).biz; return '<li><b>' + esc(n) + '</b>' + (b ? ' · ' + esc(b) : '') + '</li>'; }).join('') + '</ul>'
+        (list.length ? order.map(r => { const ns = list.filter(n => roleOf(n) === r); if(!ns.length) return '';
+            return '<div class="rl" style="--c:' + (ROLE_COLOR[r] || '#A98BFF') + '"><i></i>' + esc(r || '역할 미정') + ' <small>' + ns.length + '명</small></div><ul>' + ns.map(li).join('') + '</ul>'; }).join('')
                      : '<p class="hint">아직 참여 멤버가 없어요.</p>') +
         '<p class="todo">참여 멤버는 운영진이 구글 시트 협업그룹 탭에서 정해요.</p>';
       return;
