@@ -393,6 +393,35 @@
     .empty-card{aspect-ratio:auto; padding:34px 20px;}
     .w-hero .lead{font-size:16.5px;}
   }
+  /* 툴킷 안내 박스 (포스터 아래) */
+  .kit-note{margin-top:14px; padding:14px 15px; border-radius:13px; font-size:14px; line-height:1.65; color:var(--purple-pale);
+    background:linear-gradient(160deg,rgba(124,77,255,.22),rgba(124,77,255,.06)); border:1px solid rgba(169,139,255,.45);}
+  .kit-note b{color:#fff;}
+  .kit-note button{display:block; margin-top:9px; background:none; border:none; padding:0; cursor:pointer;
+    font:inherit; font-weight:700; color:var(--gold-soft);}
+  .kit-note button:hover{text-decoration:underline; text-underline-offset:3px;}
+  /* 툴킷 미리보기 */
+  .peek-back{position:absolute; inset:0; z-index:5; display:none; align-items:center; justify-content:center; padding:20px;
+    background:rgba(8,5,15,.74); backdrop-filter:blur(3px);}
+  .peek-back.open{display:flex;}
+  .peek{position:relative; width:min(480px,100%); max-height:100%; overflow-y:auto; background:#1A1030;
+    border:1px solid rgba(169,139,255,.5); border-radius:18px; padding:22px; box-shadow:0 24px 60px rgba(0,0,0,.6);}
+  .peek-x{position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%; cursor:pointer;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text); font-size:13px;}
+  .peek-eb{font-family:'Space Grotesk',sans-serif; font-size:11.5px; letter-spacing:.16em; font-weight:700; color:var(--purple-bright);}
+  .peek h3{font-size:19px; margin:6px 30px 6px 0; line-height:1.4;}
+  .peek-lead{font-size:13.5px; color:var(--text-dim); line-height:1.6;}
+  .peek-grid{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin:14px 0 12px;}
+  .peek-card{border-radius:12px; border:1px solid var(--border); background:var(--surface); padding:12px;}
+  .peek-card b{display:block; font-size:13.5px; margin:5px 0 5px;}
+  .peek-card p{font-size:12.5px; color:var(--text-dim); line-height:1.55;}
+  .pt{display:inline-block; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px;}
+  .pt.p1{background:rgba(124,77,255,.25); color:var(--purple-pale);}
+  .pt.p2{background:rgba(95,208,138,.16); color:var(--ok);}
+  .pt.p3{background:rgba(232,184,94,.18); color:var(--gold-soft);}
+  .peek-lock{text-align:center; font-size:13px; font-weight:600; color:var(--gold-soft); margin-bottom:10px;}
+  .peek-go{width:100%;}
+  @media(max-width:600px){ .peek-grid{grid-template-columns:1fr;} .peek{padding:18px;} }
   .after-m{display:none; font-size:13.5px; color:var(--text-faint); line-height:1.6; margin:18px 0 6px; text-align:center;}
   .after-m a{color:var(--purple-bright);}
 </style>
@@ -465,6 +494,23 @@
     <div class="modal-head" id="modalHead"></div>
     <div class="modal-scroll" id="modalScroll"></div>
     <div class="m-foot" id="modalFoot"></div>
+    <!-- 툴킷 미리보기 (신청 팝업 안에서 작게 열림) -->
+    <div class="peek-back" id="peekBack">
+      <div class="peek" role="dialog" aria-label="무료 툴킷 미리보기">
+        <button class="peek-x" id="peekX" type="button" aria-label="닫기">✕</button>
+        <span class="peek-eb">PURPLE TOOLKIT</span>
+        <h3>복사만 하면 내 콘텐츠 전략이 나옵니다</h3>
+        <p class="peek-lead">웨비나 끝까지 참여하신 분께만 링크와 참석 코드를 드려요. 한 번 열면 계속 업데이트됩니다.</p>
+        <div class="peek-grid">
+          <div class="peek-card"><span class="pt p1">프롬프트</span><b>내 비즈니스 3C 구조 잡기</b><p>업종 · 타깃 · 강점만 적으면 고객 · 나 · 경쟁자 분석과 포지셔닝 한 문장까지 나와요.</p></div>
+          <div class="peek-card"><span class="pt p1">프롬프트</span><b>4H 전략 한 번에 짜기</b><p>Hero · Hub · Help · Human 콘텐츠 아이디어와 4주 업로드 캘린더를 한 번에.</p></div>
+          <div class="peek-card"><span class="pt p2">체크리스트</span><b>콘텐츠 필수 체크 15</b><p>기획 → 촬영 → 업로드 → 올린 뒤까지, 콘텐츠마다 체크하면 기억돼요.</p></div>
+          <div class="peek-card"><span class="pt p3">이번 달 추천</span><b>업종별 3H 콘텐츠</b><p>카페 · PT · 미용실 · 교육 · 세무사 등 내 업종에 맞는 이번 달 콘텐츠 추천.</p></div>
+        </div>
+        <p class="peek-lock">🔒 웨비나 마지막 10분에 채팅창으로만 공유드립니다</p>
+        <button class="btn btn-primary peek-go" id="peekGo" type="button">웨비나 신청하고 받기</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -658,11 +704,17 @@ function openModal(w){
   if(inline) rest += formHTML(w);
   rest += '<p class="after-m">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 <a href="/">멤버십</a>을 둘러보세요.</p>';
 
+  /* 모집 중인 웨비나엔 '끝까지 참여하면 툴킷' 안내 */
+  const kitNote = (!past && kindOf(w) === 'webinar')
+    ? '<div class="kit-note">🎁 웨비나 마지막에 <b>콘텐츠 기획력을 30배 올려줄 무료 페이지</b> 툴킷 링크를 공유드리니, <b>꼭 끝까지 참여해 주세요!</b>' +
+      '<button type="button" data-peek>툴킷에 뭐가 들어있나요? →</button></div>'
+    : '';
+
   /* 포스터가 있으면 PC에선 왼쪽 포스터 · 오른쪽 내용 두 칸으로 (스크롤 줄이기) */
   if(media && !(past && yt)){
-    html = '<div class="m-split"><div class="m-left">' + media + '</div><div class="m-right">' + html + rest + '</div></div>';
+    html = '<div class="m-split"><div class="m-left">' + media + kitNote + '</div><div class="m-right">' + html + rest + '</div></div>';
   }else{
-    html += media + rest;
+    html += media + kitNote + rest;
   }
   modalScroll.innerHTML = html;
   modalScroll.scrollTop = 0;
@@ -698,6 +750,9 @@ function openModal(w){
     }, { root: modalScroll, threshold: 0.15 });
     io.observe($('wForm'));
   }
+
+  const pk = modalScroll.querySelector('[data-peek]');
+  if(pk) pk.addEventListener('click', openPeek);
 
   const slug = 'w' + w.no;
   if(location.hash !== '#' + slug) history.pushState({ w:w.no }, '', '#' + slug);
@@ -775,7 +830,19 @@ function bindForm(w){
   });
 }
 
+/* ---------- 툴킷 미리보기 ---------- */
+function openPeek(){ $('peekBack').classList.add('open'); }
+function closePeek(){ $('peekBack').classList.remove('open'); }
+$('peekX').addEventListener('click', closePeek);
+$('peekBack').addEventListener('click', e => { if(e.target === $('peekBack')) closePeek(); });
+$('peekGo').addEventListener('click', () => {
+  closePeek();
+  const f = $('wForm');
+  if(f){ f.scrollIntoView({ behavior:'smooth', block:'start' }); const n = $('fName'); if(n) setTimeout(() => n.focus({ preventScroll:true }), 350); }
+});
+
 function closeModal(fromHistory){
+  closePeek();
   modalBack.classList.remove('open');
   modalScroll.innerHTML = '';   // 영상 정지
   document.body.style.overflow = '';
@@ -784,7 +851,10 @@ function closeModal(fromHistory){
 
 modalBack.addEventListener('click', e => { if(e.target === modalBack) closeModal(); });
 $('modalClose').addEventListener('click', () => closeModal());
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Escape') return;
+  if($('peekBack').classList.contains('open')) closePeek(); else closeModal();   // 미리보기가 열려 있으면 그것만 닫기
+});
 
 function routeFromUrl(){
   const m = location.hash.match(/^#w(\d+)$/);

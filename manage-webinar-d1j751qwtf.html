@@ -303,9 +303,18 @@
           </div>
           <p class="hint">시작 10분 전에 신청자 모두에게 자동으로 문자가 나갑니다. 30분 전까지 링크가 없으면 메일로 알려드려요.</p>
 
+          <div class="sms-top" style="margin-top:16px;">
+            <div class="field">
+              <label>툴킷 참석 코드 <span style="color:var(--text-faint); font-weight:400;">· 웨비나 마지막 10분에 채팅창으로만 공유</span></label>
+              <input type="text" id="codeInput" placeholder="예) PURPLE10" maxlength="30" style="text-transform:uppercase;">
+            </div>
+            <button class="btn btn-primary btn-sm" id="codeSave" type="button" style="padding:12px 20px;">코드 저장</button>
+          </div>
+          <p class="hint">툴킷 첫 화면에서 <b>신청 번호 + 이 코드</b>를 넣으면 열리고, 아래 명단에 <b>끝까지 참여 ✓</b>가 찍힙니다. 대소문자는 구분하지 않아요. 지난 웨비나 코드로 열었던 분은 그대로 열려요.</p>
+
           <div class="stat" id="smsStat"></div>
           <div class="tbl-wrap"><table class="ap">
-            <thead><tr><th>신청 시간</th><th>이름</th><th>연락처</th><th>듣고 싶은 이유</th><th title="신청완료 · 당일안내 · 입장링크 · 자료">문자 (완료·당일·링크·자료)</th><th>소식</th></tr></thead>
+            <thead><tr><th>신청 시간</th><th>이름</th><th>연락처</th><th>듣고 싶은 이유</th><th title="신청완료 · 당일안내 · 입장링크 · 자료">문자 (완료·당일·링크·자료)</th><th>소식</th><th>끝까지 참여</th></tr></thead>
             <tbody id="apBody"></tbody>
           </table></div>
 
@@ -675,6 +684,7 @@ function renderSms(){
   const w = LIST[editIndex], no = String(w.no);
   $('keyAsk').style.display = apiKey() && admOk ? 'none' : 'flex';
   $('zoomInput').value = ADM.links[no] || '';
+  $('codeInput').value = (ADM.codes || {})[no] || '';
 
   const rows = ADM.applicants.filter(a => String(a.no) === no);
   const n = k => rows.filter(a => a.sent && a.sent[k]).length;
@@ -682,16 +692,33 @@ function renderSms(){
     '<span>신청<b>' + rows.length + '명</b></span>' +
     '<span>소식 동의<b>' + rows.filter(a => a.news === '동의').length + '명</b></span>' +
     '<span>입장 링크 발송<b>' + n('link') + ' / ' + rows.length + '</b></span>' +
-    '<span>자료 발송<b>' + n('materials') + ' / ' + rows.length + '</b></span>';
+    '<span>자료 발송<b>' + n('materials') + ' / ' + rows.length + '</b></span>' +
+    '<span>끝까지 참여<b style="color:var(--ok)">' + rows.filter(a => a.attend).length + ' / ' + rows.length + '</b></span>';
 
   const d = v => '<span class="dot ' + (v ? 'y' : 'n') + '" title="' + esc(v || '아직') + '">' + (v ? '✓' : '·') + '</span>';
   $('apBody').innerHTML = rows.length ? rows.slice().reverse().map(a =>
     '<tr><td>' + esc(a.at) + '</td><td>' + esc(a.name) + '</td><td>' + esc(a.phone) + '</td><td>' + esc(a.job) + '</td>' +
     '<td>' + d(a.sent.confirm) + d(a.sent.today) + d(a.sent.link) + d(a.sent.materials) + '</td>' +
-    '<td>' + (a.news === '동의' ? '동의' : '') + '</td></tr>').join('')
-    : '<tr><td colspan="6" style="color:var(--text-faint); text-align:center; padding:22px;">' +
+    '<td>' + (a.news === '동의' ? '동의' : '') + '</td>' +
+    '<td>' + (a.attend ? '<span class="dot y" title="' + esc(a.attend) + '">✓</span>' : '<span class="dot n">·</span>') + '</td></tr>').join('')
+    : '<tr><td colspan="7" style="color:var(--text-faint); text-align:center; padding:22px;">' +
       (admOk ? '아직 신청자가 없어요.' : '신청 조회 키를 넣으면 명단이 보여요.') + '</td></tr>';
 }
+
+$('codeSave').onclick = async () => {
+  if(editIndex < 0) return;
+  if(!apiKey()){ toast('먼저 신청 조회 키를 넣어주세요.', false); return; }
+  const code = $('codeInput').value.trim().toUpperCase();
+  const b = $('codeSave'); b.disabled = true;
+  try{
+    const r = await apiPost({ action:'attendCode', no: LIST[editIndex].no, code });
+    if(!r.ok) throw new Error(r.error);
+    ADM.codes = ADM.codes || {}; ADM.codes[String(LIST[editIndex].no)] = code;
+    $('codeInput').value = code;
+    toast(code ? '참석 코드 저장 — 웨비나 마지막에 채팅창으로 "' + code + '"를 알려주세요' : '참석 코드를 비웠습니다');
+  }catch(e){ toast('실패: ' + e.message, false); }
+  finally{ b.disabled = false; }
+};
 
 $('keySave').onclick = async () => {
   const v = $('keyInput').value.trim(); if(!v) return;
