@@ -3,6 +3,22 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.WEBINARS = [
   {
+    "no": 3,
+    "cat": "class",
+    "price": "",
+    "title": "전문직의 SNS 실무와 커리어 확장ㅣ항로클래스",
+    "host": "A-prime",
+    "date": "2026-10-24",
+    "time": "10:00~15:00",
+    "place": "서울 강남구 삼성동 트레이드타워 51층",
+    "poster": "images/1791068909299_itllp_class_01_poster.jpg",
+    "desc": "“언젠가 시작해야지”라고 생각하신 지 얼마나 되셨습니까. 그 사이에도 고객은 먼저 시작한 전문가에게 가고 있습니다.\nAI 시대의 SNS는 선택이 아닙니다. 언제 시작하느냐의 문제입니다. 10월 24일, 다섯 시간이면 무엇을·어디에·어떻게 올릴지가 정해집니다.",
+    "applyUrl": "https://aprime.kr/classlist2/?c=class_01",
+    "replayYt": "",
+    "materialUrl": "https://purpleuniverse.net/kit-bs6e3ec7",
+    "body": []
+  },
+  {
     "no": 2,
     "cat": "webinar",
     "price": "",
