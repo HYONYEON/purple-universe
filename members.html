@@ -532,6 +532,12 @@
     color:var(--text); font-size:15.5px; font-family:inherit; margin-bottom:10px;
   }
   .lock-pw input:focus{outline:none; border-color:var(--purple-bright);}
+  .lg-hint{font-size:14.5px !important; margin:0 0 12px !important; color:var(--text-dim);}
+  .lg-hint b{color:var(--gold-soft);}
+  .lg-sub{font-size:13.5px !important; margin:12px 0 0 !important; color:var(--text-faint);}
+  .lg-step[hidden]{display:none !important;}
+  .lock-btn-busy{opacity:.6; pointer-events:none;}
+  .m-logout{background:none; border:none; color:var(--text-faint); font:inherit; font-size:13px; text-decoration:underline; cursor:pointer; margin-left:8px;}
   .lock-err{color:#FF8A8A; font-size:13.5px; min-height:18px; margin-top:8px;}
   .lock-close{
     position:absolute; top:16px; right:18px; background:none; border:none;
@@ -558,11 +564,35 @@
     <h3>멤버 전용 게시물입니다</h3>
     <p>줌미팅 녹화본, 학습 자료, AI 기획 도구는<br>퍼플 유니버스 멤버에게만 열려 있어요.</p>
     <a href="/#pricing" class="btn btn-primary">멤버쉽 가입은 여기에서 →</a>
-    <p class="lock-or">이미 멤버라면 <button class="peek-link" id="lockPwToggle" type="button">비밀번호 입력</button></p>
+    <p class="lock-or">이미 멤버라면 <button class="peek-link" id="lockPwToggle" type="button">휴대폰 번호로 로그인</button></p>
     <div class="lock-pw" id="lockPw">
-      <input type="password" id="gateInput" placeholder="멤버쉽 전용 비밀번호" autocomplete="current-password">
-      <button class="btn btn-primary" id="gateBtn" type="button">입장하기</button>
+      <!-- ① 번호 -->
+      <div class="lg-step" id="lgPhone">
+        <input type="tel" id="lgPhoneIn" placeholder="휴대폰 번호 (010-0000-0000)" inputmode="numeric" autocomplete="tel">
+        <button class="btn btn-primary" id="lgCodeBtn" type="button">인증번호 받기</button>
+      </div>
+      <!-- ② 인증번호 -->
+      <div class="lg-step" id="lgCode" hidden>
+        <p class="lg-hint" id="lgCodeHint">문자로 받은 6자리를 입력해 주세요.</p>
+        <input type="text" id="lgCodeIn" placeholder="인증번호 6자리" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+        <button class="btn btn-primary" id="lgVerifyBtn" type="button">입장하기</button>
+        <p class="lg-sub"><button class="peek-link" id="lgResend" type="button">문자 다시 받기</button> · <button class="peek-link" id="lgBack" type="button">번호 다시 입력</button></p>
+      </div>
+      <!-- ③ 가입 신청 -->
+      <div class="lg-step" id="lgApply" hidden>
+        <p class="lg-hint">처음이시네요! 가입 신청을 남겨주시면<br>확인 후 <b>승인 문자</b>를 보내드려요.</p>
+        <input type="text" id="lgName" placeholder="이름" maxlength="20" autocomplete="name">
+        <input type="tel" id="lgApplyPhone" placeholder="휴대폰 번호" inputmode="numeric" autocomplete="tel">
+        <input type="text" id="lgNote" placeholder="한마디 (선택) · 예: 5기 김퍼플" maxlength="200">
+        <button class="btn btn-primary" id="lgApplyBtn" type="button">가입 신청하기</button>
+        <p class="lg-sub"><button class="peek-link" id="lgBack2" type="button">← 로그인으로</button></p>
+      </div>
+      <!-- ④ 승인 대기 -->
+      <div class="lg-step" id="lgWait" hidden>
+        <p class="lg-hint"><b>가입 신청이 접수되어 있어요.</b><br>승인되면 문자로 바로 알려드릴게요.</p>
+      </div>
       <p class="lock-err" id="gateError"></p>
+      <p class="lg-sub" id="lgFirst">처음이신가요? <button class="peek-link" id="lgToApply" type="button">멤버 공간 가입 신청</button></p>
     </div>
   </div>
 </div>
@@ -759,15 +789,19 @@
     </div>
   </section>
 
-  <footer class="m-footer">퍼플 유니버스 멤버쉽 전용 페이지 · 외부 공유는 삼가주세요.</footer>
+  <footer class="m-footer">퍼플 유니버스 멤버쉽 전용 페이지 · 외부 공유는 삼가주세요. <span id="meFoot" hidden>· <b id="meFootName"></b> 님 <button class="m-logout" id="logoutBtn" type="button">로그아웃</button></span></footer>
 
 </div>
 
 <script>
-  // ===== 비밀번호 설정 =====
-  // 아래 값을 원하는 비밀번호로 바꿔주세요.
-  const SITE_PASSWORD = "purple2026";
-  const MEMBER_TOKEN = "ok:" + SITE_PASSWORD.length + ":" + SITE_PASSWORD.split("").reverse().join("");   // 비밀번호가 바뀌면 값도 바뀜
+  // ===== 멤버 로그인 (휴대폰 번호 + 문자 인증, 승인은 구글 시트 '회원' 탭) =====
+  const MEMBER_API = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
+  function getMember(){ try{ const m = JSON.parse(localStorage.getItem('pu_member') || 'null'); return m && m.token ? m : null; }catch(e){ return null; } }
+  window.PU_MEMBER = getMember();
+  async function memberPost(body){
+    const r = await fetch(MEMBER_API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+    return r.json();
+  }
 
   /* ===================== 모임 일정 =====================
      ▼ 매주(또는 격주) 반복되는 일정은 여기에 규칙으로 넣습니다.
@@ -796,8 +830,7 @@
   // 비워두면 로드맵 카드를 눌러도 아무 곳으로도 가지 않습니다.
   const ROADMAP_URL = "";
 
-  const gateInput  = document.getElementById('gateInput');
-  const gateBtn    = document.getElementById('gateBtn');
+  const gateInput  = document.getElementById('lgPhoneIn');
   const gateError  = document.getElementById('gateError');
   const weeklyPopup = document.getElementById('weeklyPopup');
   const popupClose  = document.getElementById('popupClose');
@@ -811,6 +844,7 @@
   function openLock(pw){
     lockPw.classList.toggle('show', !!pw);
     gateError.textContent = '';
+    lgShow('lgPhone');
     lockModal.classList.add('show');
     if(pw) setTimeout(function(){ gateInput.focus(); }, 60);
   }
@@ -963,8 +997,10 @@
     const si = document.getElementById('searchInput');
     if(si) si.readOnly = false;
     closeLock();
-    // 한 번 들어오면 이 브라우저에선 계속 로그인 (비밀번호를 바꾸면 모두 다시 입력)
-    try{ localStorage.setItem('pu_members_unlocked', MEMBER_TOKEN); }catch(e){}
+    if(window.PU_MEMBER){
+      document.getElementById('meFootName').textContent = window.PU_MEMBER.name;
+      document.getElementById('meFoot').hidden = false;
+    }
     // 세션당 한 번만 이번 주 알림 팝업 표시
     if(!sessionStorage.getItem('pu_weekly_popup_seen')){
       weeklyPopup.classList.add('show');
@@ -972,27 +1008,103 @@
     }
   }
 
-  function tryUnlock(){
-    if(gateInput.value === SITE_PASSWORD){
-      unlock();
-    } else {
-      gateError.textContent = '비밀번호가 올바르지 않아요. 다시 시도해주세요.';
-    }
+  /* ── 로그인 단계 전환 ── */
+  const $g = id => document.getElementById(id);
+  const phoneOf = v => String(v || '').replace(/\D/g, '');
+  function lgShow(id){
+    ['lgPhone','lgCode','lgApply','lgWait'].forEach(k => { $g(k).hidden = (k !== id); });
+    $g('lgFirst').hidden = (id === 'lgApply' || id === 'lgWait');
+    gateError.textContent = '';
   }
+  function busy(btn, on, label){
+    btn.classList.toggle('lock-btn-busy', on);
+    if(label) btn.textContent = label;
+  }
+  const ERR = {
+    phone:'휴대폰 번호를 다시 확인해 주세요.',
+    wait:'방금 보냈어요. 1분 뒤에 다시 받을 수 있어요.',
+    limit:'인증 요청이 너무 많아요. 몇 시간 뒤에 다시 시도해 주세요.',
+    sms:'문자를 보내지 못했어요. 잠시 뒤 다시 시도해 주세요.',
+    wrong:'인증번호가 맞지 않아요.',
+    expired:'인증번호가 만료됐어요. 문자를 다시 받아주세요.',
+    name:'이름을 입력해 주세요.'
+  };
+  let lgPhoneNo = '';
 
-  gateBtn.addEventListener('click', tryUnlock);
-  gateInput.addEventListener('keydown', function(e){
-    if(e.key === 'Enter') tryUnlock();
-  });
+  async function sendCode(){
+    const p = phoneOf($g('lgPhoneIn').value);
+    if(!/^01\d{8,9}$/.test(p)){ gateError.textContent = ERR.phone; return; }
+    lgPhoneNo = p;
+    const btn = $g('lgCodeBtn'); busy(btn, true, '보내는 중…');
+    try{
+      const r = await memberPost({ action:'memberCode', phone:p });
+      if(r.ok){ lgShow('lgCode'); $g('lgCodeHint').textContent = p.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3') + ' 로 보낸 6자리를 입력해 주세요.'; $g('lgCodeIn').value = ''; $g('lgCodeIn').focus(); }
+      else if(r.error === 'none'){ lgShow('lgApply'); $g('lgApplyPhone').value = $g('lgPhoneIn').value; $g('lgName').focus(); }
+      else if(r.error === 'pending'){ lgShow('lgWait'); }
+      else gateError.textContent = ERR[r.error] || '잠시 뒤 다시 시도해 주세요.';
+    }catch(e){ gateError.textContent = '연결이 원활하지 않아요. 다시 시도해 주세요.'; }
+    busy(btn, false, '인증번호 받기');
+  }
+  async function verifyCode(){
+    const c = phoneOf($g('lgCodeIn').value);
+    if(c.length !== 6){ gateError.textContent = '6자리를 입력해 주세요.'; return; }
+    const btn = $g('lgVerifyBtn'); busy(btn, true, '확인 중…');
+    try{
+      const r = await memberPost({ action:'memberVerify', phone:lgPhoneNo, code:c });
+      if(r.ok){
+        window.PU_MEMBER = { name:r.name, phone:r.phone, token:r.token };
+        try{ localStorage.setItem('pu_member', JSON.stringify(window.PU_MEMBER)); localStorage.removeItem('pu_members_unlocked'); }catch(e){}
+        unlock();
+        window.dispatchEvent(new Event('pu-member'));
+      } else if(r.error === 'pending'){ lgShow('lgWait'); }
+      else gateError.textContent = ERR[r.error] || '잠시 뒤 다시 시도해 주세요.';
+    }catch(e){ gateError.textContent = '연결이 원활하지 않아요. 다시 시도해 주세요.'; }
+    busy(btn, false, '입장하기');
+  }
+  async function applyMember(){
+    const name = $g('lgName').value.trim(), p = phoneOf($g('lgApplyPhone').value);
+    if(!name){ gateError.textContent = ERR.name; return; }
+    if(!/^01\d{8,9}$/.test(p)){ gateError.textContent = ERR.phone; return; }
+    const btn = $g('lgApplyBtn'); busy(btn, true, '보내는 중…');
+    try{
+      const r = await memberPost({ action:'memberApply', name, phone:p, note:$g('lgNote').value.trim() });
+      if(r.ok && r.status === 'approved'){ $g('lgPhoneIn').value = $g('lgApplyPhone').value; lgShow('lgPhone'); gateError.textContent = '이미 승인된 번호예요. 인증번호를 받아주세요.'; }
+      else if(r.ok){ lgShow('lgWait'); }
+      else gateError.textContent = ERR[r.error] || '잠시 뒤 다시 시도해 주세요.';
+    }catch(e){ gateError.textContent = '연결이 원활하지 않아요. 다시 시도해 주세요.'; }
+    busy(btn, false, '가입 신청하기');
+  }
+  $g('lgCodeBtn').addEventListener('click', sendCode);
+  $g('lgPhoneIn').addEventListener('keydown', e => { if(e.key === 'Enter') sendCode(); });
+  $g('lgVerifyBtn').addEventListener('click', verifyCode);
+  $g('lgCodeIn').addEventListener('keydown', e => { if(e.key === 'Enter') verifyCode(); });
+  $g('lgCodeIn').addEventListener('input', e => { if(phoneOf(e.target.value).length === 6) verifyCode(); });
+  $g('lgResend').addEventListener('click', () => { lgShow('lgPhone'); sendCode(); });
+  $g('lgBack').addEventListener('click', () => lgShow('lgPhone'));
+  $g('lgBack2').addEventListener('click', () => lgShow('lgPhone'));
+  $g('lgToApply').addEventListener('click', () => { lgShow('lgApply'); $g('lgApplyPhone').value = $g('lgPhoneIn').value; $g('lgName').focus(); });
+  $g('lgApplyBtn').addEventListener('click', applyMember);
+
+  function logout(){
+    try{ localStorage.removeItem('pu_member'); }catch(e){}
+    location.reload();
+  }
+  $g('logoutBtn').addEventListener('click', logout);
 
   popupClose.addEventListener('click', function(){
     weeklyPopup.classList.remove('show');
   });
 
   // 시작 상태 — 이 브라우저에서 이미 들어왔던 멤버면 그대로, 아니면 미리보기
-  let saved = null; try{ saved = localStorage.getItem('pu_members_unlocked'); }catch(e){}
-  if(saved === MEMBER_TOKEN){
+  // 시작 상태 — 이 브라우저에서 이미 로그인한 멤버면 그대로 (문자 없이), 아니면 미리보기
+  if(window.PU_MEMBER){
     unlock();
+    // 뒤에서 조용히 확인 — 대표님이 승인을 풀었으면 로그아웃 (연결 실패는 그냥 유지)
+    memberPost({ action:'memberCheck', phone:window.PU_MEMBER.phone, token:window.PU_MEMBER.token })
+      .then(r => {
+        if(r && r.ok === false){ try{ localStorage.removeItem('pu_member'); }catch(e){} alert('로그인이 만료됐어요. 휴대폰 번호로 다시 로그인해 주세요.'); location.reload(); }
+        else if(r && r.ok && r.name && r.name !== window.PU_MEMBER.name){ window.PU_MEMBER.name = r.name; try{ localStorage.setItem('pu_member', JSON.stringify(window.PU_MEMBER)); }catch(e){} }
+      }).catch(() => {});
   } else {
     document.body.classList.add('peek');
     // 미리보기에서는 검색창에 글자를 넣을 수 없게 (누르면 안내 팝업만)
@@ -1113,7 +1225,8 @@
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const pad = n => String(n).padStart(2,'0');
   let D = { types:Object.keys(COLORS), members:[], candidates:[], votes:[] }, loaded = false;
-  let me = null; try{ me = localStorage.getItem('pu_vote_me'); }catch(e){}
+  let me = window.PU_MEMBER ? window.PU_MEMBER.name : null;          // 로그인한 멤버 이름으로 자동 투표
+  window.addEventListener('pu-member', () => { me = window.PU_MEMBER && window.PU_MEMBER.name; render(); });
   let tab = null;
   const now = new Date();
   const today = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
@@ -1130,7 +1243,6 @@
       if(!r.ok || !r.members) throw new Error(r.error || 'old');
       D = r; loaded = true;
       window.dispatchEvent(new CustomEvent('pu-vote-data', { detail: r }));   // 협업 맵 탭(협업그룹)에도 전달
-      if(me && D.members.indexOf(me) < 0) me = null;
     }catch(e){ if(!D.members.length) loaded = false; }      // 한 번 불러온 뒤엔 재시도 실패해도 화면 유지
     if(!tab || !candsOf(tab).length){ tab = D.types.find(t => openOf(t).length) || D.types.find(t => candsOf(t).length) || D.types[0]; }
     render(); cta();
@@ -1140,14 +1252,10 @@
     $('voteCtaSub').textContent = !loaded ? '가능한 날짜를 눌러주세요' : n ? n + '개 일정 투표 진행 중 · 누가 오는지 함께 보기' : '지금은 진행 중인 투표가 없어요';
   }
   function render(){
-    // 내 이름
-    if(!me){
-      $('voteMe').innerHTML = '<div class="lb">① 내 이름을 먼저 골라주세요. <span style="color:#FF9C9C">다른 멤버 이름은 선택하지 마세요!</span></div><div class="chips">' +
-        (D.members.length ? D.members.map(n => '<button class="vchip" type="button" data-me="' + esc(n) + '">' + esc(n) + '</button>').join('')
-                          : '<span style="font-size:13.5px;color:var(--text-faint)">' + (loaded ? '멤버 명단이 아직 비어 있어요' : '불러오는 중…') + '</span>') + '</div>';
-    }else{
-      $('voteMe').innerHTML = '<div class="who"><span><b>' + esc(me) + '</b> 님으로 투표 중</span><span><button type="button" data-change>이름 바꾸기</button></span></div>';
-    }
+    // 내 이름 — 로그인 정보에서 자동
+    $('voteMe').innerHTML = me
+      ? '<div class="who"><span><b>' + esc(me) + '</b> 님으로 투표 중</span></div>'
+      : '<div class="lb">투표하려면 먼저 휴대폰 번호로 로그인해 주세요.</div>';
     // 탭
     $('voteTabs').innerHTML = D.types.map(t => {
       const op = openOf(t).length, all = candsOf(t).length;
@@ -1234,7 +1342,7 @@
     if($('pageCal')) $('pageCal').innerHTML = out;     // 페이지 '앞으로 3개월 모임 일정'에도 같은 달력을 크게
   }
   async function vote(date, status){
-    if(!me){ alert('먼저 내 이름을 골라주세요'); return; }
+    const M = window.PU_MEMBER; if(!me || !M){ alert('먼저 로그인해 주세요'); return; }
     const cur = (D.votes.find(v => v.type === tab && v.date === date && v.name === me) || {}).status || '';
     const next = cur === status ? '' : status;                          // 같은 버튼 다시 누르면 취소
     D.votes = D.votes.filter(v => !(v.type === tab && v.date === date && v.name === me));
@@ -1242,17 +1350,15 @@
     renderList(); renderCal();
     try{
       const r = await (await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action:'vote', name:me, type:tab, date, status:next }) })).json();
+        body: JSON.stringify({ action:'vote', phone:M.phone, token:M.token, type:tab, date, status:next }) })).json();
       if(!r.ok) throw new Error(r.error);
-    }catch(e){ alert('저장하지 못했어요. 다시 눌러주세요.'); load(); }
+    }catch(e){ alert(e.message === 'login' ? '로그인이 만료됐어요. 새로고침 후 다시 로그인해 주세요.' : '저장하지 못했어요. 다시 눌러주세요.'); load(); }
   }
 
   $('voteBack').addEventListener('click', e => {
     if(e.target === $('voteBack')) $('voteBack').classList.remove('show');
     const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v],[data-jump]'); if(!t) return;
-    if(t.dataset.me){ me = t.dataset.me; try{ localStorage.setItem('pu_vote_me', me); }catch(_){} render(); }
-    else if(t.hasAttribute('data-change')){ me = null; try{ localStorage.removeItem('pu_vote_me'); }catch(_){} render(); }
-    else if(t.dataset.tab){ tab = t.dataset.tab; render(); }
+    if(t.dataset.tab){ tab = t.dataset.tab; render(); }
     else if(t.dataset.v){ vote(t.dataset.d, t.dataset.v); }
     else if(t.dataset.jump){                                              // 달력에서 후보 날짜 누르면 그 줄로
       const [ty, dt] = t.dataset.jump.split('|'); tab = ty; render();
