@@ -113,6 +113,73 @@
   .popup-box li b{color:var(--gold-soft);}
   .popup-note{font-size:13.5px; color:var(--text-faint);}
 
+  /* ---------- 날짜 투표 ---------- */
+  :root{--ok:#5FD08A;}
+  .vote-cta{display:flex; align-items:center; gap:14px; width:100%; margin:6px 0 18px; padding:16px 18px; cursor:pointer;
+    border-radius:16px; text-align:left; font-family:inherit; color:var(--text);
+    background:linear-gradient(120deg,rgba(124,77,255,.28),rgba(124,77,255,.08)); border:1px solid var(--border-strong);
+    transition:transform .15s ease, border-color .15s ease;}
+  .vote-cta:hover{transform:translateY(-2px); border-color:var(--purple-bright);}
+  .vote-cta-ic{font-size:26px;}
+  .vote-cta-t{flex:1; display:flex; flex-direction:column; gap:2px;}
+  .vote-cta-t b{font-size:17px;} .vote-cta-t small{font-size:13.5px; color:var(--text-dim);}
+  .vote-cta-go{font-weight:700; color:var(--gold-soft); font-size:15px; white-space:nowrap;}
+  .vote-back{position:fixed; inset:0; z-index:260; display:none; align-items:center; justify-content:center; padding:20px;
+    background:rgba(4,2,10,.8); backdrop-filter:blur(7px);}
+  .vote-back.show{display:flex;}
+  .vote-box{position:relative; width:min(620px,100%); max-height:92vh; overflow-y:auto; background:var(--bg-alt2);
+    border:1px solid var(--border-strong); border-radius:22px; padding:28px 26px 22px; box-shadow:0 30px 70px rgba(0,0,0,.7);}
+  .vote-x{position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:50%; cursor:pointer;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text); font-size:15px;}
+  .vote-box h3{font-size:22px; margin:8px 40px 6px 0;}
+  .vote-lead{font-size:14.5px; color:var(--text-dim); line-height:1.65; margin-bottom:16px;}
+  .vote-lead b{color:var(--text);}
+  .vote-me{padding:14px; border-radius:14px; background:var(--surface); border:1px solid var(--border); margin-bottom:14px;}
+  .vote-me .lb{font-size:13.5px; font-weight:700; color:var(--text-dim); margin-bottom:9px;}
+  .vote-me .chips{display:flex; flex-wrap:wrap; gap:7px;}
+  .vchip{padding:7px 13px; border-radius:100px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;
+    background:var(--bg-alt); border:1px solid var(--border); color:var(--text-dim);}
+  .vchip:hover{border-color:var(--border-strong);}
+  .vchip.on{background:var(--purple); border-color:var(--purple); color:#fff;}
+  .vote-me .who{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:15px;}
+  .vote-me .who b{color:var(--gold-soft);}
+  .vote-me .who button{background:none; border:none; color:var(--purple-bright); cursor:pointer; font:inherit; font-size:13.5px; font-weight:600;}
+  .vote-tabs{display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px;}
+  .vote-tabs::-webkit-scrollbar{display:none;}
+  .vtab{flex:none; display:flex; align-items:center; gap:7px; padding:9px 14px; border-radius:100px; cursor:pointer;
+    font-family:inherit; font-size:14px; font-weight:600; background:var(--surface); border:1px solid var(--border); color:var(--text-dim);}
+  .vtab i{width:8px; height:8px; border-radius:50%; background:var(--c);}
+  .vtab small{font-size:12px; color:var(--text-faint);}
+  .vtab.on{background:var(--text); color:var(--bg); border-color:var(--text);}
+  .vtab.on small{color:#5a5070;}
+  .vote-list{display:flex; flex-direction:column; gap:9px;}
+  .vrow{padding:14px 15px; border-radius:14px; background:var(--surface); border:1px solid var(--border);}
+  .vrow.best{border-color:rgba(232,184,94,.55);}
+  .vrow.fix{border-color:var(--ok); background:rgba(95,208,138,.08);}
+  .vrow-top{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .vrow-d{font-size:16px; font-weight:700;}
+  .vrow-t{font-size:13.5px; color:var(--text-dim);}
+  .vbadge{font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:100px;}
+  .vbadge.best{background:rgba(232,184,94,.18); color:var(--gold-soft);}
+  .vbadge.fix{background:rgba(95,208,138,.18); color:var(--ok);}
+  .vrow-btns{margin-left:auto; display:flex; gap:6px;}
+  .vbtn{padding:7px 13px; border-radius:100px; font-size:13.5px; font-weight:700; cursor:pointer; font-family:inherit;
+    background:var(--bg-alt); border:1px solid var(--border); color:var(--text-dim);}
+  .vbtn.ok.on{background:var(--ok); border-color:var(--ok); color:#08210f;}
+  .vbtn.no.on{background:#5a4a6e; border-color:#5a4a6e; color:#fff;}
+  .vbar{height:7px; border-radius:7px; background:var(--surface-2); overflow:hidden; margin:11px 0 6px;}
+  .vbar i{display:block; height:100%; background:linear-gradient(90deg,var(--purple),var(--purple-bright)); border-radius:7px; transition:width .3s;}
+  .vrow-n{font-size:12.5px; color:var(--text-faint); line-height:1.55;}
+  .vrow-n b{color:var(--ok); font-weight:700;}
+  .vote-empty{font-size:14.5px; color:var(--text-faint); text-align:center; padding:26px 10px; border:1.5px dashed var(--border-strong); border-radius:14px;}
+  .vote-foot{font-size:12.5px; color:var(--text-faint); margin-top:14px; line-height:1.6;}
+  @media(max-width:560px){
+    .vote-box{padding:24px 18px 18px;}
+    .vrow-btns{margin-left:0; width:100%;}
+    .vbtn{flex:1;}
+    .vote-cta-go{display:none;}
+  }
+
   /* ---------- HEADER ---------- */
   .m-header{border-bottom:1px solid var(--border); padding:18px 0; background:var(--bg-alt);}
   .m-nav{display:flex; align-items:center; justify-content:space-between;}
@@ -397,6 +464,21 @@
 </div>
 
 <!-- MAIN CONTENT — 미리보기에서도 보이고, 내용만 흐리게 가려진다 -->
+<!-- ===== 날짜 투표 팝업 ===== -->
+<div class="vote-back" id="voteBack">
+  <div class="vote-box" role="dialog" aria-label="모임 날짜 투표">
+    <button class="vote-x" id="voteClose" type="button" aria-label="닫기">✕</button>
+    <span class="eyebrow">DATE VOTE</span>
+    <h3>다음 모임 날짜 투표</h3>
+    <p class="vote-lead">후보 날짜마다 <b>가능 / 어려움</b>만 눌러주세요. 가장 많이 가능한 날로 확정해서 단톡방에 안내드려요.</p>
+
+    <div class="vote-me" id="voteMe"></div>
+    <div class="vote-tabs" id="voteTabs"></div>
+    <div class="vote-list" id="voteList"><p class="vote-empty">불러오는 중…</p></div>
+    <p class="vote-foot" id="voteFoot"></p>
+  </div>
+</div>
+
 <div id="mainContent">
 
   <header class="m-header">
@@ -405,6 +487,7 @@
       <div style="display:flex; align-items:center; gap:18px;">
         <a href="/webinar" class="m-back" style="color:var(--purple-bright);">웨비나·클래스</a>
         <a href="/notes" class="m-back" style="color:var(--purple-bright);">30X 퍼플 노트</a>
+        <a href="/kit-bs6e3ec7" class="m-back" style="color:var(--purple-bright);">30X 퍼플 툴킷</a>
         <span class="m-tag">MEMBERS ONLY</span>
       </div>
     </div>
@@ -454,6 +537,12 @@
       <span class="eyebrow">SCHEDULE</span>
       <h2>앞으로 3개월 모임 일정</h2>
       <p>퍼플 유니버스는 이 주기로 계속 모입니다. 장소와 참가 방법은 멤버에게 따로 안내해요.</p>
+      <!-- 멤버 날짜 투표 (Vote.gs) -->
+      <button class="vote-cta" id="voteOpen" type="button">
+        <span class="vote-cta-ic">🗳</span>
+        <span class="vote-cta-t"><b>다음 모임 날짜 투표</b><small id="voteCtaSub">가능한 날짜를 눌러주세요</small></span>
+        <span class="vote-cta-go">투표하기 →</span>
+      </button>
       <div id="schedSummary"></div>
       <div id="schedList"></div>
       <p class="sched-note">
@@ -910,6 +999,109 @@
     if(e.key === 'Enter') performSearch();
   });
   searchInput.addEventListener('input', performSearch);
+</script>
+<script>
+/* ===================== 멤버 날짜 투표 (Vote.gs) =====================
+   후보 날짜는 구글 시트 '투표후보' 탭에서, 멤버 이름은 '투표멤버' 탭에서 읽어옵니다. */
+(function(){
+  const API = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
+  const COLORS = {'전체 줌미팅':'#A98BFF','오프라인(해커톤)':'#FF8A65','오프라인(세미나)':'#4FB3FF','웰니스 프로그램':'#5FD08A'};
+  const DOW = ['일','월','화','수','목','금','토'];
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  let D = { types:Object.keys(COLORS), members:[], candidates:[], votes:[] }, loaded = false;
+  let me = null; try{ me = localStorage.getItem('pu_vote_me'); }catch(e){}
+  let tab = null;
+  const today = (() => { const t = new Date(); return t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0'); })();
+
+  function fmtD(s){ const p = s.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]); return p[1] + '월 ' + p[2] + '일 (' + DOW[d.getDay()] + ')'; }
+  const open = c => !c.confirmed ? c.date >= today : true;          // 지난 후보는 숨김 (확정된 건 보여줌)
+  const candsOf = t => D.candidates.filter(c => c.type === t && open(c)).sort((a,b) => a.date < b.date ? -1 : 1);
+  const vOf = (t, d) => D.votes.filter(v => v.type === t && v.date === d);
+
+  async function load(){
+    try{
+      const r = await (await fetch(API + '?action=vote&t=' + Date.now(), { cache:'no-store' })).json();
+      if(!r.ok) throw new Error(r.error);
+      D = r; loaded = true;
+      if(me && D.members.indexOf(me) < 0) me = null;
+    }catch(e){ loaded = false; }
+    if(!tab || !candsOf(tab).length){ tab = D.types.find(t => candsOf(t).length) || D.types[0]; }
+    render(); cta();
+  }
+  function cta(){
+    const n = D.types.filter(t => candsOf(t).some(c => !c.confirmed)).length;
+    $('voteCtaSub').textContent = !loaded ? '가능한 날짜를 눌러주세요' : n ? n + '개 일정 투표 진행 중' : '지금은 진행 중인 투표가 없어요';
+  }
+  function render(){
+    // 내 이름
+    if(!me){
+      $('voteMe').innerHTML = '<div class="lb">① 내 이름을 먼저 골라주세요</div><div class="chips">' +
+        (D.members.length ? D.members.map(n => '<button class="vchip" type="button" data-me="' + esc(n) + '">' + esc(n) + '</button>').join('')
+                          : '<span style="font-size:13.5px;color:var(--text-faint)">' + (loaded ? '멤버 명단이 아직 비어 있어요' : '불러오는 중…') + '</span>') + '</div>';
+    }else{
+      $('voteMe').innerHTML = '<div class="who"><span><b>' + esc(me) + '</b> 님으로 투표 중</span><button type="button" data-change>이름 바꾸기</button></div>';
+    }
+    // 탭
+    $('voteTabs').innerHTML = D.types.map(t => {
+      const n = candsOf(t).length;
+      return '<button class="vtab' + (t === tab ? ' on' : '') + '" type="button" data-tab="' + esc(t) + '" style="--c:' + (COLORS[t] || '#A98BFF') + '"><i></i>' + esc(t) + '<small>' + (n ? n : '준비 중') + '</small></button>';
+    }).join('');
+    // 후보 목록
+    const cs = candsOf(tab);
+    if(!loaded){ $('voteList').innerHTML = '<p class="vote-empty">투표를 불러오지 못했어요. 잠시 후 다시 열어주세요.</p>'; return; }
+    if(!cs.length){ $('voteList').innerHTML = '<p class="vote-empty">' + esc(tab) + ' 후보 날짜를 준비하고 있어요.</p>'; $('voteFoot').textContent = ''; return; }
+    const total = D.members.length || 1;
+    const maxOk = Math.max(...cs.map(c => vOf(tab, c.date).filter(v => v.status === '가능').length));
+    $('voteList').innerHTML = cs.map(c => {
+      const vs = vOf(tab, c.date), ok = vs.filter(v => v.status === '가능'), no = vs.filter(v => v.status === '어려움');
+      const mine = (vs.find(v => v.name === me) || {}).status || '';
+      const best = !c.confirmed && ok.length && ok.length === maxOk;
+      return '<div class="vrow' + (c.confirmed ? ' fix' : best ? ' best' : '') + '">' +
+        '<div class="vrow-top"><span class="vrow-d">' + fmtD(c.date) + '</span>' +
+          (c.time || c.memo ? '<span class="vrow-t">' + esc([c.time, c.memo].filter(Boolean).join(' · ')) + '</span>' : '') +
+          (c.confirmed ? '<span class="vbadge fix">✓ 확정</span>' : best ? '<span class="vbadge best">가장 많이 가능</span>' : '') +
+          (c.confirmed ? '' : '<span class="vrow-btns">' +
+            '<button class="vbtn ok' + (mine === '가능' ? ' on' : '') + '" type="button" data-v="가능" data-d="' + c.date + '">가능</button>' +
+            '<button class="vbtn no' + (mine === '어려움' ? ' on' : '') + '" type="button" data-v="어려움" data-d="' + c.date + '">어려움</button></span>') +
+        '</div>' +
+        '<div class="vbar"><i style="width:' + Math.round(ok.length / total * 100) + '%"></i></div>' +
+        '<div class="vrow-n">가능 <b>' + ok.length + '명</b>' + (ok.length ? ' · ' + ok.map(v => esc(v.name)).join(', ') : '') +
+          (no.length ? ' &nbsp;|&nbsp; 어려움 ' + no.length + '명' : '') + ' &nbsp;|&nbsp; 미응답 ' + Math.max(0, D.members.length - ok.length - no.length) + '명</div>' +
+      '</div>';
+    }).join('');
+    $('voteFoot').textContent = '같은 버튼을 한 번 더 누르면 취소돼요. 확정된 날짜는 초록색으로 표시됩니다.';
+  }
+  async function vote(date, status){
+    if(!me){ alert('먼저 내 이름을 골라주세요'); return; }
+    const cur = (D.votes.find(v => v.type === tab && v.date === date && v.name === me) || {}).status || '';
+    const next = cur === status ? '' : status;                          // 같은 버튼 다시 누르면 취소
+    D.votes = D.votes.filter(v => !(v.type === tab && v.date === date && v.name === me));
+    if(next) D.votes.push({ name:me, type:tab, date, status:next });
+    render();
+    try{
+      const r = await (await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action:'vote', name:me, type:tab, date, status:next }) })).json();
+      if(!r.ok) throw new Error(r.error);
+    }catch(e){ alert('저장하지 못했어요. 다시 눌러주세요.'); load(); }
+  }
+
+  $('voteBack').addEventListener('click', e => {
+    if(e.target === $('voteBack')) $('voteBack').classList.remove('show');
+    const t = e.target.closest('[data-me],[data-change],[data-tab],[data-v]'); if(!t) return;
+    if(t.dataset.me){ me = t.dataset.me; try{ localStorage.setItem('pu_vote_me', me); }catch(_){} render(); }
+    else if(t.hasAttribute('data-change')){ me = null; try{ localStorage.removeItem('pu_vote_me'); }catch(_){} render(); }
+    else if(t.dataset.tab){ tab = t.dataset.tab; render(); }
+    else if(t.dataset.v){ vote(t.dataset.d, t.dataset.v); }
+  });
+  $('voteClose').addEventListener('click', () => $('voteBack').classList.remove('show'));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') $('voteBack').classList.remove('show'); });
+  $('voteOpen').addEventListener('click', () => {
+    if(document.body.classList.contains('peek')){ const lm = $('lockModal'); if(lm) lm.classList.add('show'); return; }  // 미리보기 상태면 멤버 안내
+    $('voteBack').classList.add('show'); load();
+  });
+  load();
+})();
 </script>
 </body>
 </html>
