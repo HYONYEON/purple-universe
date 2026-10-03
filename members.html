@@ -670,6 +670,7 @@
   // ===== 비밀번호 설정 =====
   // 아래 값을 원하는 비밀번호로 바꿔주세요.
   const SITE_PASSWORD = "purple2026";
+  const MEMBER_TOKEN = "ok:" + SITE_PASSWORD.length + ":" + SITE_PASSWORD.split("").reverse().join("");   // 비밀번호가 바뀌면 값도 바뀜
 
   /* ===================== 모임 일정 =====================
      ▼ 매주(또는 격주) 반복되는 일정은 여기에 규칙으로 넣습니다.
@@ -865,7 +866,8 @@
     const si = document.getElementById('searchInput');
     if(si) si.readOnly = false;
     closeLock();
-    sessionStorage.setItem('pu_members_unlocked', '1');
+    // 한 번 들어오면 이 브라우저에선 계속 로그인 (비밀번호를 바꾸면 모두 다시 입력)
+    try{ localStorage.setItem('pu_members_unlocked', MEMBER_TOKEN); }catch(e){}
     // 세션당 한 번만 이번 주 알림 팝업 표시
     if(!sessionStorage.getItem('pu_weekly_popup_seen')){
       weeklyPopup.classList.add('show');
@@ -890,8 +892,9 @@
     weeklyPopup.classList.remove('show');
   });
 
-  // 시작 상태 — 이번 세션에 이미 들어왔던 멤버면 그대로, 아니면 미리보기
-  if(sessionStorage.getItem('pu_members_unlocked') === '1'){
+  // 시작 상태 — 이 브라우저에서 이미 들어왔던 멤버면 그대로, 아니면 미리보기
+  let saved = null; try{ saved = localStorage.getItem('pu_members_unlocked'); }catch(e){}
+  if(saved === MEMBER_TOKEN){
     unlock();
   } else {
     document.body.classList.add('peek');
