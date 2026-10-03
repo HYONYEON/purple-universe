@@ -5,7 +5,7 @@ window.NOTES = [
   {
     "cat": "insight",
     "date": "2026-10-03",
-    "title": "기획의 모든 것ㅣ무빙워터",
+    "title": "기획의 모든 것 (무엇을, 무엇으로, 어떻게)ㅣ무빙워터",
     "desc": "",
     "yt": "https://youtu.be/ZSzWRCz5hHc",
     "img": "",
