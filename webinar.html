@@ -156,16 +156,12 @@
   .duo{display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:70px; align-items:start;}
   .duo .sec{margin-top:0; min-width:0;}
   .feat .w-card{cursor:pointer;}
-  .feat .w-card{flex-direction:row; min-height:0;}
-  .feat .w-poster{width:46%; flex:none; border-bottom:none; border-right:1px solid var(--border);}
-  .feat .w-body{padding:26px 24px; justify-content:center; gap:12px;}
+  /* 대표 카드: 위 포스터(잘림 없이 4:5 그대로) · 아래 문구 */
+  .feat .w-body{padding:24px 26px 26px; gap:12px;}
   .feat .w-card h3{font-size:21px;}
   .feat .w-meta{font-size:19.5px;}   /* 대표 카드의 일시 · 시간은 크게 */
   .feat .w-card p{font-size:15px;}
-  @media(max-width:560px){
-    .feat .w-card{flex-direction:column;}
-    .feat .w-poster{width:100%; border-right:none; border-bottom:1px solid var(--border);}
-  }
+
   .rail-head{display:flex; justify-content:space-between; align-items:center; margin:26px 0 12px;}
   .rail-head span{font-size:14px; font-weight:600; color:var(--text-faint);}
   .rail-btns{display:flex; gap:6px;}
@@ -702,8 +698,8 @@ function formHTML(w){
         '<input id="fName" name="name" autocomplete="name" maxlength="30" required></div>' +
       '<div class="f-field"><label for="fPhone">휴대폰 번호</label>' +
         '<input id="fPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-0000-0000" maxlength="13" required></div>' +
-      '<div class="f-field full"><label for="fJob">하시는 일<span class="opt">(선택)</span></label>' +
-        '<input id="fJob" name="job" maxlength="60" placeholder="예) 필라테스 센터 운영, 1인 브랜드 준비 중"></div>' +
+      '<div class="f-field full"><label for="fJob">' + KW(w) + '를 듣고 싶은 이유<span class="opt">(선택)</span></label>' +
+        '<input id="fJob" name="job" maxlength="150" placeholder="예) 콘텐츠를 꾸준히 올리는데 반응이 없어서 방향을 잡고 싶어요"></div>' +
     '</div>' +
     '<label class="f-check"><input type="checkbox" id="fAgree">' +
       '<span><b>[필수]</b> ' + KW(w) + ' 안내 문자 수신 및 개인정보 수집에 동의합니다.' +
