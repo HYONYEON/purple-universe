@@ -388,6 +388,12 @@
     background:var(--bg-alt); border:1px solid var(--border); margin-bottom:14px;
   }
   .resource-embed iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+  .resource-embed.yt-lite{cursor:pointer;}
+  .resource-embed.yt-lite img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+  .yt-play{position:absolute; left:50%; top:50%; width:64px; height:44px; transform:translate(-50%,-50%); border-radius:12px;
+    background:rgba(255,0,0,.88); box-shadow:0 6px 20px rgba(0,0,0,.45); transition:transform .15s;}
+  .yt-play::after{content:''; position:absolute; left:26px; top:13px; border-style:solid; border-width:9px 0 9px 15px; border-color:transparent transparent transparent #fff;}
+  .resource-embed.yt-lite:hover .yt-play{transform:translate(-50%,-50%) scale(1.08);}
   .resource-embed .embed-empty{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     text-align:center; padding:0 14px; font-size:13.5px; color:var(--text-faint); line-height:1.5;
@@ -1196,14 +1202,20 @@
   document.querySelectorAll('.resource-embed').forEach(function(box){
     var id = ytId(box.getAttribute('data-yt'));
     if(id){
-      var f = document.createElement('iframe');
-      f.src = 'https://www.youtube.com/embed/' + id;
-      f.title = '전체 줌미팅 녹화본';
-      f.loading = 'lazy';
-      f.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-      f.referrerPolicy = 'strict-origin-when-cross-origin';
-      f.allowFullscreen = true;
-      box.appendChild(f);
+      // 썸네일 이미지를 먼저 보여주고, 누르면 그 자리에서 영상 재생 (가볍고 썸네일이 항상 보임)
+      box.classList.add('yt-lite');
+      box.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt="전체 줌미팅 녹화본" loading="lazy">' +
+                      '<span class="yt-play" aria-hidden="true"></span>';
+      box.addEventListener('click', function(){
+        if(document.body.classList.contains('peek')) return;          // 미리보기는 잠금 안내가 처리
+        var f = document.createElement('iframe');
+        f.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+        f.title = '전체 줌미팅 녹화본';
+        f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        f.referrerPolicy = 'strict-origin-when-cross-origin';
+        f.allowFullscreen = true;
+        box.innerHTML = ''; box.appendChild(f); box.classList.remove('yt-lite');
+      });
     } else {
       var p = document.createElement('div');
       p.className = 'embed-empty';
