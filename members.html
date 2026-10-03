@@ -122,6 +122,9 @@
   .net-box h3{font-size:22px; margin:8px 40px 6px 0;}
   .net-body{display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:18px; align-items:start;}
   .net-inline{margin-top:6px;}
+  .net-tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .net-glink{stroke:#5FD08A; stroke-width:2.4; opacity:.75;}
+  .net-node.grp circle.ring{stroke:#5FD08A; stroke-width:3; stroke-dasharray:none; fill:#123322;}
   .net-stage{border-radius:18px; border:1px solid var(--border);
     background:radial-gradient(circle at 50% 50%, rgba(124,77,255,.18), transparent 60%), var(--bg);}
   #netSvg{width:100%; height:auto; display:block;}
@@ -158,6 +161,11 @@
     transition:transform .15s ease, border-color .15s ease;}
   .vote-cta:hover{transform:translateY(-2px); border-color:var(--purple-bright);}
   .vote-cta-ic{font-size:26px;}
+  /* 제목 왼쪽 · 투표 카드 오른쪽 */
+  .sched-head{display:flex; align-items:center; gap:24px; margin-bottom:18px;}
+  .m-section .sched-head h2{margin:0; flex:none;}
+  .sched-head .vote-cta{flex:1; margin:0;}
+  @media(max-width:760px){ .sched-head{flex-direction:column; align-items:stretch; gap:14px;} }
   .vote-cta-t{flex:1; display:flex; flex-direction:column; gap:2px;}
   .vote-cta-t b{font-size:17px;} .vote-cta-t small{font-size:13.5px; color:var(--text-dim);}
   .vote-cta-go{font-weight:700; color:var(--gold-soft); font-size:15px; white-space:nowrap;}
@@ -625,13 +633,15 @@
   <section class="m-section">
     <div class="wrap">
       <span class="eyebrow">SCHEDULE</span>
+      <div class="sched-head">
       <h2>앞으로 3개월 모임 일정</h2>
-      <!-- 멤버 날짜 투표 (Vote.gs) -->
+      <!-- 멤버 날짜 투표 (Vote.gs) — 제목 오른쪽 -->
       <button class="vote-cta" id="voteOpen" type="button">
         <span class="vote-cta-ic">🗳</span>
         <span class="vote-cta-t"><b>모임 일정 · 날짜 투표</b><small id="voteCtaSub">가능한 날짜를 눌러주세요</small></span>
         <span class="vote-cta-go">투표하기 →</span>
       </button>
+      </div>
       <div class="page-cal" id="pageCal"><p class="vote-empty">일정을 불러오는 중…</p></div>
     </div>
   </section>
@@ -696,6 +706,7 @@
       <span class="eyebrow">COLLAB MAP</span>
       <h2>멤버 협업 맵</h2>
       <p>멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.</p>
+      <div class="net-tabs" id="netTabs"></div>
       <div class="net-body net-inline">
         <div class="net-stage"><svg id="netSvg" viewBox="0 0 800 640" aria-hidden="true"></svg></div>
         <aside class="net-side" id="netSide"></aside>
@@ -1118,6 +1129,7 @@
       const r = await (await fetch(API + '?action=vote&t=' + Date.now(), { cache:'no-store' })).json();
       if(!r.ok || !r.members) throw new Error(r.error || 'old');
       D = r; loaded = true;
+      window.dispatchEvent(new CustomEvent('pu-vote-data', { detail: r }));   // 협업 맵 탭(협업그룹)에도 전달
       if(me && D.members.indexOf(me) < 0) me = null;
     }catch(e){ if(!D.members.length) loaded = false; }      // 한 번 불러온 뒤엔 재시도 실패해도 화면 유지
     if(!tab || !candsOf(tab).length){ tab = D.types.find(t => openOf(t).length) || D.types.find(t => candsOf(t).length) || D.types[0]; }
@@ -1305,33 +1317,58 @@
     pos[m.name] = { x: CX + R*Math.cos(a), y: CY + R*0.92*Math.sin(a) };
   });
   const linksOf = n => NET_LINKS.filter(l => l[0] === n || l[1] === n);
+  /* 탭 — '전체 협업' + 구글 시트 '협업그룹' 탭의 그룹들 (예: 웰니스 프로그램) */
+  let GROUPS = { '웰니스 프로그램': [] }, mode = 'all';
+  const inGroup = n => mode !== 'all' && (GROUPS[mode] || []).indexOf(n) >= 0;
+  function tabs(){
+    $('netTabs').innerHTML = ['all'].concat(Object.keys(GROUPS)).map(k =>
+      '<button class="vtab' + (k === mode ? ' on' : '') + '" type="button" data-mode="' + esc(k) + '" style="--c:' + (k === 'all' ? '#A98BFF' : '#5FD08A') + '"><i></i>' +
+      (k === 'all' ? '전체 협업' : esc(k)) + (k === 'all' ? '' : '<small>' + (GROUPS[k] || []).length + '명</small>') + '</button>').join('');
+  }
+  $('netTabs').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if(!b) return; mode = b.dataset.mode; sel = null; tabs(); draw(); });
+  window.addEventListener('pu-vote-data', e => {
+    const g = (e.detail && e.detail.groups) || {};
+    if(Object.keys(g).length) GROUPS = g;
+    if(mode !== 'all' && !GROUPS[mode]) mode = 'all';
+    tabs(); draw();
+  });
 
   function draw(){
     const svg = $('netSvg'); let h = '<defs><radialGradient id="hubGrad"><stop offset="0" stop-color="#9B6BFF"/><stop offset="1" stop-color="#4b2a9e"/></radialGradient></defs>';
     NET_MEMBERS.forEach(m => { const p = pos[m.name]; h += '<line class="net-spoke" x1="' + CX + '" y1="' + CY + '" x2="' + p.x + '" y2="' + p.y + '"/>'; });
-    const act = sel ? new Set(linksOf(sel).flatMap(l => [l[0], l[1]])) : null;
-    NET_LINKS.forEach(l => {
+    const grp = mode !== 'all';
+    const act = grp ? new Set(GROUPS[mode] || []) : sel ? new Set(linksOf(sel).flatMap(l => [l[0], l[1]])) : null;
+    if(grp) (GROUPS[mode] || []).forEach(n => { const p = pos[n]; if(p) h += '<line class="net-glink" x1="' + CX + '" y1="' + CY + '" x2="' + p.x + '" y2="' + p.y + '"/>'; });
+    if(!grp) NET_LINKS.forEach(l => {
       const a = pos[l[0]], b = pos[l[1]]; if(!a || !b) return;
       const mx = (a.x + b.x)/2, my = (a.y + b.y)/2;          // 가운데 쪽으로 휘는 곡선
       const qx = mx + (CX - mx)*0.45, qy = my + (CY - my)*0.45;
       const on = sel && (l[0] === sel || l[1] === sel);
       h += '<path class="net-link' + (on ? ' on' : sel ? ' dim' : '') + '" d="M' + a.x + ',' + a.y + ' Q' + qx + ',' + qy + ' ' + b.x + ',' + b.y + '"/>';
     });
-    h += '<g class="net-hub" data-hub><circle cx="' + CX + '" cy="' + CY + '" r="62"/><text x="' + CX + '" y="' + (CY-2) + '">' + esc(NET_HUB.name) + '</text>' +
-         '<text x="' + CX + '" y="' + (CY+18) + '" style="font-size:11px;font-weight:500;fill:#E4DAFF">' + esc(NET_HUB.sub) + '</text></g>';
+    h += '<g class="net-hub" data-hub><circle cx="' + CX + '" cy="' + CY + '" r="62"/><text x="' + CX + '" y="' + (CY-2) + '">' + esc(grp ? mode : NET_HUB.name) + '</text>' +
+         '<text x="' + CX + '" y="' + (CY+18) + '" style="font-size:11px;font-weight:500;fill:#E4DAFF">' + esc(grp ? (GROUPS[mode] || []).length + '명 참여' : NET_HUB.sub) + '</text></g>';
     NET_MEMBERS.forEach(m => {
-      const p = pos[m.name], cls = 'net-node' + (m.biz ? '' : ' todo') + (sel === m.name ? ' on' : act && !act.has(m.name) ? ' dim' : '');
+      const p = pos[m.name], cls = 'net-node' + (m.biz ? '' : ' todo') + (inGroup(m.name) ? ' grp' : sel === m.name ? ' on' : act && !act.has(m.name) ? ' dim' : '');
       const biz = m.biz ? (m.biz.length > 11 ? m.biz.slice(0, 11) + '…' : m.biz) : '사업 입력 필요';
       h += '<g class="' + cls + '" data-n="' + esc(m.name) + '"><circle class="ring" cx="' + p.x + '" cy="' + p.y + '" r="40"/>' +
            '<text x="' + p.x + '" y="' + (p.y + 2) + '">' + esc(m.name) + '</text>' +
            '<text class="biz" x="' + p.x + '" y="' + (p.y + 58) + '">' + esc(biz) + '</text>' +
-           (linksOf(m.name).length ? '<circle cx="' + (p.x + 29) + '" cy="' + (p.y - 29) + '" r="10" fill="#E8B85E"/><text x="' + (p.x + 29) + '" y="' + (p.y - 25) + '" style="font-size:11px;fill:#1a1030">' + linksOf(m.name).length + '</text>' : '') + '</g>';
+           (!grp && linksOf(m.name).length ? '<circle cx="' + (p.x + 29) + '" cy="' + (p.y - 29) + '" r="10" fill="#E8B85E"/><text x="' + (p.x + 29) + '" y="' + (p.y - 25) + '" style="font-size:11px;fill:#1a1030">' + linksOf(m.name).length + '</text>' : '') + '</g>';
     });
     svg.innerHTML = h;
     side();
   }
   function side(){
     const box = $('netSide');
+    if(mode !== 'all'){
+      const list = GROUPS[mode] || [];
+      box.innerHTML = '<h4>' + esc(mode) + '</h4><div class="biz">참여 멤버 ' + list.length + '명</div>' +
+        (list.length ? '<ul>' + list.map(n => { const b = (NET_MEMBERS.find(x => x.name === n) || {}).biz; return '<li><b>' + esc(n) + '</b>' + (b ? ' · ' + esc(b) : '') + '</li>'; }).join('') + '</ul>'
+                     : '<p class="hint">아직 참여 멤버가 없어요.</p>') +
+        '<p class="todo">참여 멤버는 운영진이 구글 시트 협업그룹 탭에서 정해요.</p>';
+      return;
+    }
     if(!sel){
       box.innerHTML = '<h4>협업 맵 보는 법</h4><p class="hint">· 동그라미 = 멤버, 노란 숫자 = 연결된 협업 수<br>· 멤버를 누르면 연결선이 빛나고, 여기에 협업 아이디어가 나와요<br>· 점선 동그라미는 아직 사업 정보가 없는 멤버예요</p>' +
         '<div class="lb">전체 협업 아이디어 ' + NET_LINKS.length + '개</div><ul>' +
@@ -1344,10 +1381,10 @@
       (ls.length ? '<ul>' + ls.map(l => { const o = l[0] === sel ? l[1] : l[0]; return '<li><b data-go="' + esc(o) + '">' + esc(o) + '</b> · ' + esc((NET_MEMBERS.find(x => x.name === o) || {}).biz || '') + '<br>' + esc(l[2]) + '</li>'; }).join('') + '</ul>'
                  : '<p class="hint">아직 연결된 협업이 없어요. 줌미팅에서 사업을 소개해 주시면 연결을 이어드릴게요.</p>');
   }
-  function pick(n){ sel = (sel === n ? null : n); draw(); }
+  function pick(n){ if(mode !== 'all'){ mode = 'all'; tabs(); } sel = (sel === n ? null : n); draw(); }
   $('netSvg').addEventListener('click', e => { const g = e.target.closest('[data-n]'); if(g) pick(g.dataset.n); else if(e.target.closest('[data-hub]')){ sel = null; draw(); } });
   $('netSide').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if(b){ sel = b.dataset.go; draw(); } });
-  draw();                                                   // 페이지에 바로 그림
+  tabs(); draw();                                           // 페이지에 바로 그림
 })();
 </script>
 
