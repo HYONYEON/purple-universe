@@ -335,6 +335,20 @@
   .agent-note{font-size:13.5px; color:var(--text-faint); margin-top:12px;}
 
   /* ---------- RESOURCE GRID ---------- */
+  /* 줌미팅: 한 화면에 3개, 나머지는 옆으로 넘겨 보기 */
+  .zoom-rail-wrap{position:relative;}
+  .resource-grid.zoom-rail{display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:10px;
+    scrollbar-width:thin; scrollbar-color:var(--border-strong) transparent;}
+  .zoom-rail::-webkit-scrollbar{height:6px;}
+  .zoom-rail::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:3px;}
+  .zoom-rail > .resource-card{flex:0 0 calc((100% - 36px) / 3); scroll-snap-align:start;}
+  .zr-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:13.5px; color:var(--text-faint);}
+  .zr-btns{display:flex; gap:8px;}
+  .zr-btn{width:38px; height:38px; border-radius:50%; cursor:pointer; background:var(--surface); border:1px solid var(--border-strong); color:var(--text); font-size:16px;}
+  .zr-btn:hover{border-color:var(--purple-bright);}
+  .zr-btn:disabled{opacity:.3; cursor:default;}
+  @media(max-width:900px){ .zoom-rail > .resource-card{flex-basis:calc((100% - 18px) / 2);}  }
+  @media(max-width:600px){ .zoom-rail > .resource-card{flex-basis:85%;} }
   .resource-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
   @media(max-width:900px){ .resource-grid{grid-template-columns:1fr 1fr;} }
   @media(max-width:600px){ .resource-grid{grid-template-columns:1fr;} }
@@ -637,38 +651,37 @@
         data-yt="ABC123"  ← v= 뒤의 값만 넣어주세요. (일부공개 영상도 그대로 됩니다)
         새 회차를 추가할 땐 <div class="resource-card"> 블록을 통째로 복사하세요.
       -->
-      <div class="resource-grid" id="zoomGrid">
+      <div class="zoom-rail-wrap">
+        <div class="zr-head"><span>최신 3개 · 옆으로 넘기면 지난 녹화본</span><span class="zr-btns">
+          <button class="zr-btn" type="button" data-zr="-1" aria-label="이전">←</button>
+          <button class="zr-btn" type="button" data-zr="1" aria-label="다음">→</button></span></div>
+        <div class="resource-grid zoom-rail" id="zoomGrid">
         <!-- 최신순(왼쪽이 최신). 새 녹화본은 맨 위에 카드 한 개를 복사해 넣으면 됩니다 -->
         <div class="resource-card">
           <div class="resource-embed" data-yt="P_XjmVSGdw4"></div>
           <span class="resource-date">2026.09.20</span>
-          <h4>9월 20일 전체 줌미팅</h4>
         </div>
         <div class="resource-card">
           <div class="resource-embed" data-yt="T-5mM1732Qk"></div>
           <span class="resource-date">2026.09.13</span>
-          <h4>9월 13일 전체 줌미팅</h4>
         </div>
         <div class="resource-card">
           <div class="resource-embed" data-yt="atI3RsONvyg"></div>
           <span class="resource-date">2026.08.23</span>
-          <h4>8월 23일 전체 줌미팅</h4>
         </div>
         <div class="resource-card">
           <div class="resource-embed" data-yt="jkH8Q0JP5h8"></div>
           <span class="resource-date">2026.08.09</span>
-          <h4>8월 9일 전체 줌미팅</h4>
         </div>
         <div class="resource-card">
           <div class="resource-embed" data-yt="5gb_WttJ9yw"></div>
           <span class="resource-date">2026.08.02</span>
-          <h4>8월 2일 전체 줌미팅</h4>
         </div>
         <div class="resource-card">
           <div class="resource-embed" data-yt="ZxtiFjvpFlU"></div>
           <span class="resource-date">2026.07.12</span>
-          <h4>7월 12일 전체 줌미팅</h4>
         </div>
+      </div>
       </div>
       </div>
       <p class="no-result" id="zoomNoResult">검색 결과가 없어요.</p>
@@ -1259,10 +1272,8 @@
    NET_LINKS   : [멤버A, 멤버B, '협업 아이디어']  ← 여기에 한 줄씩 추가하면 선이 생깁니다.
    ※ 사업을 모르는 멤버는 biz 를 비워두면 '사업 입력 필요'로 점선 표시됩니다. */
 (function(){
-  const NET_HUB = { name:'퍼플 유니버스', sub:'콘텐츠 기획 · 영상 제작' };
+  const NET_HUB = { name:'퍼플 유니버스', sub:'김효년 · 구주인' };   // 리더 두 사람은 가운데 허브로
   const NET_MEMBERS = [
-    { name:'김효년', biz:'콘텐츠 기획 (퍼플 유니버스)' },
-    { name:'구주인', biz:'영상 제작 (주인씨필름)' },
     { name:'김미경', biz:'' },
     { name:'김성아', biz:'' },
     { name:'김승리', biz:'' },
@@ -1283,11 +1294,7 @@
     ['박헌관', '윤정하', '건강 관리 제품 번들 · 웰니스 프로그램 공동 운영'],
     ['윤정하', '김정연', '건강 제품 유통 채널 연결'],
     ['박헌관', '김정연', '웰니스 커뮤니티 공동 행사'],
-    ['노미경', '김정연', '고객 네트워크 상호 소개'],
-    ['구주인', '허준수', '매장 브랜드 영상 · 메뉴 숏폼 촬영'],
-    ['구주인', '노미경', '매물 소개 영상 · 지역 콘텐츠'],
-    ['김효년', '박헌관', '웰니스 브랜드 콘텐츠 기획'],
-    ['김효년', '윤정하', '제품 상세페이지 · 숏폼 기획']
+    ['노미경', '김정연', '고객 네트워크 상호 소개']
   ];
 
   const $ = id => document.getElementById(id);
@@ -1343,6 +1350,20 @@
   $('netSvg').addEventListener('click', e => { const g = e.target.closest('[data-n]'); if(g) pick(g.dataset.n); else if(e.target.closest('[data-hub]')){ sel = null; draw(); } });
   $('netSide').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if(b){ sel = b.dataset.go; draw(); } });
   draw();                                                   // 페이지에 바로 그림
+})();
+</script>
+
+<script>
+/* 줌미팅 가로 넘기기 */
+(function(){
+  const rail = document.getElementById('zoomGrid'); if(!rail) return;
+  const btns = document.querySelectorAll('[data-zr]');
+  const step = () => { const c = rail.querySelector('.resource-card'); return c ? c.getBoundingClientRect().width + 18 : 300; };
+  const sync = () => {
+    btns.forEach(b => b.disabled = (+b.dataset.zr < 0) ? rail.scrollLeft < 5 : rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 5);
+  };
+  btns.forEach(b => b.addEventListener('click', () => rail.scrollBy({ left: (+b.dataset.zr) * step() * 3, behavior:'smooth' })));
+  rail.addEventListener('scroll', sync, { passive:true }); window.addEventListener('resize', sync); setTimeout(sync, 300);
 })();
 </script>
 </body>
