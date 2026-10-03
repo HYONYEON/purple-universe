@@ -1140,7 +1140,8 @@
     // 뒤에서 조용히 확인 — 대표님이 승인을 풀었으면 로그아웃 (연결 실패는 그냥 유지)
     memberPost({ action:'memberCheck', phone:window.PU_MEMBER.phone, token:window.PU_MEMBER.token })
       .then(r => {
-        if(r && r.ok === false && r.error === 'logout'){   // 승인이 풀렸을 때만 로그아웃 (서버 오류 · 연결 문제로는 절대 안 풀림) try{ localStorage.removeItem('pu_member'); }catch(e){} alert('로그인이 만료됐어요. 휴대폰 번호로 다시 로그인해 주세요.'); location.reload(); }
+        // 승인이 풀렸을 때만 로그아웃 (서버 오류 · 연결 문제로는 절대 안 풀림)
+        if(r && r.ok === false && r.error === 'logout'){ try{ localStorage.removeItem('pu_member'); }catch(e){} alert('로그인이 만료됐어요. 휴대폰 번호로 다시 로그인해 주세요.'); location.reload(); }
         else if(r && r.ok && r.name && r.name !== window.PU_MEMBER.name){ window.PU_MEMBER.name = r.name; try{ localStorage.setItem('pu_member', JSON.stringify(window.PU_MEMBER)); }catch(e){} }
       }).catch(() => {});
   } else {
