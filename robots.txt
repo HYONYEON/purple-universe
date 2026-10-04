@@ -4,6 +4,8 @@ Disallow: /manage-a13l742d7a.html
 Disallow: /manage-a13l742d7a
 Disallow: /manage-webinar-d1j751qwtf.html
 Disallow: /manage-webinar-d1j751qwtf
+Disallow: /manage-journey-r8k3m2.html
+Disallow: /manage-journey-r8k3m2
 Disallow: /review-yy7cw90873.html
 Disallow: /review-yy7cw90873
 Disallow: /apply.html

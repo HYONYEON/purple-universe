@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>여정 맵 관리 — 퍼플 유니버스</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08050F; --bg-alt:#0F0A1E; --bg-alt2:#140D26;
+    --surface:rgba(255,255,255,.045); --border:rgba(184,155,255,.16); --border-strong:rgba(184,155,255,.32);
+    --purple:#7C4DFF; --purple-bright:#A98BFF; --gold:#E8B85E; --gold-soft:#F3D89A;
+    --text:#F4F1FC; --text-dim:#B7ACD1; --text-faint:#756A94; --ok:#5FD08A;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:'IBM Plex Sans KR',sans-serif; line-height:1.6; word-break:keep-all;}
+  .wrap{max-width:1400px; margin:0 auto; padding:0 24px;}
+  header{border-bottom:1px solid var(--border); background:var(--bg-alt); padding:16px 0; position:sticky; top:0; z-index:50;}
+  header .wrap{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+  .eyebrow{font-family:'Space Grotesk'; font-size:12.5px; letter-spacing:.16em; color:var(--purple-bright); font-weight:600;}
+  h1{font-size:22px;} h2{font-size:17px; margin-bottom:12px;}
+  .btn{border:none; border-radius:100px; padding:10px 20px; font-size:14.5px; font-weight:600; font-family:inherit; cursor:pointer; white-space:nowrap;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .btn-p{background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff;}
+  .btn-g{background:var(--surface); color:var(--text); border:1px solid var(--border-strong);}
+  .btn-sm{padding:6px 12px; font-size:13px;}
+  .btn-d{background:rgba(255,90,90,.12); color:#FF9B9B; border:1px solid rgba(255,90,90,.3);}
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px;}
+  label{display:block; font-size:13.5px; color:var(--text-dim); font-weight:600; margin:12px 0 6px;}
+  label small{font-weight:400; color:var(--text-faint);}
+  input[type=text], input[type=password], textarea{width:100%; padding:10px 13px; border-radius:10px; border:1px solid var(--border); background:var(--bg-alt); color:var(--text); font-size:14.5px; font-family:inherit;}
+  textarea{resize:vertical; min-height:84px; line-height:1.65;}
+  input:focus, textarea:focus{outline:none; border-color:var(--purple-bright);}
+  .hint{font-size:12.5px; color:var(--text-faint); margin-top:5px;}
+
+  /* 로그인 */
+  #gate{max-width:440px; margin:80px auto;}
+  #gateErr{color:#FF9B9B; font-size:13.5px; margin-top:10px; min-height:18px;}
+
+  /* 미리보기 */
+  .stage{margin-top:20px; border-radius:18px; border:1px solid var(--border); background:radial-gradient(900px 400px at 30% 30%, rgba(124,77,255,.16), transparent 70%), var(--bg-alt); overflow-x:auto; padding:6px 0;}
+  .stage svg{display:block; margin:0 auto;}
+  .stage-h{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; flex-wrap:wrap;}
+  .stage-h p{font-size:13px; color:var(--text-faint);}
+
+  /* 편집 */
+  .grid{display:grid; grid-template-columns:minmax(0,420px) minmax(0,1fr); gap:18px; margin:18px 0 60px;}
+  @media(max-width:980px){ .grid{grid-template-columns:1fr;} }
+  .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px;}
+  .tab{padding:7px 14px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text-dim); cursor:pointer; font-size:13.5px; font-weight:600; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+  .tab i{width:9px; height:9px; border-radius:50%; background:var(--c);}
+  .tab.on{background:#F4F1FC; color:#140D26; border-color:#F4F1FC;}
+  .sts{list-style:none; display:flex; flex-direction:column; gap:7px; margin-top:8px;}
+  .sts li{display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:11px; border:1px solid var(--border); background:var(--bg-alt); cursor:pointer;}
+  .sts li.on{border-color:var(--purple-bright); background:rgba(124,77,255,.14);}
+  .sts .no{width:22px; height:22px; border-radius:50%; background:var(--c); color:#120B22; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:none;}
+  .sts .t{flex:1; font-size:14px; font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .sts button{background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; padding:2px 5px;}
+  .sts button:hover{color:var(--text);}
+  .sw{display:flex; gap:8px; flex-wrap:wrap;}
+  .sw button{width:30px; height:30px; border-radius:50%; border:2px solid transparent; cursor:pointer; background:var(--c);}
+  .sw button.on{border-color:#fff; box-shadow:0 0 0 2px var(--c);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .row-ic{display:grid; grid-template-columns:90px 1fr; gap:12px;}
+  .side{border-radius:14px; border:1px solid var(--border); background:var(--bg-alt); padding:16px; margin-top:16px; font-size:14px;}
+  .toast{position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(20px); opacity:0; transition:all .25s; background:var(--bg-alt2); border:1px solid var(--border-strong); border-radius:12px; padding:12px 20px; font-size:14px; z-index:100;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .toast.bad{border-color:#FF8A8A;}
+  .dirty{color:var(--gold-soft); font-size:13px; font-weight:600;}
+  /* 오른쪽 자세히 칸 (멤버쉽 페이지와 같은 모양) */
+  .side h4{font-size:18px; margin-bottom:4px;} .j-sub{color:var(--text-dim); font-size:13.5px;} .j-hint{color:var(--text-faint); font-size:13px; margin-top:8px;}
+  .j-lb{font-size:12.5px; font-weight:700; color:var(--text-faint); margin:14px 0 7px;}
+  .side ul{list-style:none; display:flex; flex-direction:column; gap:6px;}
+  .side li{padding:8px 11px; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid var(--border); font-size:13.5px;}
+  .side li.rev{color:var(--gold-soft); border-color:rgba(232,184,94,.35); background:rgba(232,184,94,.08);}
+  .j-step{display:inline-block; font-family:'Space Grotesk'; font-size:12px; font-weight:700; letter-spacing:.12em; color:#120B22; background:var(--c); padding:2px 9px; border-radius:6px; margin-bottom:8px;}
+  .j-mem{display:flex; gap:6px; flex-wrap:wrap;} .j-mem span{padding:4px 10px; border-radius:100px; background:rgba(169,139,255,.14); color:#C9B6FF; font-size:13px;}
+  .j-memo{margin-top:12px; font-size:13px; color:var(--gold-soft);}
+</style>
+</head>
+<body>
+
+<!-- 로그인 (웨비나 관리 페이지와 같은 GitHub 토큰) -->
+<div id="gate" class="card">
+  <span class="eyebrow">JOURNEY MAP ADMIN</span>
+  <h1 style="margin:6px 0 14px;">여정 맵 관리</h1>
+  <label>GitHub 토큰</label><input type="password" id="tokenInput" placeholder="github_pat_…">
+  <label>계정</label><input type="text" id="ownerInput" placeholder="hyonyeon">
+  <label>저장소</label><input type="text" id="repoInput" placeholder="purple-universe">
+  <button class="btn btn-p" id="loginBtn" type="button" style="margin-top:16px; width:100%;">연결하기</button>
+  <p id="gateErr"></p>
+  <p class="hint">웨비나 · 글 관리 페이지에 로그인한 브라우저면 자동으로 연결돼요.</p>
+</div>
+
+<div id="app" style="display:none;">
+  <header><div class="wrap">
+    <div><span class="eyebrow">JOURNEY MAP ADMIN</span><h1>여정 맵 관리</h1></div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <span class="dirty" id="dirty"></span>
+      <a class="btn btn-g" href="/members" target="_blank" rel="noopener">멤버쉽 페이지 ↗</a>
+      <button class="btn btn-p" id="saveBtn" type="button">발행하기</button>
+    </div>
+  </div></header>
+
+  <div class="wrap">
+    <div class="stage-h">
+      <div class="tabs" id="mapTabs"></div>
+      <p>미리보기 — 고치는 대로 바로 바뀌어요. 정거장을 누르면 아래에서 편집할 수 있어요.</p>
+    </div>
+    <div class="stage"><svg id="jSvg"></svg></div>
+
+    <div class="grid">
+      <!-- 왼쪽: 맵 · 정거장 목록 -->
+      <div class="card">
+        <h2>맵 설정 <small style="font-weight:400; color:var(--text-faint); font-size:13px;">· 계열사 · 수익 모델마다 하나씩</small></h2>
+        <label>맵 이름</label><input type="text" id="mName" placeholder="예) 웰니스 프로그램">
+        <label>한 줄 설명</label><input type="text" id="mSub" placeholder="예) 함께 만든 프로그램으로 같이 버는 길">
+        <label>대표 색</label><div class="sw" id="mColor"></div>
+        <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+          <button class="btn btn-g btn-sm" id="addMap" type="button">+ 새 맵 (계열사)</button>
+          <button class="btn btn-g btn-sm" data-mv="-1" type="button">← 맵 순서</button>
+          <button class="btn btn-g btn-sm" data-mv="1" type="button">맵 순서 →</button>
+          <button class="btn btn-d btn-sm" id="delMap" type="button">이 맵 삭제</button>
+        </div>
+
+        <h2 style="margin-top:26px;">정거장 <small style="font-weight:400; color:var(--text-faint); font-size:13px;">· 위에서부터 왼쪽 → 오른쪽 순서</small></h2>
+        <ul class="sts" id="stList"></ul>
+        <button class="btn btn-g btn-sm" id="addSt" type="button" style="margin-top:10px;">+ 정거장 추가</button>
+      </div>
+
+      <!-- 오른쪽: 선택한 정거장 편집 -->
+      <div class="card" id="stForm">
+        <h2 id="stHead">정거장 편집</h2>
+        <div class="row-ic">
+          <div><label>아이콘</label><input type="text" id="sIcon" maxlength="4" placeholder="🚀" style="text-align:center; font-size:20px;"></div>
+          <div><label>제목 <small>· 14자 안쪽이 보기 좋아요</small></label><input type="text" id="sTitle" placeholder="예) 협업 프로젝트"></div>
+        </div>
+        <label>한 줄 설명</label><input type="text" id="sSub" placeholder="예) 서로의 고객을 연결">
+        <label>색</label><div class="sw" id="sColor"></div>
+        <label>함께하는 멤버 <small>· 쉼표로 구분</small></label><input type="text" id="sMembers" placeholder="김미경, 김승리, 박헌관">
+        <div class="row2">
+          <div><label>할 일 <small>· 한 줄에 하나</small></label><textarea id="sTodo" placeholder="웰니스 프로그램&#10;오프라인 세미나"></textarea></div>
+          <div><label>생기는 수익 <small>· 한 줄에 하나 (금색 ₩)</small></label><textarea id="sRev" placeholder="공동 프로그램 매출&#10;제품 체험 판매"></textarea></div>
+        </div>
+        <p class="hint">할 일 + 수익은 정거장마다 7개까지 가지로 그려져요. 긴 문장은 맵에선 줄여서 보이고, 오른쪽 자세히 칸에는 전부 나와요.</p>
+        <label>메모 <small>· 자세히 칸 아래에 금색으로</small></label><input type="text" id="sMemo" placeholder="예) 정유진 — 개인 PT 가능">
+        <div class="side" id="jSide"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="journey-data.js"></script>
+<script src="journey-render.js"></script>
+<script>
+const DATA_FILE = 'journey-data.js';
+const COLORS = ['#A98BFF','#4FB3FF','#5FD08A','#B8F03C','#E8B85E','#FF8A65','#FF7EB6','#9AA3B5'];
+let TOKEN='', OWNER='', REPO='', BRANCH='main', sha=null;
+let J = JSON.parse(JSON.stringify(window.JOURNEY || { maps: [] }));
+let mi = 0, si = null, dirty = false;
+const $ = id => document.getElementById(id);
+function toast(m, ok){ const t = $('toast'); t.textContent = m; t.className = 'toast show' + (ok === false ? ' bad' : ''); clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast', 3800); }
+function b64e(str){ const b = new TextEncoder().encode(str); let s = ''; b.forEach(c => s += String.fromCharCode(c)); return btoa(s); }
+function b64d(b64){ return new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0))); }
+async function gh(path, opts){
+  const r = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + path, Object.assign({
+    headers:{ 'Authorization':'Bearer ' + TOKEN, 'Accept':'application/vnd.github+json' }, cache:'no-store' }, opts || {}));
+  if(!r.ok) throw new Error(r.status + ' ' + (await r.text()).slice(0, 160));
+  return r.json();
+}
+function setDirty(v){ dirty = v; $('dirty').textContent = v ? '● 발행 안 한 변경이 있어요' : ''; }
+window.addEventListener('beforeunload', e => { if(dirty){ e.preventDefault(); e.returnValue = ''; } });
+
+/* ---------- 로그인 ---------- */
+async function connect(auto){
+  if(!auto){ TOKEN = $('tokenInput').value.trim(); OWNER = $('ownerInput').value.trim(); REPO = $('repoInput').value.trim(); }
+  if(!TOKEN || !OWNER || !REPO){ $('gateErr').textContent = '세 칸을 모두 채워주세요.'; return; }
+  try{
+    const info = await gh(''); BRANCH = info.default_branch || 'main';
+    localStorage.setItem('pu_admin', JSON.stringify({ t:TOKEN, o:OWNER, r:REPO }));
+    try{
+      const f = await gh('/contents/' + DATA_FILE + '?ref=' + BRANCH);
+      sha = f.sha;
+      const m = b64d(f.content.replace(/\n/g, '')).match(/window\.JOURNEY\s*=\s*([\s\S]*?);?\s*$/);
+      if(m) J = JSON.parse(m[1]);
+    }catch(e){ sha = null; toast('아직 발행된 여정 맵이 없어서 예시로 시작해요'); }
+    $('gate').style.display = 'none'; $('app').style.display = 'block';
+    renderAll();
+  }catch(e){ $('gateErr').textContent = '연결 실패: ' + e.message; }
+}
+$('loginBtn').onclick = () => connect(false);
+try{ const c = JSON.parse(localStorage.getItem('pu_admin') || 'null'); if(c && c.t){ TOKEN = c.t; OWNER = c.o; REPO = c.r; connect(true); } }catch(e){}
+
+/* ---------- 그리기 ---------- */
+const map = () => J.maps[mi];
+const st = () => (map() && si != null) ? map().stations[si] : null;
+function swatches(box, cur, onPick){
+  box.innerHTML = COLORS.map(c => '<button type="button" style="--c:' + c + '" class="' + (c === cur ? 'on' : '') + '" data-c="' + c + '"></button>').join('');
+  box.onclick = e => { const b = e.target.closest('[data-c]'); if(b) onPick(b.dataset.c); };
+}
+function renderTabs(){
+  $('mapTabs').innerHTML = J.maps.map((m, i) => '<button class="tab' + (i === mi ? ' on' : '') + '" type="button" data-m="' + i + '" style="--c:' + (m.color || '#A98BFF') + '"><i></i>' + JourneyEsc(m.name || '(이름 없음)') + '</button>').join('');
+}
+function JourneyEsc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function renderPreview(){
+  JourneyMap.render($('jSvg'), map(), { selected: si, onPick: i => { si = i; renderAll(); } });
+  $('jSide').innerHTML = JourneyMap.detail(map(), si);
+}
+function renderMapForm(){
+  const m = map();
+  $('mName').value = m ? (m.name || '') : ''; $('mSub').value = m ? (m.sub || '') : '';
+  swatches($('mColor'), m && m.color, c => { m.color = c; setDirty(true); renderAll(); });
+}
+function renderStations(){
+  const m = map();
+  $('stList').innerHTML = (m ? m.stations : []).map((s, i) =>
+    '<li class="' + (i === si ? 'on' : '') + '" data-s="' + i + '" style="--c:' + (s.color || m.color || '#A98BFF') + '">' +
+    '<span class="no">' + (i + 1) + '</span><span class="t">' + JourneyEsc((s.icon ? s.icon + ' ' : '') + (s.title || '(제목 없음)')) + '</span>' +
+    '<button type="button" data-up="' + i + '" title="앞으로">↑</button><button type="button" data-dn="' + i + '" title="뒤로">↓</button>' +
+    '<button type="button" data-del="' + i + '" title="삭제">✕</button></li>').join('');
+}
+function renderStForm(){
+  const s = st(), on = !!s;
+  $('stForm').style.opacity = on ? 1 : .5;
+  $('stHead').textContent = on ? 'STEP ' + (si + 1) + ' 편집' : '왼쪽에서 정거장을 고르거나 추가하세요';
+  ['sIcon','sTitle','sSub','sMembers','sTodo','sRev','sMemo'].forEach(id => $(id).disabled = !on);
+  $('sIcon').value = on ? (s.icon || '') : ''; $('sTitle').value = on ? (s.title || '') : ''; $('sSub').value = on ? (s.sub || '') : '';
+  $('sMembers').value = on ? (s.members || []).join(', ') : '';
+  $('sTodo').value = on ? (s.todo || []).join('\n') : ''; $('sRev').value = on ? (s.revenue || []).join('\n') : '';
+  $('sMemo').value = on ? (s.memo || '') : '';
+  swatches($('sColor'), on && s.color, c => { if(!st()) return; st().color = c; setDirty(true); renderAll(true); });
+}
+function renderAll(keepForm){
+  if(mi >= J.maps.length) mi = Math.max(0, J.maps.length - 1);
+  if(map() && si != null && si >= map().stations.length) si = null;
+  renderTabs(); renderPreview(); renderStations();
+  if(!keepForm){ renderMapForm(); renderStForm(); }
+}
+
+/* ---------- 입력 ---------- */
+$('mName').oninput = e => { if(!map()) return; map().name = e.target.value; setDirty(true); renderTabs(); renderPreview(); };
+$('mSub').oninput  = e => { if(!map()) return; map().sub = e.target.value; setDirty(true); renderPreview(); };
+const lines = v => v.split('\n').map(x => x.trim()).filter(Boolean);
+const bind = (id, fn) => $(id).oninput = e => { const s = st(); if(!s) return; fn(s, e.target.value); setDirty(true); renderPreview(); renderStations(); };
+bind('sIcon',    (s, v) => s.icon = v.trim());
+bind('sTitle',   (s, v) => s.title = v);
+bind('sSub',     (s, v) => s.sub = v);
+bind('sMembers', (s, v) => s.members = v.split(/[,，]/).map(x => x.trim()).filter(Boolean));
+bind('sTodo',    (s, v) => s.todo = lines(v));
+bind('sRev',     (s, v) => s.revenue = lines(v));
+bind('sMemo',    (s, v) => s.memo = v);
+
+$('mapTabs').onclick = e => { const b = e.target.closest('[data-m]'); if(!b) return; mi = +b.dataset.m; si = null; renderAll(); };
+$('stList').onclick = e => {
+  const m = map(); if(!m) return;
+  const t = e.target.closest('[data-up],[data-dn],[data-del],[data-s]'); if(!t) return;
+  const S = m.stations;
+  if(t.dataset.up != null){ const i = +t.dataset.up; if(i > 0){ [S[i-1], S[i]] = [S[i], S[i-1]]; si = i - 1; setDirty(true); } }
+  else if(t.dataset.dn != null){ const i = +t.dataset.dn; if(i < S.length - 1){ [S[i+1], S[i]] = [S[i], S[i+1]]; si = i + 1; setDirty(true); } }
+  else if(t.dataset.del != null){ const i = +t.dataset.del; if(!confirm('"' + (S[i].title || '') + '" 정거장을 지울까요?')) return; S.splice(i, 1); si = null; setDirty(true); }
+  else si = +t.dataset.s;
+  renderAll();
+};
+$('addSt').onclick = () => {
+  const m = map(); if(!m) return;
+  m.stations.push({ title:'새 정거장', sub:'', icon:'✦', color: m.color || '#A98BFF', members:[], todo:[], revenue:[], memo:'' });
+  si = m.stations.length - 1; setDirty(true); renderAll(); $('sTitle').focus(); $('sTitle').select();
+};
+$('addMap').onclick = () => {
+  const name = prompt('새 맵(계열사 · 수익 모델) 이름', '새 수익 모델'); if(!name) return;
+  J.maps.push({ id:'m' + Date.now().toString(36), name, sub:'', color:'#5FD08A', stations:[
+    { title:'시작', sub:'', icon:'🚀', color:'#5FD08A', members:[], todo:[], revenue:[], memo:'' } ] });
+  mi = J.maps.length - 1; si = 0; setDirty(true); renderAll();
+};
+$('delMap').onclick = () => {
+  if(!map()) return;
+  if(!confirm('"' + map().name + '" 맵을 통째로 지울까요?')) return;
+  J.maps.splice(mi, 1); mi = 0; si = null; setDirty(true); renderAll();
+};
+document.querySelectorAll('[data-mv]').forEach(b => b.onclick = () => {
+  const j = mi + (+b.dataset.mv); if(j < 0 || j >= J.maps.length) return;
+  [J.maps[mi], J.maps[j]] = [J.maps[j], J.maps[mi]]; mi = j; setDirty(true); renderAll();
+});
+
+/* ---------- 발행 ---------- */
+$('saveBtn').onclick = async () => {
+  const b = $('saveBtn'); b.disabled = true; b.textContent = '발행 중…';
+  J.updated = new Date().toISOString().slice(0, 10);
+  const text = '/* 여정 맵 (협업 로드맵)\n   ─ 여정 맵 관리 페이지에서 자동으로 갱신됩니다. 직접 고치면 형식이 깨질 수 있어요. */\n' +
+               'window.JOURNEY = ' + JSON.stringify(J, null, 2) + ';\n';
+  const put = async s => gh('/contents/' + DATA_FILE, { method:'PUT',
+    headers:{ 'Authorization':'Bearer ' + TOKEN, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
+    body: JSON.stringify(Object.assign({ message:'여정 맵 갱신', content:b64e(text), branch:BRANCH }, s ? { sha:s } : {})) });
+  try{
+    let r;
+    try{ r = await put(sha); }
+    catch(e){
+      if(!/^409|^422/.test(e.message)) throw e;
+      const f = await gh('/contents/' + DATA_FILE + '?ref=' + BRANCH + '&t=' + Date.now()).catch(() => null);
+      r = await put(f ? f.sha : null);
+    }
+    sha = r.content.sha; setDirty(false);
+    toast('발행 완료 — 1~2분 뒤 멤버쉽 페이지에 반영돼요');
+  }catch(e){ toast('발행 실패: ' + e.message, false); }
+  finally{ b.disabled = false; b.textContent = '발행하기'; }
+};
+</script>
+</body>
+</html>

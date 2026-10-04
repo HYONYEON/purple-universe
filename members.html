@@ -422,7 +422,24 @@
   body.peek .peek-bar{display:block;}
   /* 협업 맵 — 미리보기에선 통째로 숨기고 잠금 안내만 */
   .net-locked{display:none;}
-  body.peek .net-tabs, body.peek .net-body.net-inline{display:none !important;}
+  body.peek .net-tabs, body.peek .net-body.net-inline, body.peek .j-wrap{display:none !important;}
+  /* 여정 맵 */
+  .j-wrap[hidden], .net-body[hidden]{display:none !important;}
+  .j-subtabs{display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 12px;}
+  .j-subtabs .vtab{font-size:13px; padding:6px 13px;}
+  .j-stage{margin-top:6px; border-radius:20px; border:1px solid var(--border); overflow-x:auto;
+    background:radial-gradient(900px 380px at 30% 35%, rgba(124,77,255,.16), transparent 70%), var(--bg-alt);}
+  .j-stage svg{display:block; height:540px; width:auto; margin:0 auto;}
+  @media(max-width:700px){ .j-stage svg{height:440px;} }
+  .j-side{margin-top:14px; border-radius:16px; border:1px solid var(--border); background:var(--surface); padding:18px 20px; font-size:14px;}
+  .j-side h4{font-size:19px; margin-bottom:3px;} .j-side .j-sub{color:var(--text-dim); font-size:14px;} .j-side .j-hint{color:var(--text-faint); font-size:13px; margin-top:8px;}
+  .j-side .j-lb{font-size:12.5px; font-weight:700; color:var(--text-faint); margin:14px 0 7px;}
+  .j-side ul{list-style:none; display:flex; flex-wrap:wrap; gap:7px;}
+  .j-side li{padding:7px 12px; border-radius:100px; background:rgba(255,255,255,.04); border:1px solid var(--border); font-size:13.5px; color:var(--text-dim);}
+  .j-side li.rev{color:var(--gold-soft); border-color:rgba(232,184,94,.35); background:rgba(232,184,94,.08);}
+  .j-side .j-step{display:inline-block; font-family:'Space Grotesk'; font-size:12px; font-weight:700; letter-spacing:.12em; color:#120B22; background:var(--c); padding:2px 9px; border-radius:6px; margin-bottom:8px;}
+  .j-side .j-mem{display:flex; gap:6px; flex-wrap:wrap;} .j-side .j-mem span{padding:4px 11px; border-radius:100px; background:rgba(169,139,255,.14); color:#C9B6FF; font-size:13px;}
+  .j-side .j-memo{margin-top:12px; font-size:13px; color:var(--gold-soft);}
   body.peek .net-locked{
     display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
     margin-top:22px; padding:70px 24px; border-radius:22px; cursor:pointer;
@@ -771,7 +788,7 @@
     <div class="wrap">
       <span class="eyebrow">COLLAB MAP</span>
       <h2>멤버 협업 맵</h2>
-      <p>멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.</p>
+      <p id="netDesc">멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.</p>
       <div class="net-locked" data-lock>
         <div class="nl-ico">🔒</div>
         <b>멤버에게만 공개되는 협업 맵이에요</b>
@@ -781,6 +798,12 @@
       <div class="net-body net-inline">
         <div class="net-stage"><svg id="netSvg" viewBox="0 0 800 640" aria-hidden="true"></svg></div>
         <aside class="net-side" id="netSide"></aside>
+      </div>
+      <!-- '함께 걸어갈 길' 탭 — 내용은 여정 맵 관리 페이지(manage-journey-r8k3m2)에서 발행 → journey-data.js -->
+      <div class="j-wrap" id="jWrap" hidden>
+        <div class="j-subtabs" id="jTabs"></div>
+        <div class="j-stage"><svg id="jSvg"></svg></div>
+        <div class="j-side" id="jSide"></div>
       </div>
     </div>
   </section>
@@ -1496,18 +1519,29 @@
   const memoOf = n => ((ROLES[mode] || {})[n] || {}).memo || '';
   const rColor = n => ROLE_COLOR[roleOf(n)] || '#A98BFF';
   const inGroup = n => mode !== 'all' && (GROUPS[mode] || []).indexOf(n) >= 0;
+  const J_TAB = '__journey';
+  const hasJourney = () => !!(window.JOURNEY && window.JOURNEY.maps && window.JOURNEY.maps.length && window.JourneyMap);
+  const NET_DESC = '멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.';
+  const J_DESC = '우리가 함께 걸어갈 길이에요. 정거장마다 할 일과 함께하는 멤버, 그리고 생기는 수익이 보여요.';
   function tabs(){
     $('netTabs').innerHTML = ['all'].concat(Object.keys(GROUPS)).map(k =>
       '<button class="vtab' + (k === mode ? ' on' : '') + '" type="button" data-mode="' + esc(k) + '" style="--c:' + (k === 'all' ? '#A98BFF' : '#5FD08A') + '"><i></i>' +
-      (k === 'all' ? '전체 협업' : esc(k)) + (k === 'all' ? '' : '<small>' + (GROUPS[k] || []).length + '명</small>') + '</button>').join('');
+      (k === 'all' ? '전체 협업' : esc(k)) + (k === 'all' ? '' : '<small>' + (GROUPS[k] || []).length + '명</small>') + '</button>').join('') +
+      (hasJourney() ? '<button class="vtab' + (mode === J_TAB ? ' on' : '') + '" type="button" data-mode="' + J_TAB + '" style="--c:#E8B85E"><i></i>🧭 함께 걸어갈 길</button>' : '');
+    const j = mode === J_TAB;
+    document.querySelector('.net-body.net-inline').hidden = j;
+    $('jWrap').hidden = !j;
+    $('netDesc').textContent = j ? J_DESC : NET_DESC;
+    if(j && window.drawJourney) window.drawJourney();
   }
-  $('netTabs').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if(!b) return; mode = b.dataset.mode; sel = null; tabs(); draw(); });
+  $('netTabs').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if(!b) return; mode = b.dataset.mode; sel = null; tabs(); if(mode !== J_TAB) draw(); });
+  window.refreshNetTabs = tabs;   // 여정 맵 데이터가 늦게 읽혀도 탭이 생기도록
   window.addEventListener('pu-vote-data', e => {
     const g = (e.detail && e.detail.groups) || {};
     if(Object.keys(g).length) GROUPS = g;
     ROLES = (e.detail && e.detail.roles) || {};
-    if(mode !== 'all' && !GROUPS[mode]) mode = 'all';
-    tabs(); draw();
+    if(mode !== 'all' && mode !== J_TAB && !GROUPS[mode]) mode = 'all';
+    tabs(); if(mode !== J_TAB) draw();
   });
 
   function draw(){
@@ -1582,6 +1616,28 @@
   };
   btns.forEach(b => b.addEventListener('click', () => rail.scrollBy({ left: (+b.dataset.zr) * step() * 3, behavior:'smooth' })));
   rail.addEventListener('scroll', sync, { passive:true }); window.addEventListener('resize', sync); setTimeout(sync, 300);
+})();
+</script>
+<script src="journey-data.js"></script>
+<script src="journey-render.js"></script>
+<script>
+/* 여정 맵 — journey-data.js(관리 페이지에서 발행)를 그립니다 */
+(function(){
+  if(!window.JourneyMap) return;
+  const J = window.JOURNEY || { maps: [] };
+  if(!J.maps.length) return;
+  let mi = 0, si = null;
+  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  function draw(){
+    document.getElementById('jTabs').innerHTML = J.maps.map((m, i) =>
+      '<button class="vtab' + (i === mi ? ' on' : '') + '" type="button" data-jm="' + i + '" style="--c:' + esc(m.color || '#A98BFF') + '"><i></i>' + esc(m.name) + '</button>').join('');
+    JourneyMap.render(document.getElementById('jSvg'), J.maps[mi], { selected: si, onPick: i => { si = (si === i ? null : i); draw(); } });
+    document.getElementById('jSide').innerHTML = JourneyMap.detail(J.maps[mi], si);
+  }
+  document.getElementById('jTabs').addEventListener('click', e => { const b = e.target.closest('[data-jm]'); if(!b) return; mi = +b.dataset.jm; si = null; draw(); });
+  window.drawJourney = draw;
+  if(window.refreshNetTabs) window.refreshNetTabs();
+  if(!document.getElementById('jWrap').hidden) draw();
 })();
 </script>
 </body>
