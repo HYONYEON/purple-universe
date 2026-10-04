@@ -1522,12 +1522,12 @@
   const J_TAB = '__journey';
   const hasJourney = () => !!(window.JOURNEY && window.JOURNEY.maps && window.JOURNEY.maps.length && window.JourneyMap);
   const NET_DESC = '멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.';
-  const J_DESC = '우리가 함께 걸어갈 길이에요. 정거장마다 할 일과 함께하는 멤버, 그리고 생기는 수익이 보여요.';
+  const J_DESC = '지금 멤버들과 함께 진행 중인 비즈니스예요. 정거장마다 할 일과 함께하는 멤버, 그리고 생기는 수익이 보여요.';
   function tabs(){
-    $('netTabs').innerHTML = ['all'].concat(Object.keys(GROUPS)).map(k =>
+    $('netTabs').innerHTML = ['all'].map(k =>          // 그룹 탭(웰니스 등)은 '현재 진행중인 비즈니스' 탭으로 옮김
       '<button class="vtab' + (k === mode ? ' on' : '') + '" type="button" data-mode="' + esc(k) + '" style="--c:' + (k === 'all' ? '#A98BFF' : '#5FD08A') + '"><i></i>' +
       (k === 'all' ? '전체 협업' : esc(k)) + (k === 'all' ? '' : '<small>' + (GROUPS[k] || []).length + '명</small>') + '</button>').join('') +
-      (hasJourney() ? '<button class="vtab' + (mode === J_TAB ? ' on' : '') + '" type="button" data-mode="' + J_TAB + '" style="--c:#E8B85E"><i></i>🧭 함께 걸어갈 길</button>' : '');
+      (hasJourney() ? '<button class="vtab' + (mode === J_TAB ? ' on' : '') + '" type="button" data-mode="' + J_TAB + '" style="--c:#E8B85E"><i></i>🧭 현재 진행중인 비즈니스</button>' : '');
     const j = mode === J_TAB;
     document.querySelector('.net-body.net-inline').hidden = j;
     $('jWrap').hidden = !j;
@@ -1540,7 +1540,7 @@
     const g = (e.detail && e.detail.groups) || {};
     if(Object.keys(g).length) GROUPS = g;
     ROLES = (e.detail && e.detail.roles) || {};
-    if(mode !== 'all' && mode !== J_TAB && !GROUPS[mode]) mode = 'all';
+    if(mode !== 'all' && mode !== J_TAB) mode = 'all';
     tabs(); if(mode !== J_TAB) draw();
   });
 
