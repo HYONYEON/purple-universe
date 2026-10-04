@@ -834,7 +834,11 @@
   function getMember(){ try{ const m = JSON.parse(localStorage.getItem('pu_member') || 'null'); return m && m.token ? m : null; }catch(e){ return null; } }
   // ?preview=1 로 열면 로그인돼 있어도 '로그아웃된 미리보기 화면'으로 보여줌 (로그인 정보는 그대로 둠)
   const PREVIEW_TEST = /[?&]preview=1/.test(location.search);
-  window.PU_MEMBER = PREVIEW_TEST ? null : getMember();
+  /* 운영자(대표님) — 관리 페이지를 쓰는 브라우저(관리 키가 저장된 브라우저)는 로그인 없이 바로 멤버 화면 */
+  const OWNER_NAME = '김효년';
+  function ownerKey(){ try{ return localStorage.getItem('pu_apply_key') || ''; }catch(e){ return ''; } }
+  function isOwner(){ try{ return !!(ownerKey() || localStorage.getItem('pu_admin')); }catch(e){ return false; } }
+  window.PU_MEMBER = PREVIEW_TEST ? null : (getMember() || (isOwner() ? { name: OWNER_NAME, owner: true } : null));
   async function memberPost(body){
     const r = await fetch(MEMBER_API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
     return r.json();
@@ -1037,6 +1041,7 @@
     if(window.PU_MEMBER){
       document.getElementById('meFootName').textContent = window.PU_MEMBER.name;
       document.getElementById('meFoot').hidden = false;
+      if(window.PU_MEMBER.owner) document.getElementById('logoutBtn').hidden = true;   // 운영자 모드는 로그아웃 없음
     }
     // 이번 달 알림 팝업 — 12시간에 한 번만 (마지막으로 보여준 시간을 브라우저에 기억)
     let lastSeen = 0; try{ lastSeen = Number(localStorage.getItem('pu_popup_seen_at')) || 0; }catch(e){}
@@ -1141,7 +1146,9 @@
     tb.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:500;padding:10px 18px;border-radius:100px;background:#E8B85E;color:#1a1030;font-weight:700;font-size:13.5px;text-decoration:none;box-shadow:0 10px 30px -8px rgba(0,0,0,.7);';
     document.body.appendChild(tb);
   }
-  if(window.PU_MEMBER){
+  if(window.PU_MEMBER && window.PU_MEMBER.owner){
+    unlock();                                   // 운영자는 확인 없이 그대로
+  } else if(window.PU_MEMBER){
     unlock();
     // 뒤에서 조용히 확인 — 대표님이 승인을 풀었으면 로그아웃 (연결 실패는 그냥 유지)
     memberPost({ action:'memberCheck', phone:window.PU_MEMBER.phone, token:window.PU_MEMBER.token })
@@ -1401,7 +1408,8 @@
     renderList(); renderCal();
     try{
       const r = await (await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action:'vote', phone:M.phone, token:M.token, type:tab, date, status:next }) })).json();
+        body: JSON.stringify(M.owner ? { action:'vote', key: ownerKey(), name: M.name, type:tab, date, status:next }
+                             : { action:'vote', phone:M.phone, token:M.token, type:tab, date, status:next }) })).json();
       if(!r.ok) throw new Error(r.error);
     }catch(e){ alert(e.message === 'login' ? '로그인이 만료됐어요. 새로고침 후 다시 로그인해 주세요.' : '저장하지 못했어요. 다시 눌러주세요.'); load(); }
   }
