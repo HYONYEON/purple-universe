@@ -98,6 +98,10 @@
     background:rgba(5,3,10,.72); backdrop-filter:blur(6px); padding:24px;
   }
   .popup-overlay.show{display:flex;}
+  /* 팝업이 떠 있는 동안 뒤 페이지는 스크롤되지 않게 */
+  html:has(.popup-overlay.show), html:has(.lock-modal.show), html:has(.vote-back.show),
+  body:has(.popup-overlay.show), body:has(.lock-modal.show), body:has(.vote-back.show){overflow:hidden;}
+  .popup-overlay, .lock-modal, .vote-back{overscroll-behavior:contain;}
   .popup-box{
     max-width:880px; width:100%; max-height:calc(100vh - 48px); overflow:auto;
     background:var(--bg-alt2); border:1px solid var(--border-strong);
@@ -1612,8 +1616,8 @@
   rail.addEventListener('scroll', sync, { passive:true }); window.addEventListener('resize', sync); setTimeout(sync, 300);
 })();
 </script>
-<script src="journey-data.js"></script>
-<script src="journey-render.js"></script>
+<script>document.write('<script src="journey-data.js?t=' + Date.now() + '"><\/script>');</script>
+<script src="journey-render.js?v=2"></script>
 <script>
 /* 여정 맵 — journey-data.js(관리 페이지에서 발행)를 그립니다 */
 (function(){
