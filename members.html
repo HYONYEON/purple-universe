@@ -363,6 +363,10 @@
   .zr-btns{display:flex; gap:8px; flex:none;}
   .zr-title{display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:22px;}
   .zr-title h2{margin-bottom:0 !important;}
+  .zr-left{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .zr-notion{display:inline-flex; align-items:center; gap:7px; padding:9px 16px; border-radius:100px; font-size:14.5px; font-weight:600;
+    color:var(--text); background:var(--surface); border:1px solid var(--border-strong); text-decoration:none; transition:border-color .18s, background .18s;}
+  .zr-notion:hover{border-color:var(--purple-bright); background:rgba(124,77,255,.14);}
   .net-side .rl{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; margin:16px 0 8px;}
   .net-side .rl i{width:9px; height:9px; border-radius:50%; background:var(--c);}
   .net-side .rl small{color:var(--text-faint); font-weight:500;}
@@ -713,7 +717,7 @@
   <section class="m-section gated">
     <div class="wrap">
       <span class="eyebrow">ZOOM ARCHIVE</span>
-      <div class="zr-title"><h2>전체 줌미팅 다시보기</h2><span class="zr-btns">
+      <div class="zr-title"><div class="zr-left"><h2>전체 줌미팅 다시보기</h2><a class="zr-notion" data-lock href="https://mapa365.notion.site/_-39b9279ab8ee80f39ea7e34b10112f1c?source=copy_link" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M9 8v8M9 8l6 8M15 8v8"/></svg>노션 페이지 열기 ↗</a></div><span class="zr-btns">
           <button class="zr-btn" type="button" data-zr="-1" aria-label="이전">←</button>
           <button class="zr-btn" type="button" data-zr="1" aria-label="다음">→</button></span></div>
       <!--
