@@ -12,6 +12,19 @@
   const cut = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
   const textW = (s, px) => [...String(s)].reduce((w, ch) => w + (/[\x00-\x7F]/.test(ch) ? px * 0.58 : px * 0.98), 0);
   const GOLD = '#E8B85E';
+  /* 긴 문구는 가운데 근처 띄어쓰기에서 두 줄로 (줄마다 최대 22자) */
+  function split2(t){
+    t = String(t || '').trim();
+    if([...t].length <= 18) return [t];
+    const mid = Math.floor(t.length / 2);
+    let at = -1;
+    for(let d = 0; d < mid; d++){
+      if(t[mid - d] === ' '){ at = mid - d; break; }
+      if(t[mid + d] === ' '){ at = mid + d; break; }
+    }
+    const a = at > 0 ? t.slice(0, at) : t.slice(0, mid), b = at > 0 ? t.slice(at + 1) : t.slice(mid);
+    return [cut(a, 22), cut(b, 22)];
+  }
 
   /* svg 하나에 맵 하나를 그립니다. onPick(index) 은 정거장을 눌렀을 때 */
   function render(svg, map, opt){
@@ -37,18 +50,23 @@
               .concat((s.revenue || []).filter(Boolean).map(t => ({ t, k:'rev' }))).slice(0, 9);
       const rows = [[]]; let rw = 0;
       items.forEach(it => {
-        it.label = (it.k === 'rev' ? '₩ ' : '') + cut(it.t, 18);
-        it.w = textW(it.label, 13) + 26;
+        const full = (it.k === 'rev' ? '₩ ' : '') + String(it.t);
+        it.lines = split2(full);                                   // 길면 두 줄로 (자르지 않음)
+        it.w = Math.max.apply(null, it.lines.map(l => textW(l, 13))) + 28;
+        it.h = it.lines.length > 1 ? 48 : 30;
         if(rows[rows.length - 1].length && rw + it.w > ROWW){ rows.push([]); rw = 0; }
         rows[rows.length - 1].push(it); rw += it.w + PGAP;
       });
-      rows.forEach((row, ri) => {
+      let off = 0;
+      rows.forEach(row => {
         const total = row.reduce((a, b) => a + b.w, 0) + PGAP * (row.length - 1);
+        const rh = Math.max.apply(null, row.map(b => b.h));
         let x = p.x - total / 2;
-        const y = up ? p.y - 100 - ri * ROWH : p.y + 100 + ri * ROWH;
+        const y = up ? p.y - 85 - off - rh / 2 : p.y + 85 + off + rh / 2;
+        off += rh + 12;
         row.forEach(b => { b.cx = x + b.w / 2; b.cy = y; x += b.w + PGAP;
           minX = Math.min(minX, b.cx - b.w / 2); maxX = Math.max(maxX, b.cx + b.w / 2);
-          minY = Math.min(minY, b.cy - 16); maxY = Math.max(maxY, b.cy + 16); });
+          minY = Math.min(minY, b.cy - b.h / 2 - 2); maxY = Math.max(maxY, b.cy + b.h / 2 + 2); });
       });
       // 제목 · 설명 · 멤버 자리 (말풍선 반대편)
       const ty = up ? p.y + 76 : p.y - 120;   // 아래쪽 정거장은 제목·멤버를 번호 배지보다 위로
@@ -90,11 +108,11 @@
       const on = sel === i, dim = sel != null && !on;
       let lines = '', pills = '';
       L.items.forEach(it => {
-        const col = it.k === 'rev' ? GOLD : c, ey = it.cy + (L.up ? 15 : -15);
+        const col = it.k === 'rev' ? GOLD : c, ey = it.cy + (L.up ? it.h / 2 : -it.h / 2);
         lines += '<line x1="' + p.x + '" y1="' + p.y + '" x2="' + it.cx + '" y2="' + ey + '" stroke="' + esc(col) + '" stroke-width="1.3" opacity=".45"/>';
         pills += '<g><title>' + esc(it.t) + '</title>' +
-          '<rect x="' + (it.cx - it.w/2) + '" y="' + (it.cy - 15) + '" width="' + it.w + '" height="30" rx="15" fill="' + (it.k === 'rev' ? '#2A2015' : '#140D26') + '" stroke="' + esc(col) + '" stroke-width="1.4"/>' +
-          '<text x="' + it.cx + '" y="' + (it.cy + 4.5) + '" text-anchor="middle" font-size="13" font-weight="' + (it.k === 'rev' ? 700 : 500) + '" fill="' + (it.k === 'rev' ? '#F3D89A' : '#E9E3FA') + '">' + esc(it.label) + '</text></g>';
+          '<rect x="' + (it.cx - it.w/2) + '" y="' + (it.cy - it.h/2) + '" width="' + it.w + '" height="' + it.h + '" rx="' + (it.h > 30 ? 18 : 15) + '" fill="' + (it.k === 'rev' ? '#2A2015' : '#140D26') + '" stroke="' + esc(col) + '" stroke-width="1.4"/>' +
+          it.lines.map((ln, li) => '<text x="' + it.cx + '" y="' + (it.lines.length > 1 ? it.cy - 4 + li * 17 : it.cy + 4.5) + '" text-anchor="middle" font-size="13" font-weight="' + (it.k === 'rev' ? 700 : 500) + '" fill="' + (it.k === 'rev' ? '#F3D89A' : '#E9E3FA') + '">' + esc(ln) + '</text>').join('') + '</g>';
       });
       let g = lines +
            '<circle cx="' + p.x + '" cy="' + p.y + '" r="58" fill="' + esc(c) + '" opacity="' + (on ? .45 : .18) + '" filter="url(#jGlow)"/>' +
