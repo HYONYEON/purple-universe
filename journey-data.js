@@ -85,7 +85,13 @@ window.JOURNEY = {
           "icon": "🚀",
           "color": "#A98BFF",
           "members": [],
-          "todo": [],
+          "todo": [
+            "외국인 관광객(바이어 포함)",
+            "B2B 제휴",
+            "K-스타일 강화",
+            "지자체 연계",
+            "웰니스 크리에이터 연계"
+          ],
           "revenue": [],
           "memo": ""
         }
