@@ -92,12 +92,12 @@
   .news .tag{font-family:'Space Grotesk'; font-weight:700; font-size:12px; letter-spacing:.12em; color:var(--bg);
     background:var(--gold); padding:3px 9px; border-radius:6px;}
   .news .tag{flex:none; position:relative; z-index:1;}
-  .news-track{flex:1; overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 4%,#000 92%,transparent);}
+  .news-track{flex:1; min-width:0; overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 4%,#000 92%,transparent);}
   .news ul{list-style:none; display:flex; gap:56px; color:var(--text-dim); width:max-content; white-space:nowrap; padding-right:56px;
     animation:newsRun 40s linear infinite;}
-  .news:hover ul{animation-play-state:paused;}
-  @keyframes newsRun{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
-  @media (prefers-reduced-motion: reduce){ .news ul{animation:none; flex-wrap:wrap; white-space:normal;} }
+  @media (hover:hover){ .news:hover ul{animation-play-state:paused;} }   /* 마우스 있는 PC에서만 멈춤 — 휴대폰은 터치 후에도 계속 흐름 */
+  @keyframes newsRun{ from{transform:translate3d(0,0,0);} to{transform:translate3d(-50%,0,0);} }
+  .news ul{will-change:transform;}
   .news li b{color:var(--gold-soft); font-weight:600; margin-right:6px;}
 
   /* 내 정보 */
@@ -394,7 +394,7 @@
     <div class="inds" id="inds"></div>
     <div class="rec-head"><span></span><span style="color:var(--hero)">Hero</span><span style="color:var(--hub)">Hub</span><span style="color:var(--help)">Help</span><span style="color:var(--human)">Human</span></div>
     <div id="recList"></div>
-    <p class="rec-foot"><b style="color:var(--hero)">Hero</b>는 처음 만나게 하고, <b style="color:var(--hub)">Hub</b>는 다시 오게 하고, <b style="color:var(--help)">Help</b>는 검색으로 찾아오게 합니다. 구독은 <b style="color:var(--hub)">Hub</b>에서 늘어나고, 문의는 <b style="color:var(--human)">Human</b>에서 옵니다.<br>
+    <p class="rec-foot"><b style="color:var(--hero)">Hero</b>는 처음 만나게 하는 관심 역할, <b style="color:var(--hub)">Hub</b>는 다시 오게 하는 구독 역할, <b style="color:var(--help)">Help</b>는 검색으로 찾아오는 SEO 및 문의∙전환 역할, <b style="color:var(--human)">Human</b>은 내 찐팬들과의 진솔한 소통 역할을 합니다.<br>
       내 업종이 없나요? <span class="linkish" data-go="prompt" data-open="k-4h">4H 전략 프롬프트</span>로 내 것만 뽑아보세요.</p>
   </section>
 
