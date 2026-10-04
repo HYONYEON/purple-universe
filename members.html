@@ -440,6 +440,7 @@
     font:inherit; font-size:13.5px; font-weight:600; color:var(--text); background:rgba(20,13,38,.85); border:1px solid var(--border-strong); cursor:pointer; backdrop-filter:blur(6px);}
   .j-zoom:hover{border-color:var(--purple-bright);}
   .j-stage-wrap{position:relative;}
+  #jSide, #jSideFull{display:none !important;}   /* 자세히 칸은 숨김 — 마인드맵만으로 충분 */
   /* 크게 보기 (전체 화면) */
   .j-full{position:fixed; inset:0; z-index:300; display:none; flex-direction:column; background:rgba(6,4,12,.94); backdrop-filter:blur(6px);}
   .j-full.show{display:flex;}
@@ -822,7 +823,7 @@
         <div class="j-side" id="jSide"></div>
       </div>
       <div class="j-full" id="jFull" role="dialog" aria-label="여정 맵 크게 보기">
-        <div class="j-full-h"><div><b id="jFullTitle"></b><span>정거장을 누르면 자세히 볼 수 있어요 · 마우스로 끌어서 이동</span></div><button class="j-full-x" id="jFullX" type="button" aria-label="닫기">✕</button></div>
+        <div class="j-full-h"><div><b id="jFullTitle"></b><span>마우스로 끌어서 이동 · Esc로 닫기</span></div><button class="j-full-x" id="jFullX" type="button" aria-label="닫기">✕</button></div>
         <div class="j-full-body" id="jFullBody"><svg id="jSvgFull"></svg></div>
         <div class="j-side" id="jSideFull" style="margin:0 24px 20px;"></div>
       </div>
@@ -1541,7 +1542,7 @@
   const J_TAB = '__journey';
   const hasJourney = () => !!(window.JOURNEY && window.JOURNEY.maps && window.JOURNEY.maps.length && window.JourneyMap);
   const NET_DESC = '멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.';
-  const J_DESC = '지금 멤버들과 함께 진행 중인 비즈니스예요. 정거장마다 할 일과 함께하는 멤버, 그리고 생기는 수익이 보여요.';
+  const J_DESC = '지금 멤버들과 함께 진행 중인 비즈니스예요. 정거장마다 할 일과 함께하는 멤버, 그리고 생기는 수익이 보여요. 정거장을 누르면 그 단계만 강조돼요.';
   function tabs(){
     $('netTabs').innerHTML = ['all'].map(k =>          // 그룹 탭(웰니스 등)은 '현재 진행중인 비즈니스' 탭으로 옮김
       '<button class="vtab' + (k === mode ? ' on' : '') + '" type="button" data-mode="' + esc(k) + '" style="--c:' + (k === 'all' ? '#A98BFF' : '#5FD08A') + '"><i></i>' +
