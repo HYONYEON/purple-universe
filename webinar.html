@@ -424,7 +424,7 @@
   .pt.p1{background:rgba(124,77,255,.25); color:var(--purple-pale);}
   .pt.p2{background:rgba(95,208,138,.16); color:var(--ok);}
   .pt.p3{background:rgba(232,184,94,.18); color:var(--gold-soft);}
-  .peek-lock{text-align:center; font-size:13px; font-weight:600; color:var(--gold-soft); margin-bottom:10px;}
+  .peek-lock{text-align:center; font-size:13px; font-weight:600; color:var(--gold-soft); margin-bottom:10px; line-height:1.55; word-break:keep-all;}
   .peek-go{width:100%;}
   @media(max-width:600px){ .peek-grid{grid-template-columns:1fr;} .peek{padding:18px;} }
   .after-m{display:none; font-size:13.5px; color:var(--text-faint); line-height:1.6; margin:18px 0 6px; text-align:center;}
@@ -506,14 +506,13 @@
         <button class="peek-x" id="peekX" type="button" aria-label="닫기">✕</button>
         <span class="peek-eb">30X PURPLE TOOLKIT</span>
         <h3>이 툴킷 하나만 있어도 365일 무한하게 생성되는 콘텐츠 전략이 나옵니다</h3>
-        <p class="peek-lead">웨비나·클래스에 끝까지 참여하신 분께만 링크와 참석 코드를 알려드려요. 한 번 열면 계속 업데이트됩니다.</p>
         <div class="peek-grid">
           <div class="peek-card"><span class="pt p1">프롬프트</span><b><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>내 비즈니스 3C 구조 잡기</b><p>업종 · 타깃 · 강점만 적으면 Contents → Community → Commerce, 콘텐츠가 매출로 이어지는 구조가 나와요.</p></div>
           <div class="peek-card"><span class="pt p1">프롬프트</span><b><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 7.5l9 4.5 9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/></svg>4H 전략 한 번에 짜기</b><p>Hero · Hub · Help · Human 콘텐츠 아이디어와 4주 업로드 캘린더를 한 번에.</p></div>
           <div class="peek-card"><span class="pt p2">체크리스트</span><b><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="m8 12.2 2.7 2.7L16.2 9"/></svg>콘텐츠 필수 체크 15</b><p>기획 → 촬영 → 업로드 → 올린 뒤까지, 콘텐츠마다 체크하면 기억돼요.</p></div>
           <div class="peek-card"><span class="pt p3">이번 달 추천</span><b><svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17 9 11l4 4 8-8"/><path d="M15 7h6v6"/></svg>업종별 3H 콘텐츠</b><p>카페 · PT · 미용실 · 교육 · 세무사 등 내 업종에 맞는 이번 달 콘텐츠 추천.</p></div>
         </div>
-        <p class="peek-lock">🔒 웨비나 마지막 10분에 채팅창으로만 공유드립니다</p>
+        <p class="peek-lock">🔒 웨비나·클래스에 끝까지 참여하신 분께만 링크와 참석 코드를 알려드려요. 한 번 열면 계속 업데이트됩니다.</p>
         <button class="btn btn-primary peek-go" id="peekGo" type="button">웨비나 신청하고 받기</button>
       </div>
     </div>
@@ -675,8 +674,20 @@ function cardHTML(w){
 }
 
 /* ---------- 팝업 ---------- */
+/* 클릭 통계 — 팝업 열람 · 신청 버튼 클릭 수를 시트(클릭통계 탭)에 셉니다. 개인정보는 보내지 않아요 */
+function track(no, ev){
+  let u = 0;
+  try{ const k = 'pu_tr_' + no + '_' + ev; if(!localStorage.getItem(k)){ localStorage.setItem(k, '1'); u = 1; } }catch(e){}
+  const body = JSON.stringify({ action:'track', no:no, ev:ev, u:u });
+  try{
+    if(navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, new Blob([body], { type:'text/plain;charset=utf-8' }))) return;
+  }catch(e){}
+  try{ fetch(ENDPOINT, { method:'POST', mode:'no-cors', keepalive:true, headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body }); }catch(e){}
+}
+
 function openModal(w){
   const past = isPast(w.date);
+  if(!past) track(w.no, 'open');
   const yt = ytId(w.replayYt);
 
   modalHead.innerHTML =
@@ -731,7 +742,7 @@ function openModal(w){
   if(inline){
     act = '<button class="btn btn-primary" type="button" id="goForm">' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</button>';
   }else if(!past && w.applyUrl){
-    act = '<a class="btn btn-primary" href="' + esc(w.applyUrl) + '" target="_blank" rel="noopener">' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</a>';
+    act = '<a class="btn btn-primary" id="applyLink" href="' + esc(w.applyUrl) + '" target="_blank" rel="noopener">' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</a>';
   }else if(past && yt){
     act = '<a class="btn btn-ghost" href="https://www.youtube.com/watch?v=' + yt + '" target="_blank" rel="noopener">유튜브에서 보기 ↗</a>';
   }else if(past && /^(https?:)?\/\/|^\//.test(String(w.replayYt || '').trim())){
@@ -742,8 +753,11 @@ function openModal(w){
     '<p class="after">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 ' +
     '<a href="/">멤버십</a>을 둘러보세요.</p>';
 
+  const al = $('applyLink');
+  if(al) al.addEventListener('click', () => track(w.no, 'apply'));
   const go = $('goForm');
   if(go) go.addEventListener('click', () => {
+    track(w.no, 'apply');
     const f = $('wForm');
     if(!f) return;
     f.scrollIntoView({ behavior:'smooth', block:'start' });
