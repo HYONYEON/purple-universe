@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>페이지를 찾을 수 없어요 — 퍼플 유니버스</title>
+<script>
+  /* 공유 주소(/w/번호)의 작은 페이지가 아직 없을 때도 해당 웨비나 팝업으로 보내줍니다 */
+  (function(){
+    var m = location.pathname.match(/^\/w\/(\d+)/);
+    if(m) location.replace('/webinar#w' + m[1]);
+  })();
+</script>
+<style>
+  body{margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center;
+    background:#08050F; color:#F4F1FC; font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;}
+  a{display:inline-block; margin-top:18px; padding:12px 24px; border-radius:100px; color:#fff; text-decoration:none;
+    background:linear-gradient(135deg,#7C4DFF,#9B6BFF);}
+  p{color:#B7ACD1;}
+</style>
+</head>
+<body>
+  <div>
+    <h1 style="font-size:24px;">페이지를 찾을 수 없어요</h1>
+    <p>주소가 바뀌었거나 사라진 페이지예요.</p>
+    <a href="/">퍼플 유니버스 홈으로</a>
+  </div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<base href="/">   <!-- 주소창이 /w/번호 로 바뀌어도 이미지 · 파일 경로가 깨지지 않게 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>웨비나·클래스 — 퍼플 유니버스</title>
@@ -365,6 +366,9 @@
     font-size:13.5px; color:var(--text-faint); line-height:1.6;
   }
   .m-foot .after a{color:var(--purple-bright);}
+  .m-share{margin-left:auto; flex:none; padding:9px 15px; border-radius:100px; font:inherit; font-size:13.5px; font-weight:600; cursor:pointer;
+    color:var(--text); background:var(--surface); border:1px solid var(--border-strong); white-space:nowrap;}
+  .m-share:hover{border-color:var(--purple-bright);}
   .m-foot .after a:hover{text-decoration:underline;}
 
   /* ---------- FOOTER ---------- */
@@ -751,7 +755,15 @@ function openModal(w){
   /* 자료 링크(툴킷)는 사이트에 보이지 않게 — 참석자에게 '녹화본·자료 문자'로만 보냅니다 */
   modalFoot.innerHTML = act +
     '<p class="after">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 ' +
-    '<a href="/">멤버십</a>을 둘러보세요.</p>';
+    '<a href="/">멤버십</a>을 둘러보세요.</p>' +
+    '<button class="m-share" type="button" id="mShare">🔗 공유 링크 복사</button>';
+  /* 카톡은 주소 뒤 #w3 를 무시해서, 웨비나마다 만든 공유 주소(/w/번호)를 복사해 드려요 → 이 포스터로 미리보기 */
+  $('mShare').addEventListener('click', async () => {
+    const url = 'https://purpleuniverse.net/w/' + w.no, b = $('mShare');
+    try{ await navigator.clipboard.writeText(url); b.textContent = '✓ 복사했어요'; }
+    catch(e){ prompt('이 주소를 복사해서 보내주세요', url); }
+    setTimeout(() => { b.textContent = '🔗 공유 링크 복사'; }, 2200);
+  });
 
   const al = $('applyLink');
   if(al) al.addEventListener('click', () => track(w.no, 'apply'));
@@ -774,8 +786,12 @@ function openModal(w){
   const pk = modalScroll.querySelector('[data-peek]');
   if(pk) pk.addEventListener('click', openPeek);
 
-  const slug = 'w' + w.no;
-  if(location.hash !== '#' + slug) history.pushState({ w:w.no }, '', '#' + slug);
+  /* 주소창을 카톡용 공유 주소(/w/번호)로 바꿔둠 — 방문자가 주소창을 복사해 보내도 이 포스터로 미리보기가 나옴 */
+  const share = '/w/' + w.no;
+  if(location.pathname !== share){
+    if(/^#w\d+$/.test(location.hash)) history.replaceState({ w:w.no }, '', share);   // 예전 #w3 링크로 들어온 경우
+    else history.pushState({ w:w.no }, '', share);
+  }
 
   modalBack.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -866,7 +882,7 @@ function closeModal(fromHistory){
   modalBack.classList.remove('open');
   modalScroll.innerHTML = '';   // 영상 정지
   document.body.style.overflow = '';
-  if(!fromHistory && location.hash) history.pushState(null, '', location.pathname);
+  if(!fromHistory && (location.hash || /^\/w\//.test(location.pathname))) history.pushState(null, '', '/webinar');
 }
 
 modalBack.addEventListener('click', e => { if(e.target === modalBack) closeModal(); });
@@ -877,7 +893,7 @@ document.addEventListener('keydown', e => {
 });
 
 function routeFromUrl(){
-  const m = location.hash.match(/^#w(\d+)$/);
+  const m = location.hash.match(/^#w(\d+)$/) || location.pathname.match(/^\/w\/(\d+)/);
   const w = m ? WEBINARS.find(x => String(x.no) === m[1]) : null;
   if(w) openModal(w);
   else if(modalBack.classList.contains('open')) closeModal(true);
