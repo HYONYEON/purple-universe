@@ -125,6 +125,9 @@
   table.ap{width:100%; border-collapse:collapse; font-size:14px; min-width:620px;}
   table.ap th{text-align:left; font-weight:600; color:var(--text-faint); font-size:12.5px; padding:10px 12px; background:var(--bg-alt); border-bottom:1px solid var(--border);}
   table.ap td{padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top;}
+  table.ap th, table.ap td{white-space:nowrap;}                       /* 줄바꿈 없이 한 줄로 */
+  table.ap td.why{white-space:normal; min-width:180px; max-width:340px; color:var(--text-dim);}   /* 듣고 싶은 이유만 여러 줄 허용 */
+  table.ap td.ph{font-variant-numeric:tabular-nums;}
   table.ap tr:last-child td{border-bottom:none;}
   .dot{display:inline-block; width:22px; text-align:center; font-weight:700;}
   .dot.y{color:var(--ok);} .dot.n{color:var(--text-faint);}
@@ -326,7 +329,7 @@
 
           <div class="stat" id="smsStat"></div>
           <div class="tbl-wrap"><table class="ap">
-            <thead><tr><th>신청 시간</th><th>이름</th><th>연락처</th><th>듣고 싶은 이유</th><th title="신청완료 · 당일안내 · 입장링크 · 자료">문자 (완료·당일·링크·자료)</th><th>소식</th><th>끝까지 참여</th></tr></thead>
+            <thead><tr><th>신청 시간</th><th>이름</th><th>연락처</th><th>듣고 싶은 이유</th><th title="신청완료 · 당일안내 · 입장링크 · 자료">문자 <small style="font-weight:400">완료·당일·링크·자료</small></th><th>소식</th><th>끝까지</th></tr></thead>
             <tbody id="apBody"></tbody>
           </table></div>
 
@@ -717,7 +720,7 @@ function renderSms(){
 
   const d = v => '<span class="dot ' + (v ? 'y' : 'n') + '" title="' + esc(v || '아직') + '">' + (v ? '✓' : '·') + '</span>';
   $('apBody').innerHTML = rows.length ? rows.slice().reverse().map(a =>
-    '<tr><td>' + esc(a.at) + '</td><td>' + esc(a.name) + '</td><td>' + esc(a.phone) + '</td><td>' + esc(a.job) + '</td>' +
+    '<tr><td title="' + esc(a.at) + '">' + esc(String(a.at).replace(/^\d{4}-/, '').replace(/:\d{2}$/, '')) + '</td><td>' + esc(a.name) + '</td><td class="ph">' + esc(a.phone) + '</td><td class="why">' + esc(a.job) + '</td>' +
     '<td>' + d(a.sent.confirm) + d(a.sent.today) + d(a.sent.link) + d(a.sent.materials) + '</td>' +
     '<td>' + (a.news === '동의' ? '동의' : '') + '</td>' +
     '<td>' + (a.attend ? '<span class="dot y" title="' + esc(a.attend) + '">✓</span>' : '<span class="dot n">·</span>') + '</td></tr>').join('')
