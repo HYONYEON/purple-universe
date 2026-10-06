@@ -10,7 +10,11 @@
 <meta property="og:site_name" content="퍼플 유니버스">
 <meta property="og:title" content="30X 퍼플 툴킷 — 콘텐츠 기획력을 30배 올려서 비즈니스에 적용하세요">
 <meta property="og:description" content="3C · 4H 프롬프트, 콘텐츠 체크리스트, 업종별 이번 달 추천까지. 계속 업데이트됩니다.">
-<meta property="og:image" content="https://purpleuniverse.net/og-image.png">
+<meta property="og:image" content="https://purpleuniverse.net/og-toolkit.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://purpleuniverse.net/og-toolkit.png?v=1">
 <meta property="og:url" content="https://purpleuniverse.net/toolkit">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -514,9 +518,13 @@ const KIT = {
 
 [정리 방식]
 1) Contents — 콘텐츠 주제 10개 (내가 실제로 겪은 일 5개 / 고객이 지금 판단해야 하는 것 5개). 경쟁자 · 대안과 겹치지 않는 각도로
-2) Community — 이 콘텐츠를 보고 모일 잠재 고객의 모습, 그들이 나를 신뢰하게 만드는 장치 3가지, 시청자를 팬으로 바꾸는 첫 행동 1개
-3) Commerce — 팬이 된 고객에게 팔 상품 사다리(무료 → 입문 → 핵심 → 고가)와 가격대, 내가 매번 직접 영업하지 않아도 굴러가는 자동 영업 흐름
+2) Community — 이 콘텐츠를 보고 모일 잠재 고객의 모습, 그들이 나를 신뢰하게 만드는 장치 3가지, 시청자가 스스로 프로필 링크를 눌러보게 만드는 한 줄 1개
+3) Commerce — 팬이 된 고객에게 팔 상품 사다리(무료 → 입문 → 핵심 → 고가)와 가격대, 내가 매번 직접 영업하지 않아도 굴러가는 흐름 (콘텐츠 → 프로필 방문 → 프로필 링크 → 상품)
 4) 세 단계를 잇는 한 문장 3안: "나는 ___ 콘텐츠로 ___ 사람들을 모아, ___ 을 판다"
+
+[유입 원칙]
+- "댓글 남기면 DM으로 보내드려요" 같은 DM 자동화 댓글은 쓰지 말 것
+- 대신 영상 끝 · 캡션 끝에서 시청자가 자연스럽게 프로필 링크를 확인하게 만들 것
 
 표로 정리하고, 추상적인 말 대신 구체적인 장면으로 써줘.` },
 
@@ -554,7 +562,8 @@ const KIT = {
 [기준]
 - 내가 실제로 겪을 수 있는 장면만. 지어낸 사례 금지
 - 휴대폰 하나로 혼자 찍을 수 있는 것
-- 고객 정보는 빼고, 과장 · 단정 표현(최고, 100%, 무조건)은 쓰지 말 것` },
+- 고객 정보는 빼고, 과장 · 단정 표현(최고, 100%, 무조건)은 쓰지 말 것
+- "댓글 남기면 DM으로 보내드려요" 같은 DM 자동화 댓글은 쓰지 말고, 영상 끝 · 캡션 끝 한 줄로 자연스럽게 프로필 링크를 확인하게 할 것` },
 
     { id:'k-human', title:'1H 사람 냄새 소통 설계', sub:'전문가일수록 약한 능력 — ‘이 사람한테는 물어봐도 되겠다’는 마음 만들기', added:'2026-10-04',
       text:
@@ -622,13 +631,13 @@ const KIT = {
     { g:'만들 때', s:'촬영 · 편집', items:[
       ['내 얼굴이나 목소리, 손 등 사람이 보인다', '사람이 보여야 신뢰가 쌓입니다'],
       ['자막을 넣었다', '소리 끄고 보는 사람이 절반 이상'],
-      ['끝에 다음 행동이 하나 있다', '저장 · 댓글 · 다음 편 중 딱 하나만'],
+      ['끝에 다음 행동이 하나 있다', '저장 · 다음 편 · 프로필 링크 중 딱 하나만'],
       ['Hub라면 다음 편 예고를 넣었다', '“다음 주엔 ○○ 이야기”']
     ]},
     { g:'올릴 때', s:'업로드', items:[
       ['커버 · 썸네일 문장이 7자 안팎이다', '한눈에 읽혀야 눌립니다'],
       ['설명란에 검색 키워드를 2~3개 넣었다', 'Help 콘텐츠라면 특히'],
-      ['고정 댓글을 달았다', '질문을 던지면 첫 댓글이 쉬워집니다']
+      ['캡션 끝에 프로필 링크 안내 한 줄을 넣었다', 'DM 자동화 댓글 대신 — “○○는 프로필 링크에 모아뒀어요”']
     ]},
     { g:'올린 뒤 · Human', s:'여기서 팬이 생깁니다', items:[
       ['첫 1시간 안의 댓글에 모두 답했다', '템플릿 탭의 답장 문구 활용'],
