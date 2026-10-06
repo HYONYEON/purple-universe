@@ -135,6 +135,7 @@ async function load(quiet){
   try{
     const r = await (await fetch(API + '?action=oneFree&t=' + Date.now(), { cache:'no-store' })).json();
     if(!r.ok) throw new Error(r.error || '');
+    (r.days || []).forEach(d => d.slots.sort());   // 시간순 정렬
     DATA = r; render();
     $('liveChip').textContent = '실시간 확인 중';
   }catch(e){
