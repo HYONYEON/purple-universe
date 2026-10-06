@@ -10,6 +10,8 @@ Disallow: /review-yy7cw90873.html
 Disallow: /review-yy7cw90873
 Disallow: /apply.html
 Disallow: /apply
+Disallow: /1on1-m4p8.html
+Disallow: /1on1-m4p8
 Disallow: /members.html
 Disallow: /members
 

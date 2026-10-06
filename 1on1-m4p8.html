@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>1:1 줌미팅 가능한 시간 — 퍼플 유니버스</title>
+<meta property="og:title" content="1:1 줌미팅 가능한 시간 — 퍼플 유니버스">
+<meta property="og:description" content="이번 달 1:1 줌미팅, 비어 있는 시간을 실시간으로 확인하세요.">
+<meta property="og:image" content="https://purpleuniverse.net/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08050F; --bg-alt:#0F0A1E; --surface:rgba(255,255,255,.045);
+    --border:rgba(184,155,255,.16); --border-strong:rgba(184,155,255,.32);
+    --purple:#7C4DFF; --purple-bright:#A98BFF; --purple-pale:#C9B6FF; --gold-soft:#F3D89A;
+    --text:#F4F1FC; --text-dim:#B7ACD1; --text-faint:#756A94; --ok:#5FD08A;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:'IBM Plex Sans KR',sans-serif; line-height:1.6; word-break:keep-all; min-height:100vh;
+    background-image:radial-gradient(900px 420px at 20% -80px, rgba(124,77,255,.26), transparent 70%); background-repeat:no-repeat;}
+  .wrap{max-width:860px; margin:0 auto; padding:0 22px;}
+  header{padding:22px 0;}
+  header a{color:var(--text-dim); text-decoration:none; font-size:15px;}
+  h1{font-size:clamp(26px,4vw,34px); margin:26px 0 8px;}
+  .lead{color:var(--text-dim); font-size:15.5px;}
+  .meta{display:flex; gap:10px; flex-wrap:wrap; margin:18px 0 26px; font-size:13px;}
+  .chip{padding:5px 12px; border-radius:100px; background:var(--surface); border:1px solid var(--border); color:var(--text-dim);}
+  .chip b{color:var(--text);} .chip.live{color:var(--ok); border-color:rgba(95,208,138,.35);}
+  .chip.live::before{content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--ok); margin-right:6px; vertical-align:1px; animation:blink 1.6s ease-in-out infinite;}
+  @keyframes blink{50%{opacity:.3;}}
+
+  /* 주간 달력 */
+  .cal{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin-bottom:24px;}
+  .cal .h{text-align:center; font-size:12.5px; color:var(--text-faint); font-weight:600; padding-bottom:2px;}
+  .cal .h.sun{color:#FF8A8A;} .cal .h.sat{color:#7FB5FF;}
+  .d{position:relative; aspect-ratio:1/0.82; border-radius:12px; border:1px solid var(--border); background:var(--surface);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-family:'Space Grotesk'; font-weight:600; font-size:15px; color:var(--text-faint);}
+  .d.empty{visibility:hidden;}
+  .d.past{opacity:.3;}
+  .d.on{color:var(--text); border-color:rgba(169,139,255,.55); background:rgba(124,77,255,.14); cursor:pointer;}
+  .d.on small{font-family:'IBM Plex Sans KR'; font-size:11px; color:var(--purple-pale); font-weight:600;}
+  .d.on:hover{border-color:var(--purple-bright);}
+  .d.sel{background:linear-gradient(135deg,var(--purple),#9B6BFF); border-color:transparent; color:#fff;}
+  .d.sel small{color:#fff;}
+  .d.today::after{content:'오늘'; position:absolute; top:4px; right:6px; font-size:9.5px; color:var(--gold-soft); font-family:'IBM Plex Sans KR';}
+
+  /* 날짜별 시간 */
+  .days{display:flex; flex-direction:column; gap:12px; margin-bottom:60px;}
+  .day{border-radius:16px; border:1px solid var(--border); background:var(--surface); padding:16px 18px; scroll-margin-top:20px; transition:border-color .2s;}
+  .day.sel{border-color:var(--purple-bright); box-shadow:0 0 0 3px rgba(124,77,255,.15);}
+  .day h3{font-size:16.5px; margin-bottom:10px;} .day h3 small{color:var(--text-faint); font-weight:500; font-size:13px; margin-left:6px;}
+  .slots{display:flex; gap:8px; flex-wrap:wrap;}
+  .slot{padding:9px 16px; border-radius:100px; border:1px solid rgba(169,139,255,.45); background:rgba(124,77,255,.1); color:var(--text);
+    font-family:'Space Grotesk'; font-weight:600; font-size:15px; cursor:pointer;}
+  .slot:hover{background:rgba(124,77,255,.25);}
+  .slot.done{background:var(--ok); color:#0B1A10; border-color:var(--ok);}
+  .note{font-size:13px; color:var(--text-faint); margin-top:4px;}
+  .state{padding:40px 20px; text-align:center; color:var(--text-faint); border:1px dashed var(--border-strong); border-radius:16px;}
+  .toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(16px); opacity:0; transition:all .25s; z-index:50;
+    background:#1A1030; border:1px solid var(--border-strong); border-radius:14px; padding:12px 18px; font-size:14px; max-width:92vw; text-align:center;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media(max-width:560px){ .d{font-size:13.5px; aspect-ratio:1/1;} .d.on small{font-size:10px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><a href="/members">← 멤버쉽 전용 공간</a></header>
+
+  <h1>1:1 줌미팅 가능한 시간</h1>
+  <p class="lead">한 달에 한 번, 대표님과 1:1로 이야기 나누는 시간이에요. 아래는 지금 비어 있는 시간이에요.<br>
+    원하는 시간을 누르면 문구가 복사돼요 — <b>개인톡으로 보내주시면</b> 확정해 드릴게요.</p>
+  <div class="meta">
+    <span class="chip live" id="liveChip">실시간 확인 중</span>
+    <span class="chip">한 번에 <b id="slotLen">60분</b></span>
+    <span class="chip" id="updChip"></span>
+  </div>
+
+  <div class="cal" id="cal"></div>
+  <div class="days" id="days"><div class="state">가능한 시간을 불러오는 중…</div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec';
+const DOW = ['일','월','화','수','목','금','토'];
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+const keyOf = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+let DATA = null, SEL = null;
+
+function toast(m){ const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3200); }
+function label(key){ const p = key.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]); return p[1] + '월 ' + p[2] + '일 (' + DOW[d.getDay()] + ')'; }
+function hm(t){ const h = +t.slice(0,2), m = t.slice(3); return (h < 12 ? '오전 ' : '오후 ') + (h % 12 || 12) + '시' + (m !== '00' ? ' ' + m + '분' : ''); }
+
+function render(){
+  const map = {}; (DATA.days || []).forEach(d => map[d.date] = d);
+  // 달력: 이번 주 일요일부터 3주 + α
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(today); start.setDate(start.getDate() - start.getDay());
+  const last = DATA.days.length ? DATA.days[DATA.days.length - 1].date : keyOf(today);
+  let html = DOW.map((d, i) => '<div class="h' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '">' + d + '</div>').join('');
+  for(let d = new Date(start); keyOf(d) <= last || d.getDay() !== 0; d.setDate(d.getDate() + 1)){
+    const k = keyOf(d), info = map[k], past = d < today;
+    html += '<div class="d' + (past ? ' past' : '') + (info ? ' on' : '') + (k === SEL ? ' sel' : '') + (k === keyOf(today) ? ' today' : '') + '"' + (info ? ' data-k="' + k + '"' : '') + '>' +
+            d.getDate() + (info ? '<small>' + info.slots.length + '개</small>' : '') + '</div>';
+    if(d - start > 60 * 86400000) break;
+  }
+  $('cal').innerHTML = html;
+  $('days').innerHTML = DATA.days.length ? DATA.days.map(d =>
+    '<section class="day' + (d.date === SEL ? ' sel' : '') + '" id="d-' + d.date + '"><h3>' + label(d.date) + '<small>' + d.slots.length + '개 가능</small></h3>' +
+    '<div class="slots">' + d.slots.map(s => '<button class="slot" type="button" data-d="' + d.date + '" data-t="' + s + '">' + s + '</button>').join('') + '</div></section>').join('') +
+    '<p class="note">표시된 시간은 대표님 캘린더 기준으로 1분마다 새로 확인돼요. 개인톡으로 확정되기 전에는 다른 분이 먼저 잡을 수 있어요.</p>'
+    : '<div class="state">지금은 비어 있는 시간이 없어요. 며칠 뒤 다시 확인해 주세요 🙏</div>';
+  $('slotLen').textContent = (DATA.slot || 60) + '분';
+  $('updChip').textContent = DATA.updated ? '마지막 확인 ' + DATA.updated : '';
+}
+
+async function load(quiet){
+  try{
+    const r = await (await fetch(API + '?action=oneFree&t=' + Date.now(), { cache:'no-store' })).json();
+    if(!r.ok) throw new Error(r.error || '');
+    DATA = r; render();
+    $('liveChip').textContent = '실시간 확인 중';
+  }catch(e){
+    if(!DATA) $('days').innerHTML = '<div class="state">시간을 불러오지 못했어요. 잠시 뒤 새로고침해 주세요.</div>';
+    $('liveChip').textContent = '연결 재시도 중';
+  }
+}
+
+$('cal').addEventListener('click', e => {
+  const c = e.target.closest('[data-k]'); if(!c) return;
+  SEL = c.dataset.k; render();
+  const el = $('d-' + SEL); if(el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+});
+$('days').addEventListener('click', async e => {
+  const b = e.target.closest('[data-t]'); if(!b) return;
+  const msg = '[1:1 줌미팅] ' + label(b.dataset.d) + ' ' + hm(b.dataset.t) + '에 가능할까요?';
+  try{ await navigator.clipboard.writeText(msg); toast('복사했어요 — 개인톡에 붙여넣어 보내주세요 💜'); }
+  catch(err){ prompt('아래 문구를 복사해서 개인톡으로 보내주세요', msg); }
+  b.classList.add('done'); setTimeout(() => b.classList.remove('done'), 1600);
+});
+
+load();
+setInterval(() => { if(!document.hidden) load(true); }, 60000);          // 1분마다 새로 확인
+document.addEventListener('visibilitychange', () => { if(!document.hidden) load(true); });
+</script>
+</body>
+</html>
