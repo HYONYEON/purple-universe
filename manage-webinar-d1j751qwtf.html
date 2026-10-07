@@ -133,6 +133,11 @@
   .att-box label{display:block; font-size:14px; font-weight:700; margin-bottom:8px;}
   .att-box textarea{min-height:90px; font-size:14px;}
   .att-tg{background:none; border:none; cursor:pointer; padding:2px 6px; font:inherit;}
+  .cs-pick{margin:10px 0 12px; padding:12px 14px; border:1px solid var(--border); border-radius:12px;}
+  .cs-pick-btns{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+  .cs-pick-list{display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:4px 12px; max-height:300px; overflow:auto;}
+  .cs-pick-list label{display:flex; align-items:center; gap:6px; font-size:14px; padding:4px 2px; cursor:pointer; white-space:nowrap;}
+  .cs-pick-list small{color:var(--text-faint); font-size:12px;}
   .cs-box{margin-top:26px; padding:18px; border-radius:14px; border:1px solid var(--border-strong); background:rgba(124,77,255,.06);}
   .cs-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
   .cs-head b{font-size:16px;} .cs-tpl{display:flex; gap:8px;}
@@ -377,6 +382,15 @@
               <label><input type="radio" name="csTarget" value="attend" checked> <b>끝까지 참여한 분만</b> <small>(툴킷 참석 코드 · 감사 문자)</small></label>
               <label><input type="radio" name="csTarget" value="all"> 신청자 <b>전원</b> <small>(정보성 문자 — 참석 코드는 넣지 마세요)</small></label>
               <label><input type="radio" name="csTarget" value="news"> <b>소식 동의자만</b> <small>(광고 문자 — 맨 앞 (광고) · 수신거부 번호 필수)</small></label>
+              <label><input type="radio" name="csTarget" value="pick"> <b>직접 고른 분만</b> <small>(아래 명단에서 체크)</small></label>
+            </div>
+            <div id="csPick" class="cs-pick" style="display:none;">
+              <div class="cs-pick-btns">
+                <button type="button" class="btn btn-ghost btn-sm" data-pk="attend">끝까지 참여한 분</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-pk="all">전체 선택</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-pk="none">모두 해제</button>
+              </div>
+              <div id="csPickList" class="cs-pick-list"></div>
             </div>
             <textarea id="csText" rows="12" placeholder="{이름} 이라고 쓰면 받는 분 이름으로 바뀌어요."></textarea>
             <div class="cs-meta"><span id="csBytes">0 / 2,000 바이트</span><span id="csCount"></span></div>
@@ -893,10 +907,42 @@ function csRefresh(){
   const t = $('csText').value, b = csBytes(t);
   $('csBytes').innerHTML = '<span class="' + (b > 2000 ? 'over' : '') + '">' + b.toLocaleString() + ' / 2,000 바이트</span>' + (b > 90 ? ' · 장문(LMS)' : ' · 단문');
   if(editIndex < 0) return;
-  const rows = ADM.applicants.filter(a => String(a.no) === String(LIST[editIndex].no));
-  const ph = new Set(rows.filter(a => csTarget() === 'all' || (csTarget() === 'news' ? a.news === '동의' : !!a.attend)).map(a => a.phone.replace(/\D/g, '')));
+  const rows = csRows();
+  if(PICK_NO !== String(LIST[editIndex].no)){            // 다른 웨비나를 열면 고른 명단 초기화
+    PICK_NO = String(LIST[editIndex].no);
+    PICK = new Set(rows.filter(a => a.attend).map(a => csPh(a)));
+  }
+  const tg = csTarget();
+  $('csPick').style.display = tg === 'pick' ? '' : 'none';
+  if(tg === 'pick') csPickRender(rows);
+  const ph = new Set(rows.filter(a => tg === 'pick' ? PICK.has(csPh(a)) : tg === 'all' || (tg === 'news' ? a.news === '동의' : !!a.attend)).map(csPh));
   $('csCount').textContent = '받는 분 ' + ph.size + '명';
 }
+/* 직접 고르기 */
+let PICK = new Set(), PICK_NO = '';
+const csPh = a => String(a.phone || '').replace(/\D/g, '');
+function csRows(){
+  const seen = {};
+  return ADM.applicants.filter(a => String(a.no) === String(LIST[editIndex].no))
+    .filter(a => { const p = csPh(a); if(!p || seen[p]) return false; seen[p] = 1; return true; });
+}
+function csPickRender(rows){
+  $('csPickList').innerHTML = rows.length ? rows.map(a =>
+    '<label><input type="checkbox" data-pick="' + esc(csPh(a)) + '"' + (PICK.has(csPh(a)) ? ' checked' : '') + '> ' +
+    '<b>' + esc(a.name) + '</b> <small>' + esc(csPh(a).slice(-4)) + (a.attend ? ' · ✓참여' : '') + (a.news === '동의' ? ' · 소식동의' : '') +
+    (a.job === '현장 참여' ? ' · 현장' : '') + '</small></label>').join('')
+    : '<p class="hint" style="margin:0;">신청자가 없어요.</p>';
+}
+$('csPickList').addEventListener('change', e => {
+  const c = e.target.closest('[data-pick]'); if(!c) return;
+  c.checked ? PICK.add(c.dataset.pick) : PICK.delete(c.dataset.pick);
+  csRefresh();
+});
+document.querySelectorAll('[data-pk]').forEach(b => b.onclick = () => {
+  const rows = csRows(), k = b.dataset.pk;
+  PICK = new Set(k === 'none' ? [] : rows.filter(a => k === 'all' || a.attend).map(csPh));
+  csRefresh();
+});
 $('csText').addEventListener('input', csRefresh);
 document.querySelectorAll('input[name="csTarget"]').forEach(r => r.addEventListener('change', csRefresh));
 try{ $('csTest').value = localStorage.getItem('pu_cs_test') || ''; }catch(e){}
@@ -924,7 +970,12 @@ async function csPost(extra){
   const text = $('csText').value.trim();
   if(!text) throw new Error('문자 내용을 입력해주세요');
   if(csBytes(text) > 2000) throw new Error('2,000바이트를 넘었어요. 조금 줄여주세요');
-  const r = await apiPost(Object.assign({ action:'sendCustom', no: LIST[editIndex].no, text, target: csTarget() }, extra || {}));
+  const body = { action:'sendCustom', no: LIST[editIndex].no, text, target: csTarget() };
+  if(body.target === 'pick'){
+    body.phones = [...PICK];
+    if(!body.phones.length && !(extra && extra.test)) throw new Error('받을 분을 한 명 이상 체크해주세요');
+  }
+  const r = await apiPost(Object.assign(body, extra || {}));
   if(r.sent == null) throw new Error(r.error || '실패');
   return r;
 }
@@ -939,9 +990,13 @@ $('csTestBtn').onclick = async () => {
 };
 $('csSend').onclick = async () => {
   csRefresh();
-  const who = csTarget() === 'news' ? '소식 동의자' : csTarget() === 'attend' ? '끝까지 참여한 분' : '신청자 전원';
+  const who = csTarget() === 'news' ? '소식 동의자' : csTarget() === 'attend' ? '끝까지 참여한 분' : csTarget() === 'pick' ? '직접 고른 분' : '신청자 전원';
   if(csTarget() === 'all' && /참석 코드/.test($('csText').value) && !confirm('신청자 전원에게 참석 코드가 나가요. 웨비나를 안 들은 분도 받게 되는데 괜찮을까요?')) return;
   const text = $('csText').value.trim();
+  if(csTarget() === 'pick' && /^\(광고\)/.test(text)){
+    const noAd = csRows().filter(a => PICK.has(csPh(a)) && a.news !== '동의').map(a => a.name);
+    if(noAd.length && !confirm('광고 문자인데 소식 수신에 동의하지 않은 분이 ' + noAd.length + '명 있어요.\n(' + noAd.slice(0, 8).join(', ') + (noAd.length > 8 ? ' 외' : '') + ')\n\n광고 문자는 동의한 분에게만 보내는 게 원칙이에요. 그래도 보낼까요?')) return;
+  }
   if(csTarget() === 'news' && !/^\(광고\)/.test(text) && !confirm('소식 동의자에게 보내는 광고 문자는 맨 앞에 (광고)를 붙이는 게 원칙이에요. 그래도 보낼까요?')) return;
   if(!confirm(who + ' ' + $('csCount').textContent.replace('받는 분 ', '') + '에게 이 문자를 보낼까요?\n(장문 1건당 약 45원)')) return;
   const b = $('csSend'); b.disabled = true; b.textContent = '보내는 중…';
