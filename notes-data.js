@@ -17,6 +17,38 @@ window.NOTES = [
   },
   {
     "cat": "marketing",
+    "date": "2026-10-06",
+    "title": "잘 쓴 대본보다 닮은 사람의 자기 말이 팝니다",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1791411693353_3jhc3_1007_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791411695670_yhweq_1007_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791411698838_48gem_1007_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791411701358_47dg3_1007_B_04_news3.png"
+      }
+    ],
+    "no": 16,
+    "imgtop": 0.106,
+    "ogimg": "images/1791411704253_w042h_og-16.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
     "date": "2026-10-03",
     "title": "하루의 완판 뒤엔 몇 달, 몇 년의 반복이 있었습니다",
     "desc": "",
