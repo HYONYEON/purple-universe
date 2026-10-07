@@ -836,15 +836,8 @@ function openModal(w){
   /* 자료 링크(툴킷)는 사이트에 보이지 않게 — 참석자에게 '녹화본·자료 문자'로만 보냅니다 */
   modalFoot.innerHTML = act +
     '<p class="after">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 ' +
-    '<a href="/">멤버십</a>을 둘러보세요.</p>' +
-    '<button class="m-share" type="button" id="mShare">🔗 공유 링크 복사</button>';
-  /* 카톡은 주소 뒤 #w3 를 무시해서, 웨비나마다 만든 공유 주소(/w/번호)를 복사해 드려요 → 이 포스터로 미리보기 */
-  $('mShare').addEventListener('click', async () => {
-    const url = 'https://purpleuniverse.net/w/' + w.no, b = $('mShare');
-    try{ await navigator.clipboard.writeText(url); b.textContent = '✓ 복사했어요'; }
-    catch(e){ prompt('이 주소를 복사해서 보내주세요', url); }
-    setTimeout(() => { b.textContent = '🔗 공유 링크 복사'; }, 2200);
-  });
+    '<a href="/">멤버십</a>을 둘러보세요.</p>';
+  /* 공유는 주소창 그대로 — 팝업을 열면 주소가 /w/번호 로 바뀌어서 복사하면 이 포스터로 카톡 미리보기가 나옵니다 */
 
   const al = $('applyLink');
   if(al) al.addEventListener('click', () => track(w.no, 'apply'));

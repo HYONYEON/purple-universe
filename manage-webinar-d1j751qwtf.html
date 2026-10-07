@@ -132,6 +132,12 @@
   .att-box{margin:18px 0 6px; padding:14px 16px; border-radius:14px; border:1px dashed var(--border-strong);}
   .att-box label{display:block; font-size:14px; font-weight:700; margin-bottom:8px;}
   .att-box textarea{min-height:90px; font-size:14px;}
+  .past-box{margin-top:14px;}
+  .past-box summary{cursor:pointer; padding:10px 4px; font-size:14px; font-weight:600; color:var(--text-faint); list-style:none;}
+  .past-box summary::before{content:'▸ ';}
+  .past-box[open] summary::before{content:'▾ ';}
+  .past-box .list-item{opacity:.75;}
+  .past-box .list-item.editing{opacity:1;}
   .att-tg{background:none; border:none; cursor:pointer; padding:2px 6px; font:inherit;}
   .cs-pick{margin:10px 0 12px; padding:12px 14px; border:1px solid var(--border); border-radius:12px;}
   .cs-pick-btns{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
@@ -593,13 +599,37 @@ function isPast(s){
 }
 const CATS = { webinar:'웨비나', class:'클래스' };
 const catOf = w => w.cat === 'class' ? 'class' : 'webinar';
+/* 끝났는지 — 날짜가 지났거나, 오늘이라도 끝 시간(없으면 시작 1시간 30분 뒤)이 지났으면 (웨비나 페이지와 같은 기준) */
+function startMin(t){
+  const s = String(t || '');
+  let m = s.match(/(\d{1,2})\s*:\s*(\d{2})/);
+  if(m) return (+m[1]) * 60 + (+m[2]);
+  m = s.match(/(오전|오후|낮|저녁|밤|새벽|아침)?\s*(\d{1,2})\s*시\s*(?:(\d{1,2})\s*분|(반))?/);
+  if(!m) return null;
+  let h = +m[2];
+  if(/오후|저녁|밤/.test(m[1] || '') && h < 12) h += 12;
+  if(/낮/.test(m[1] || '') && h < 6) h += 12;
+  return h * 60 + (m[3] ? +m[3] : m[4] ? 30 : 0);
+}
+function isOver(w){
+  if(isPast(w.date)) return true;
+  const p = String(w.date || '').split('-').map(Number), now = new Date();
+  if(p.length !== 3 || p[0] !== now.getFullYear() || p[1] !== now.getMonth() + 1 || p[2] !== now.getDate()) return false;
+  const cut = String(w.time || '').split(/~|–|-/);
+  let end = cut.length > 1 ? startMin(cut[1]) : null;
+  const st = startMin(cut[0]);
+  if(end != null && st != null && end <= st) end += 720;
+  const over = end != null ? end : st != null ? st + 90 : null;
+  return over != null && now.getHours() * 60 + now.getMinutes() > over;
+}
+let pastOpen = false;
 function renderList(){
   const box = $('list');
-  $('cnt').textContent = '· ' + LIST.length + '개';
+  $('cnt').textContent = '· 예정 ' + LIST.filter(w => !isOver(w)).length + '개';
   if(!LIST.length){ box.innerHTML = '<p class="hint">아직 등록된 웨비나가 없어요.</p>'; return; }
-  box.innerHTML = LIST.map((w, i) => {
-    const past = isPast(w.date);
-    return '<div class="list-item' + (i === editIndex ? ' editing' : '') + '" data-open="' + i + '">' +
+  const item = (w, i) => {
+    const past = isOver(w);
+    return '<div class="list-item' + (i === editIndex ? ' editing' : '') + (past ? ' is-past' : '') + '" data-open="' + i + '">' +
       '<div class="li-top">' +
         '<span class="pill ' + (catOf(w) === 'class' ? 'client' : 'fixed') + '">' + CATS[catOf(w)] + '</span>' +
         '<span class="pill ' + (past ? 'done' : 'soon') + '">' + (past ? '종료' : '모집 중') + '</span>' +
@@ -613,7 +643,16 @@ function renderList(){
         '<button class="btn btn-ghost" data-share="' + i + '" type="button" title="카톡에 붙여넣으면 이 웨비나 포스터로 미리보기가 나오는 주소">공유 링크</button>' +
         '<button class="btn btn-danger" data-del="' + i + '" type="button">삭제</button>' +
       '</div></div>';
-  }).join('');
+  };
+  const all = LIST.map((w, i) => ({ w, i }));
+  const up = all.filter(x => !isOver(x.w)).sort((a, b) => a.w.date < b.w.date ? -1 : a.w.date > b.w.date ? 1 : 0);
+  const done = all.filter(x => isOver(x.w)).sort((a, b) => a.w.date < b.w.date ? 1 : a.w.date > b.w.date ? -1 : 0);
+  if(done.some(x => x.i === editIndex)) pastOpen = true;              // 지난 웨비나를 수정 중이면 펼쳐 둠
+  box.innerHTML = (up.length ? up.map(x => item(x.w, x.i)).join('') : '<p class="hint">진행 예정인 웨비나가 없어요.</p>') +
+    (done.length ? '<details class="past-box"' + (pastOpen ? ' open' : '') + '><summary>지난 웨비나 · 클래스 ' + done.length + '개</summary>' +
+      done.map(x => item(x.w, x.i)).join('') + '</details>' : '');
+  const det = box.querySelector('.past-box');
+  if(det) det.addEventListener('toggle', () => { pastOpen = det.open; });
 
   box.querySelectorAll('[data-open]').forEach(el => {
     el.onclick = e => { if(e.target.closest('button')) return; editItem(+el.dataset.open); };
