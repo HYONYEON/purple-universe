@@ -579,7 +579,7 @@
   </div>
 </div>
 
-<script src="/webinars-data.js"></script>
+<script>document.write('<script src="/webinars-data.js?v=' + Math.floor(Date.now() / 60000) + '"><\/script>');</script>
 <script>
 const WEBINARS = Array.isArray(window.WEBINARS) ? window.WEBINARS : [];
 /* 신청이 저장되는 곳 — 5기 신청서와 같은 구글 시트 주소 */

@@ -472,7 +472,7 @@
   </div>
 </footer>
 
-<script src="/notes-data.js"></script>
+<script>document.write('<script src="/notes-data.js?v=' + Math.floor(Date.now() / 60000) + '"><\/script>');</script>
 <script>
 /* 자료 목록은 notes-data.js 에서 불러옵니다.
    관리자 페이지에서 글을 쓰면 그 파일이 자동으로 갱신돼요. */
