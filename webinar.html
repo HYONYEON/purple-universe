@@ -586,10 +586,10 @@ const WEBINARS = Array.isArray(window.WEBINARS) ? window.WEBINARS : [];
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
 
 const SECTIONS = [
-  { key:'webinar', title:'웨비나', unit:'회', rest:'다른 웨비나',
+  { key:'webinar', title:'웨비나', unit:'회', rest:'다음 웨비나', past:'지난 웨비나',
     desc:'매달 무료로 엽니다. 처음 오셔도 따라올 수 있게 구성합니다.',
     empty:'다음 웨비나를 준비하고 있어요' },
-  { key:'class',   title:'클래스', unit:'개', rest:'다른 클래스',
+  { key:'class',   title:'클래스', unit:'개', rest:'다음 클래스', past:'지난 클래스',
     desc:'퍼플 유니버스 자체 클래스 혹은 외부 협업으로 진행하는 클래스들이 있습니다.',
     empty:'첫 클래스를 준비하고 있어요' }
 ];
@@ -637,6 +637,29 @@ function fmtDate(s){
   const d = new Date(p[0], p[1]-1, p[2]);
   return p[1] + '월 ' + p[2] + '일 (' + DOW[d.getDay()] + ')';
 }
+/* 끝났는지 — 날짜가 지났거나, 오늘이라도 끝 시간(없으면 시작 1시간 30분 뒤)이 지나면 '지난 웨비나'로 */
+function startMin(t){
+  const s = String(t || '');
+  let m = s.match(/(\d{1,2})\s*:\s*(\d{2})/);
+  if(m) return (+m[1]) * 60 + (+m[2]);
+  m = s.match(/(오전|오후|낮|저녁|밤|새벽|아침)?\s*(\d{1,2})\s*시\s*(?:(\d{1,2})\s*분|(반))?/);
+  if(!m) return null;
+  let h = +m[2];
+  if(/오후|저녁|밤/.test(m[1] || '') && h < 12) h += 12;
+  if(/낮/.test(m[1] || '') && h < 6) h += 12;
+  return h * 60 + (m[3] ? +m[3] : m[4] ? 30 : 0);
+}
+function isOver(w){
+  if(isPast(w.date)) return true;
+  const p = String(w.date || '').split('-').map(Number), now = new Date();
+  if(p.length !== 3 || p[0] !== now.getFullYear() || p[1] !== now.getMonth() + 1 || p[2] !== now.getDate()) return false;
+  const t = String(w.time || ''), cut = t.split(/~|–|-/);
+  let end = cut.length > 1 ? startMin(cut[1]) : null;             // '10:00~15:00' 처럼 끝 시간이 있으면 그 시각
+  const st = startMin(cut[0]);
+  if(end != null && st != null && end <= st) end += 720;           // '오후 2시~5시' → 17시
+  const over = end != null ? end : st != null ? st + 90 : null;    // 없으면 시작 1시간 30분 뒤
+  return over != null && now.getHours() * 60 + now.getMinutes() > over;
+}
 function isPast(s){
   const p = String(s||'').split('-').map(Number);
   if(p.length !== 3) return false;
@@ -666,8 +689,8 @@ function blockHTML(b){
 
 /* ---------- 목록: 칸마다 대표 1개 크게 + 나머지 좌우 스크롤 ---------- */
 function pickOrder(list){
-  const up   = list.filter(w => !isPast(w.date)).sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
-  const done = list.filter(w =>  isPast(w.date)).sort((a,b) => a.date < b.date ? 1 : a.date > b.date ? -1 : 0);
+  const up   = list.filter(w => !isOver(w)).sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  const done = list.filter(w =>  isOver(w)).sort((a,b) => a.date < b.date ? 1 : a.date > b.date ? -1 : 0);
   return up.concat(done);          // 가장 가까운 예정 → 그다음 예정 → 최근 종료 순
 }
 function render(){
@@ -686,12 +709,14 @@ function render(){
       html += '<div class="empty-card"><b>' + sec.empty + '</b>열리면 이 자리에서 가장 먼저 알려드릴게요.</div>';
     }else{
       html += '<div class="feat">' + cardHTML(list[0]) + '</div>';
-      if(list.length > 1){
-        html += '<div class="rail-head"><span>' + sec.rest + ' ' + (list.length - 1) + '</span>' +
-          (list.length > 3 ? '<div class="rail-btns"><button type="button" data-rail="' + sec.key + '" data-dir="-1" aria-label="이전">←</button>' +
-          '<button type="button" data-rail="' + sec.key + '" data-dir="1" aria-label="다음">→</button></div>' : '') + '</div>' +
-          '<div class="rail" id="rail-' + sec.key + '">' + list.slice(1).map(cardHTML).join('') + '</div>';
-      }
+      const rest = list.slice(1);
+      const nextL = rest.filter(w => !isOver(w)), pastL = rest.filter(w => isOver(w));
+      const rail = (id, label, arr) => !arr.length ? '' :
+        '<div class="rail-head"><span>' + label + ' ' + arr.length + '</span>' +
+        (arr.length > 2 ? '<div class="rail-btns"><button type="button" data-rail="' + id + '" data-dir="-1" aria-label="이전">←</button>' +
+        '<button type="button" data-rail="' + id + '" data-dir="1" aria-label="다음">→</button></div>' : '') + '</div>' +
+        '<div class="rail" id="rail-' + id + '">' + arr.map(cardHTML).join('') + '</div>';
+      html += rail(sec.key, sec.rest, nextL) + rail(sec.key + '-past', sec.past, pastL);
     }
     html += '</section>';
   });
@@ -710,7 +735,7 @@ function render(){
 }
 
 function cardHTML(w){
-  const past = isPast(w.date);
+  const past = isOver(w);
   const poster = absPath(w.poster);
   return '<article class="w-card" data-no="' + esc(w.no) + '">' +
     '<div class="w-poster">' +
@@ -746,7 +771,7 @@ function track(no, ev){
 }
 
 function openModal(w){
-  const past = isPast(w.date);
+  const past = isOver(w);
   if(!past) track(w.no, 'open');
   const yt = ytId(w.replayYt);
 

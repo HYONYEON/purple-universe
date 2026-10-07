@@ -814,7 +814,9 @@ function renderSms(){
       return '<span title="같은 브라우저는 한 번만 셈 (괄호는 전체 클릭 수)">팝업 열람<b>' + st.open.u + '명</b> <small style="color:var(--text-faint)">(' + st.open.n + '회)</small></span>' +
              '<span title="신청하기 버튼을 누른 사람">신청 버튼 클릭<b style="color:var(--gold-soft)">' + st.apply.u + '명</b> <small style="color:var(--text-faint)">(' + st.apply.n + '회 · ' + rate + '%)</small></span>'; })();
 
-  const d = v => '<span class="dot ' + (v ? 'y' : 'n') + '" title="' + esc(v || '아직') + '">' + (v ? '✓' : '·') + '</span>';
+  const d = v => /현장|외부/.test(v || '')                                       // 현장 참여 · 외부 명단은 보내지 않은 문자 → '–'
+    ? '<span class="dot n" title="' + esc(v) + ' (보내지 않음)">–</span>'
+    : '<span class="dot ' + (v ? 'y' : 'n') + '" title="' + esc(v || '아직') + '">' + (v ? '✓' : '·') + '</span>';
   $('apBody').innerHTML = rows.length ? rows.slice().reverse().map(a =>
     '<tr><td title="' + esc(a.at) + '">' + esc(String(a.at).replace(/^\d{4}-/, '').replace(/:\d{2}$/, '')) + '</td><td>' + esc(a.name) + '</td><td class="ph">' + esc(a.phone) + '</td><td class="why">' + esc(a.job) + '</td>' +
     '<td>' + d(a.sent.confirm) + d(a.sent.today) + d(a.sent.link) + d(a.sent.materials) + '</td>' +
