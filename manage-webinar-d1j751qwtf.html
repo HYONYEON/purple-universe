@@ -725,6 +725,9 @@ let ADM = { links:{}, applicants:[] }, admOk = false;
 function apiKey(){ return localStorage.getItem('pu_apply_key') || ''; }
 
 async function loadAdmin(){
+  try{ await loadAdmin0(); } finally{ renderLive(); }
+}
+async function loadAdmin0(){
   const key = apiKey();
   if(!key){ admOk = false; return; }
   try{
@@ -735,11 +738,25 @@ async function loadAdmin(){
       admOk = false; return;
     }
     ADM = r; admOk = true;
-    renderLive();
   }catch(e){ admOk = false; toast('신청자 목록 연결이 안 돼요. 앱스 스크립트를 새 버전으로 배포했는지 확인해주세요.', false); }
 }
 function renderLive(){
   const box = $('lvBox'), L = ADM.live;
+  if(!admOk){
+    $('lvCnt').textContent = '';
+    box.innerHTML = '<div style="display:flex; gap:8px;"><input type="password" id="lvKey" placeholder="신청 조회 키" style="flex:1; min-width:0;">' +
+      '<button class="btn btn-primary btn-sm" id="lvKeySave" type="button">연결</button></div>' +
+      '<p class="hint" style="margin:8px 0 0;">한 번 넣으면 이 브라우저에 저장돼요. (신청자 명단 · 문자 보내기도 같이 열려요)</p>';
+    const go = async () => {
+      const v = $('lvKey').value.trim(); if(!v) return;
+      localStorage.setItem('pu_apply_key', v);
+      await loadAdmin(); renderList(); renderSms();
+      toast(admOk ? '연결됐습니다' : '키가 맞지 않아요', admOk);
+    };
+    $('lvKeySave').onclick = go;
+    $('lvKey').onkeydown = e => { if(e.key === 'Enter') go(); };
+    return;
+  }
   if(!L){ box.innerHTML = '앱스 스크립트에 <b>Live.gs</b>를 넣고 새 버전으로 배포하면 여기에 신청자가 보여요.'; $('lvCnt').textContent = ''; return; }
   $('lvCnt').textContent = '· 구독 ' + L.count + '명';
   const nx = L.next ? '다음 LIVE · <b>' + esc(L.next.date.slice(5).replace('-', '/')) + ' ' + esc(L.next.timeK || L.next.time) + '</b>' + (L.next.topic ? ' · ' + esc(L.next.topic) : '') : '예정된 LIVE 없음';
