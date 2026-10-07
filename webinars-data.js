@@ -51,7 +51,7 @@ window.WEBINARS = [
     "poster": "images/1790995652353_xvr5p_______________v5____________.mp4",
     "desc": "\"매번 다짐해도 관두는 SNS 콘텐츠, 어떻게 타파해야 할까요?\"\n\"콘텐츠 차별화를 위한 뼈대 설계는 어떻게 해야 할까요?\"\n\"갑갑한 전문직 콘텐츠.. 이건 어떻게 풀어가야 할까요?\"\n\"6년 차 콘텐츠 기획자의 인사이트가 궁금하시다면 모두 환영\"\n\n위에서 고민한 것들을 해결하고, 1년 동안 콘텐츠로 롱런할 수 있는 방법을 알려드리겠습니다!",
     "applyUrl": "",
-    "replayYt": "",
+    "replayYt": "https://purpleuniverse.net/n/15",
     "materialUrl": "https://purpleuniverse.net/toolkit",
     "body": [
       {
