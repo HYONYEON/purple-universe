@@ -3,6 +3,19 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "webinar",
+    "date": "2026-10-07",
+    "title": "60회 차 남콘남비 웨비나ㅣ2027년 AI 시대에도 살아남을 '콘텐츠 차별화 전략'",
+    "desc": "",
+    "yt": "https://youtu.be/og_Fp1lSDj4",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [],
+    "no": 15,
+    "ogv": 2
+  },
+  {
     "cat": "marketing",
     "date": "2026-10-03",
     "title": "하루의 완판 뒤엔 몇 달, 몇 년의 반복이 있었습니다",
