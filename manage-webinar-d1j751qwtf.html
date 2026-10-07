@@ -129,6 +129,10 @@
   table.ap td.why{white-space:normal; min-width:180px; max-width:340px; color:var(--text-dim);}   /* 듣고 싶은 이유만 여러 줄 허용 */
   table.ap td.ph{font-variant-numeric:tabular-nums;}
   table.ap tr:last-child td{border-bottom:none;}
+  .att-box{margin:18px 0 6px; padding:14px 16px; border-radius:14px; border:1px dashed var(--border-strong);}
+  .att-box label{display:block; font-size:14px; font-weight:700; margin-bottom:8px;}
+  .att-box textarea{min-height:90px; font-size:14px;}
+  .att-tg{background:none; border:none; cursor:pointer; padding:2px 6px; font:inherit;}
   .cs-box{margin-top:26px; padding:18px; border-radius:14px; border:1px solid var(--border-strong); background:rgba(124,77,255,.06);}
   .cs-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
   .cs-head b{font-size:16px;} .cs-tpl{display:flex; gap:8px;}
@@ -201,6 +205,10 @@
         <section class="card">
           <h2>등록된 웨비나 <span style="color:var(--text-faint); font-size:15px; font-weight:400;" id="cnt"></span></h2>
           <div class="side-list" id="list"></div>
+        </section>
+        <section class="card" style="margin-top:18px;">
+          <h2>🔴 유튜브 LIVE 알림 <span style="color:var(--text-faint); font-size:15px; font-weight:400;" id="lvCnt"></span></h2>
+          <div id="lvBox" class="hint">신청 조회 키를 넣으면 보여요.</div>
         </section>
       </aside>
 
@@ -337,6 +345,17 @@
             </div>
           </div>
 
+          <div class="att-box">
+            <label>줌 채팅 붙여넣기 <span style="color:var(--text-faint); font-weight:400;">· 웨비나 마지막에 남겨주신 번호로 ‘끝까지 참여 ✓’</span></label>
+            <textarea id="attText" rows="5" placeholder="줌 채팅을 통째로 복사해서 붙여넣으세요. (숫자 없는 채팅은 알아서 건너뜁니다)&#10;신청한 분: 휴대폰 끝 4자리 → 예) 5678&#10;신청 안 한 분: 이름 + 휴대폰 전체 → 예) 홍길동 010-1234-5678 (명단에 ‘현장 참여’로 추가)"></textarea>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+              <button class="btn btn-ghost btn-sm" id="attBtn" type="button" style="padding:10px 18px;">① 미리 확인</button>
+              <button class="btn btn-primary btn-sm" id="attGo" type="button" style="padding:10px 18px; display:none;">② 이대로 표시하기</button>
+              <span class="hint" style="margin:0;">명단 표의 <b>끝까지</b> 칸을 눌러서 한 명씩 켜고 끌 수도 있어요.</span>
+            </div>
+            <div id="attPlan" class="hint" style="display:none; margin-top:10px; line-height:1.7;"></div>
+          </div>
+
           <div class="stat" id="smsStat"></div>
           <div class="tbl-wrap"><table class="ap">
             <thead><tr><th>신청 시간</th><th>이름</th><th>연락처</th><th>듣고 싶은 이유</th><th title="신청완료 · 당일안내 · 입장링크 · 자료">문자 <small style="font-weight:400">완료·당일·링크·자료</small></th><th>소식</th><th>끝까지</th></tr></thead>
@@ -355,7 +374,8 @@
               <span class="cs-tpl"><button type="button" class="btn btn-ghost btn-sm" data-tpl="info">정보성 템플릿</button>
               <button type="button" class="btn btn-ghost btn-sm" data-tpl="ad">광고 템플릿</button></span></div>
             <div class="cs-target">
-              <label><input type="radio" name="csTarget" value="all" checked> 신청자 <b>전원</b> <small>(정보성 문자)</small></label>
+              <label><input type="radio" name="csTarget" value="attend" checked> <b>끝까지 참여한 분만</b> <small>(툴킷 참석 코드 · 감사 문자)</small></label>
+              <label><input type="radio" name="csTarget" value="all"> 신청자 <b>전원</b> <small>(정보성 문자 — 참석 코드는 넣지 마세요)</small></label>
               <label><input type="radio" name="csTarget" value="news"> <b>소식 동의자만</b> <small>(광고 문자 — 맨 앞 (광고) · 수신거부 번호 필수)</small></label>
             </div>
             <textarea id="csText" rows="12" placeholder="{이름} 이라고 쓰면 받는 분 이름으로 바뀌어요."></textarea>
@@ -715,7 +735,22 @@ async function loadAdmin(){
       admOk = false; return;
     }
     ADM = r; admOk = true;
+    renderLive();
   }catch(e){ admOk = false; toast('신청자 목록 연결이 안 돼요. 앱스 스크립트를 새 버전으로 배포했는지 확인해주세요.', false); }
+}
+function renderLive(){
+  const box = $('lvBox'), L = ADM.live;
+  if(!L){ box.innerHTML = '앱스 스크립트에 <b>Live.gs</b>를 넣고 새 버전으로 배포하면 여기에 신청자가 보여요.'; $('lvCnt').textContent = ''; return; }
+  $('lvCnt').textContent = '· 구독 ' + L.count + '명';
+  const nx = L.next ? '다음 LIVE · <b>' + esc(L.next.date.slice(5).replace('-', '/')) + ' ' + esc(L.next.timeK || L.next.time) + '</b>' + (L.next.topic ? ' · ' + esc(L.next.topic) : '') : '예정된 LIVE 없음';
+  const rows = L.list.length ? L.list.map(x =>
+    '<div style="display:flex; gap:8px; align-items:center; padding:7px 0; border-top:1px solid var(--border); font-size:14px; white-space:nowrap;' + (x.status !== '구독' ? ' opacity:.45;' : '') + '">' +
+      '<b style="min-width:52px;">' + esc(x.name) + '</b><span style="color:var(--text-dim);">' + esc(x.phone) + '</span>' +
+      '<span style="margin-left:auto; color:var(--text-faint); font-size:12px;">' + (x.status !== '구독' ? '해지' : esc(x.at)) + '</span></div>').join('')
+    : '<p class="hint" style="margin:8px 0 0;">아직 신청자가 없어요.</p>';
+  box.innerHTML = '<div style="margin-bottom:8px;">' + nx + '</div>' +
+    '<div style="max-height:320px; overflow:auto;">' + rows + '</div>' +
+    '<p class="hint" style="margin:10px 0 0;">LIVE 당일 오전 10~12시에 구독자에게 알림 문자가 자동으로 나가요. 일정 변경 · 쉬는 주는 시트 <b>LIVE일정</b> 탭에.</p>';
 }
 async function apiPost(body){
   const r = await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
@@ -753,7 +788,8 @@ function renderSms(){
     '<tr><td title="' + esc(a.at) + '">' + esc(String(a.at).replace(/^\d{4}-/, '').replace(/:\d{2}$/, '')) + '</td><td>' + esc(a.name) + '</td><td class="ph">' + esc(a.phone) + '</td><td class="why">' + esc(a.job) + '</td>' +
     '<td>' + d(a.sent.confirm) + d(a.sent.today) + d(a.sent.link) + d(a.sent.materials) + '</td>' +
     '<td>' + (a.news === '동의' ? '동의' : '') + '</td>' +
-    '<td>' + (a.attend ? '<span class="dot y" title="' + esc(a.attend) + '">✓</span>' : '<span class="dot n">·</span>') + '</td></tr>').join('')
+    '<td><button type="button" class="att-tg" data-att="' + esc(a.phone) + '" data-on="' + (a.attend ? 1 : 0) + '" title="눌러서 끝까지 참여 표시 / 해제">' +
+      (a.attend ? '<span class="dot y">✓</span>' : '<span class="dot n">·</span>') + '</button></td></tr>').join('')
     : '<tr><td colspan="7" style="color:var(--text-faint); text-align:center; padding:22px;">' +
       (admOk ? '아직 신청자가 없어요.' : '신청 조회 키를 넣으면 명단이 보여요.') + '</td></tr>';
 }
@@ -841,7 +877,7 @@ function csRefresh(){
   $('csBytes').innerHTML = '<span class="' + (b > 2000 ? 'over' : '') + '">' + b.toLocaleString() + ' / 2,000 바이트</span>' + (b > 90 ? ' · 장문(LMS)' : ' · 단문');
   if(editIndex < 0) return;
   const rows = ADM.applicants.filter(a => String(a.no) === String(LIST[editIndex].no));
-  const ph = new Set(rows.filter(a => csTarget() === 'all' || a.news === '동의').map(a => a.phone.replace(/\D/g, '')));
+  const ph = new Set(rows.filter(a => csTarget() === 'all' || (csTarget() === 'news' ? a.news === '동의' : !!a.attend)).map(a => a.phone.replace(/\D/g, '')));
   $('csCount').textContent = '받는 분 ' + ph.size + '명';
 }
 $('csText').addEventListener('input', csRefresh);
@@ -859,7 +895,7 @@ document.querySelectorAll('[data-tpl]').forEach(b => b.onclick = () => {
     '■ 퍼플 유니버스 멤버십\n콘텐츠 · 브랜딩 · 매출 · 협업 고민을 함께 해결하는 곳\n▶ purpleuniverse.net\n\n무료수신거부 080-000-0000';
   if($('csText').value.trim() && !confirm('지금 쓴 내용을 템플릿으로 바꿀까요?')) return;
   $('csText').value = b.dataset.tpl === 'ad' ? ad : info;
-  document.querySelector('input[name="csTarget"][value="' + (b.dataset.tpl === 'ad' ? 'news' : 'all') + '"]').checked = true;
+  document.querySelector('input[name="csTarget"][value="' + (b.dataset.tpl === 'ad' ? 'news' : 'attend') + '"]').checked = true;
   csRefresh();
 });
 async function csPost(extra){
@@ -883,7 +919,8 @@ $('csTestBtn').onclick = async () => {
 };
 $('csSend').onclick = async () => {
   csRefresh();
-  const who = csTarget() === 'news' ? '소식 동의자' : '신청자 전원';
+  const who = csTarget() === 'news' ? '소식 동의자' : csTarget() === 'attend' ? '끝까지 참여한 분' : '신청자 전원';
+  if(csTarget() === 'all' && /참석 코드/.test($('csText').value) && !confirm('신청자 전원에게 참석 코드가 나가요. 웨비나를 안 들은 분도 받게 되는데 괜찮을까요?')) return;
   const text = $('csText').value.trim();
   if(csTarget() === 'news' && !/^\(광고\)/.test(text) && !confirm('소식 동의자에게 보내는 광고 문자는 맨 앞에 (광고)를 붙이는 게 원칙이에요. 그래도 보낼까요?')) return;
   if(!confirm(who + ' ' + $('csCount').textContent.replace('받는 분 ', '') + '에게 이 문자를 보낼까요?\n(장문 1건당 약 45원)')) return;
@@ -892,6 +929,51 @@ $('csSend').onclick = async () => {
   catch(e){ toast('실패: ' + e.message, false); }
   finally{ b.disabled = false; b.textContent = '보내기'; }
 };
+
+/* ---------- 끝까지 참여 표시 ---------- */
+$('apBody').addEventListener('click', async e => {
+  const b = e.target.closest('[data-att]'); if(!b || editIndex < 0) return;
+  const on = b.dataset.on !== '1';
+  b.disabled = true;
+  try{
+    const r = await apiPost({ action:'setAttend', no: LIST[editIndex].no, phone: b.dataset.att, on });
+    if(!r.ok) throw new Error(r.error || '');
+    const a = ADM.applicants.find(x => String(x.no) === String(LIST[editIndex].no) && x.phone === b.dataset.att);
+    if(a) a.attend = on ? '방금' : '';
+    renderSms(); renderList();
+  }catch(err){ toast('실패: ' + err.message, false); b.disabled = false; }
+});
+function attPlanHtml(r){
+  const li = (t, arr, c) => arr.length ? '<div><b style="color:' + c + '">' + t + ' ' + arr.length + '명</b> — ' + arr.map(esc).join(', ') + '</div>' : '';
+  return li(r.dry ? '✓ 표시할 신청자' : '✓ 표시한 신청자', r.done, 'var(--accent,#9b7bff)') +
+    li(r.dry ? '＋ 명단에 추가할 현장 참여' : '＋ 추가한 현장 참여', r.added, '#5FD08A') +
+    li('이미 ✓', r.already, 'var(--text-faint)') +
+    (r.unsure.length ? '<div><b style="color:#E8B85E">끝자리가 같아 확인 필요 ' + r.unsure.length + '건</b> — ' +
+      r.unsure.map(u => esc(u.line) + ' → ' + u.who.map(esc).join(' / ')).join('<br>') + '<br><span style="color:var(--text-faint)">명단 표에서 직접 눌러 주세요.</span></div>' : '') +
+    li('신청자에서 못 찾은 끝자리', r.unknown, '#ff7b7b') +
+    (!r.done.length && !r.added.length && !r.unsure.length && !r.unknown.length ? '<div>새로 표시할 분이 없어요.</div>' : '');
+}
+async function attRun(dry){
+  if(editIndex < 0) return;
+  if(!apiKey()){ toast('먼저 신청 조회 키를 넣어주세요.', false); return; }
+  const text = $('attText').value.trim(); if(!text){ toast('줌 채팅을 붙여넣어 주세요.', false); return; }
+  const b = dry ? $('attBtn') : $('attGo'), label = b.textContent; b.disabled = true; b.textContent = '확인 중…';
+  try{
+    const r = await apiPost({ action:'setAttend', no: LIST[editIndex].no, text, dry });
+    if(!r.ok) throw new Error(r.error || '');
+    $('attPlan').style.display = ''; $('attPlan').innerHTML = attPlanHtml(r);
+    $('attGo').style.display = dry && (r.done.length || r.added.length) ? '' : 'none';
+    if(!dry){
+      toast('끝까지 참여 ✓ ' + r.done.length + '명' + (r.added.length ? ' · 현장 참여 ' + r.added.length + '명 추가' : ''));
+      $('attText').value = r.unmatched.join('\n');
+      await loadAdmin(); renderList(); renderSms();
+    }
+  }catch(err){ toast('실패: ' + err.message, false); }
+  finally{ b.disabled = false; b.textContent = label; }
+}
+$('attBtn').onclick = () => attRun(true);
+$('attGo').onclick = () => attRun(false);
+$('attText').addEventListener('input', () => { $('attGo').style.display = 'none'; });
 
 function syncCat(){
   const cls = $('fCat').value === 'class';
