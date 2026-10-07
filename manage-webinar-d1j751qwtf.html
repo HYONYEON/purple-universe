@@ -129,6 +129,16 @@
   table.ap td.why{white-space:normal; min-width:180px; max-width:340px; color:var(--text-dim);}   /* 듣고 싶은 이유만 여러 줄 허용 */
   table.ap td.ph{font-variant-numeric:tabular-nums;}
   table.ap tr:last-child td{border-bottom:none;}
+  .cs-box{margin-top:26px; padding:18px; border-radius:14px; border:1px solid var(--border-strong); background:rgba(124,77,255,.06);}
+  .cs-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
+  .cs-head b{font-size:16px;} .cs-tpl{display:flex; gap:8px;}
+  .cs-target{display:flex; flex-direction:column; gap:6px; margin-bottom:10px; font-size:14px; color:var(--text-dim);}
+  .cs-target label{display:flex; gap:8px; align-items:center; margin:0; font-weight:400; cursor:pointer;}
+  .cs-target b{color:var(--text);} .cs-target small{color:var(--text-faint);}
+  .cs-box textarea{min-height:240px; font-size:14.5px;}
+  .cs-meta{display:flex; justify-content:space-between; font-size:12.5px; color:var(--text-faint); margin-top:6px;}
+  .cs-meta .over{color:#FF9B9B; font-weight:700;}
+  .cs-acts{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:12px;}
   .dot{display:inline-block; width:22px; text-align:center; font-weight:700;}
   .dot.y{color:var(--ok);} .dot.n{color:var(--text-faint);}
   .key-ask{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
@@ -337,6 +347,25 @@
             <button class="btn btn-ghost" id="matBtn" type="button">녹화본 · 자료 문자 보내기</button>
             <button class="btn btn-ghost btn-sm" id="apReload" type="button">새로고침</button>
             <span class="hint" style="margin:0;">녹화본·자료 링크를 위에 저장하고 1~2분 뒤에 눌러주세요. 이미 받은 분께는 다시 가지 않아요.</span>
+          </div>
+
+          <!-- 직접 쓴 문자 보내기 -->
+          <div class="cs-box">
+            <div class="cs-head"><b>직접 쓴 문자 보내기</b>
+              <span class="cs-tpl"><button type="button" class="btn btn-ghost btn-sm" data-tpl="info">정보성 템플릿</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-tpl="ad">광고 템플릿</button></span></div>
+            <div class="cs-target">
+              <label><input type="radio" name="csTarget" value="all" checked> 신청자 <b>전원</b> <small>(정보성 문자)</small></label>
+              <label><input type="radio" name="csTarget" value="news"> <b>소식 동의자만</b> <small>(광고 문자 — 맨 앞 (광고) · 수신거부 번호 필수)</small></label>
+            </div>
+            <textarea id="csText" rows="12" placeholder="{이름} 이라고 쓰면 받는 분 이름으로 바뀌어요."></textarea>
+            <div class="cs-meta"><span id="csBytes">0 / 2,000 바이트</span><span id="csCount"></span></div>
+            <div class="cs-acts">
+              <input type="text" id="csTest" placeholder="테스트 받을 번호 (예: 010-0000-0000)" style="max-width:260px;">
+              <button class="btn btn-ghost btn-sm" type="button" id="csTestBtn">내 폰으로 테스트</button>
+              <button class="btn btn-primary" type="button" id="csSend">보내기</button>
+            </div>
+            <p class="hint" style="margin-top:8px;">보낸 기록은 시트 '문자발송기록' 탭에 남아요. 같은 내용을 두 번 누르면 두 번 나가니 한 번만 눌러주세요.</p>
           </div>
         </section>
       </div>
@@ -594,7 +623,7 @@ function editItem(i){
   $('fDesc').value  = w.desc || '';
   $('fApply').value = w.applyUrl || '';
   $('fYt').value    = w.replayYt || '';
-  $('fMat').value   = w.materialUrl || KIT_URL; lockMat(true);
+  $('fMat').value   = (!w.materialUrl || /kit-bs6e3ec7/.test(w.materialUrl)) ? KIT_URL : w.materialUrl; lockMat(true);   // 예전 툴킷 주소는 새 주소로 자동 교체
   posterData = null;
   if(w.poster){ showPoster('/' + String(w.poster).replace(/^\//,'')); $('posterDrop').textContent = '기존 포스터 — 바꾸려면 클릭'; }
   else { showPoster(''); $('posterDrop').textContent = '클릭하거나 이미지를 여기로 끌어다 놓으세요'; }
@@ -635,7 +664,7 @@ async function save(){
       desc : $('fDesc').value.trim(),
       applyUrl   : $('fCat').value === 'class' ? $('fApply').value.trim() : '',   // 웨비나는 항상 사이트 신청 폼
       replayYt   : $('fYt').value.trim(),
-      materialUrl: $('fMat').value.trim() || KIT_URL,
+      materialUrl: ($('fMat').value.trim() || KIT_URL).replace(/https?:\/\/purpleuniverse\.net\/kit-bs6e3ec7\/?/, KIT_URL),
       body : blocks
     };
 
@@ -705,6 +734,7 @@ function renderSms(){
   $('codeInput').value = (ADM.codes || {})[no] || '';
 
   $('importBox').hidden = catOf(w) !== 'class';
+  setTimeout(csRefresh, 0);
   const rows = ADM.applicants.filter(a => String(a.no) === no);
   const n = k => rows.filter(a => a.sent && a.sent[k]).length;
   $('smsStat').innerHTML =
@@ -801,6 +831,66 @@ $('matBtn').onclick = async () => {
     await loadAdmin(); renderList(); renderSms();
   }catch(e){ toast('실패: ' + e.message, false); }
   finally{ b.disabled = false; b.textContent = '녹화본 · 자료 문자 보내기'; }
+};
+
+/* ---------- 직접 쓴 문자 보내기 ---------- */
+const csBytes = t => [...t].reduce((n, ch) => n + (ch.charCodeAt(0) < 128 ? 1 : 2), 0);
+function csTarget(){ return (document.querySelector('input[name="csTarget"]:checked') || {}).value || 'all'; }
+function csRefresh(){
+  const t = $('csText').value, b = csBytes(t);
+  $('csBytes').innerHTML = '<span class="' + (b > 2000 ? 'over' : '') + '">' + b.toLocaleString() + ' / 2,000 바이트</span>' + (b > 90 ? ' · 장문(LMS)' : ' · 단문');
+  if(editIndex < 0) return;
+  const rows = ADM.applicants.filter(a => String(a.no) === String(LIST[editIndex].no));
+  const ph = new Set(rows.filter(a => csTarget() === 'all' || a.news === '동의').map(a => a.phone.replace(/\D/g, '')));
+  $('csCount').textContent = '받는 분 ' + ph.size + '명';
+}
+$('csText').addEventListener('input', csRefresh);
+document.querySelectorAll('input[name="csTarget"]').forEach(r => r.addEventListener('change', csRefresh));
+try{ $('csTest').value = localStorage.getItem('pu_cs_test') || ''; }catch(e){}
+document.querySelectorAll('[data-tpl]').forEach(b => b.onclick = () => {
+  if(editIndex < 0) return;
+  const w = LIST[editIndex], code = (ADM.codes || {})[String(w.no)] || 'PURPLE7777';
+  const info = '[퍼플 유니버스]\n\n{이름}님, 오늘 ' + (catOf(w) === 'class' ? '클래스' : '웨비나') + ' 끝까지 함께해 주셔서 감사합니다!\n\n' +
+    '■ 30X 퍼플 툴킷 (무료)\n▶ purpleuniverse.net/toolkit\n참석 코드: ' + code + '\n(이 번호 + 코드로 입장 / PC 권장 / 지인 공유 OK)\n\n' +
+    '■ 다음 웨비나 [무료]\n▶ purpleuniverse.net/w/번호\n\n' +
+    '■ 매주 목요일 밤 9시 유튜브 LIVE\n「무엇이든 물어보세요」 알림 받기\n▶ purpleuniverse.net/webinar#live';
+  const ad = '(광고)[퍼플 유니버스]\n\n{이름}님, 이어서 알려드리는 소식이에요.\n\n' +
+    '■ 오프라인 세미나 [유료]\n▶ purpleuniverse.net/w/번호\n\n' +
+    '■ 퍼플 유니버스 멤버십\n콘텐츠 · 브랜딩 · 매출 · 협업 고민을 함께 해결하는 곳\n▶ purpleuniverse.net\n\n무료수신거부 080-000-0000';
+  if($('csText').value.trim() && !confirm('지금 쓴 내용을 템플릿으로 바꿀까요?')) return;
+  $('csText').value = b.dataset.tpl === 'ad' ? ad : info;
+  document.querySelector('input[name="csTarget"][value="' + (b.dataset.tpl === 'ad' ? 'news' : 'all') + '"]').checked = true;
+  csRefresh();
+});
+async function csPost(extra){
+  if(editIndex < 0) throw new Error('웨비나를 먼저 열어주세요');
+  if(!apiKey()) throw new Error('먼저 신청 조회 키를 넣어주세요');
+  const text = $('csText').value.trim();
+  if(!text) throw new Error('문자 내용을 입력해주세요');
+  if(csBytes(text) > 2000) throw new Error('2,000바이트를 넘었어요. 조금 줄여주세요');
+  const r = await apiPost(Object.assign({ action:'sendCustom', no: LIST[editIndex].no, text, target: csTarget() }, extra || {}));
+  if(r.sent == null) throw new Error(r.error || '실패');
+  return r;
+}
+$('csTestBtn').onclick = async () => {
+  const t = $('csTest').value.replace(/\D/g, '');
+  if(!/^01\d{8,9}$/.test(t)){ toast('테스트 받을 번호를 넣어주세요.', false); return; }
+  try{ localStorage.setItem('pu_cs_test', $('csTest').value); }catch(e){}
+  const b = $('csTestBtn'); b.disabled = true;
+  try{ await csPost({ test: t }); toast('테스트 문자를 보냈어요 — 휴대폰에서 줄바꿈 · 링크를 확인해 주세요'); }
+  catch(e){ toast('실패: ' + e.message, false); }
+  finally{ b.disabled = false; }
+};
+$('csSend').onclick = async () => {
+  csRefresh();
+  const who = csTarget() === 'news' ? '소식 동의자' : '신청자 전원';
+  const text = $('csText').value.trim();
+  if(csTarget() === 'news' && !/^\(광고\)/.test(text) && !confirm('소식 동의자에게 보내는 광고 문자는 맨 앞에 (광고)를 붙이는 게 원칙이에요. 그래도 보낼까요?')) return;
+  if(!confirm(who + ' ' + $('csCount').textContent.replace('받는 분 ', '') + '에게 이 문자를 보낼까요?\n(장문 1건당 약 45원)')) return;
+  const b = $('csSend'); b.disabled = true; b.textContent = '보내는 중…';
+  try{ const r = await csPost(); toast(r.sent + '명 발송' + (r.failed ? ' · ' + r.failed + '명 실패: ' + (r.error || '') : ' 완료'), !r.failed); }
+  catch(e){ toast('실패: ' + e.message, false); }
+  finally{ b.disabled = false; b.textContent = '보내기'; }
 };
 
 function syncCat(){

@@ -969,5 +969,20 @@ window.addEventListener('scroll', () => {
   window.addEventListener('resize', () => { if(window.innerWidth > 860) setOpen(false); });
 })();
 </script>
+<script>
+/* 방문 통계 — 하루에 같은 브라우저는 한 번만 셉니다 (구글 시트 '방문통계' 탭). 대표님 브라우저는 빼고 셉니다 */
+(function(){
+  try{
+    if(localStorage.getItem('pu_apply_key') || localStorage.getItem('pu_admin')) return;
+    var d = new Date(), day = d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+    var k = 'pu_pv_notes_' + day, u = localStorage.getItem(k) ? 0 : 1;
+    localStorage.setItem(k, '1');
+    var body = JSON.stringify({ action:'pv', page:'notes', u:u });
+    var url = 'https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec';
+    if(!(navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type:'text/plain;charset=utf-8' }))))
+      fetch(url, { method:'POST', mode:'no-cors', keepalive:true, headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: body });
+  }catch(e){}
+})();
+</script>
 </body>
 </html>

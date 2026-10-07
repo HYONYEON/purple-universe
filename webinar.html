@@ -314,6 +314,29 @@
   .modal-scroll figure{margin-bottom:18px;}
   .modal-scroll figure img{width:100%; border-radius:13px; border:1px solid var(--border);}
 
+  /* ---------- 유튜브 LIVE ---------- */
+  .live{margin-top:56px;}
+  .live-card{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:32px; align-items:center; padding:24px; border-radius:24px;
+    background:linear-gradient(135deg,rgba(124,77,255,.16),rgba(124,77,255,.04)); border:1px solid var(--border-strong);}
+  .live-thumb{position:relative; display:block; border-radius:16px; overflow:hidden; aspect-ratio:16/9; border:1px solid var(--border);}
+  .live-thumb img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .3s;}
+  .live-thumb:hover img{transform:scale(1.03);}
+  .live-badge{position:absolute; top:12px; left:12px; display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:8px;
+    background:#E5243B; color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px; letter-spacing:.08em;}
+  .live-badge i{width:7px; height:7px; border-radius:50%; background:#fff; animation:liveBlink 1.4s ease-in-out infinite;}
+  @keyframes liveBlink{50%{opacity:.25;}}
+  .live-eb{font-size:13.5px; font-weight:700; color:var(--gold-soft);}
+  .live-body h2{font-size:clamp(24px,3vw,32px); margin:6px 0 10px;}
+  .live-body > p{color:var(--text-dim); font-size:15.5px; line-height:1.7;}
+  .live-next{margin-top:16px; display:inline-block; padding:9px 15px; border-radius:12px; background:var(--surface); border:1px solid var(--border); font-size:15px;}
+  .live-next b{color:var(--gold-soft);}
+  .live-acts{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;}
+  .live-form{margin-top:16px; padding:18px; border-radius:16px; background:var(--surface); border:1px solid var(--border);}
+  .live-form[hidden]{display:none;}
+  .live-foot{margin-top:12px; font-size:13px; color:var(--text-faint); display:flex; gap:12px; align-items:center;}
+  .live-leave{background:none; border:none; color:var(--text-faint); font:inherit; font-size:13px; text-decoration:underline; cursor:pointer;}
+  @media(max-width:860px){ .live-card{grid-template-columns:1fr; gap:20px; padding:18px;} }
+
   /* ---------- 신청 폼 (팝업 안) ---------- */
   .w-form{
     margin:28px 0 14px; padding:24px 22px 22px; border-radius:18px;
@@ -476,6 +499,39 @@
       <div><span class="chk">✓</span> <b>웨비나는 참가비 없음</b></div>
       <div><span class="chk">✓</span> <b>녹화본 제공</b></div>
       <div class="note"><span class="dot">₩</span> <b>클래스는 참가비 있을 수 있음</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- 유튜브 LIVE — 썸네일은 그대로, 일정만 매주 자동으로 바뀝니다 (일정 · 쉬는 주는 시트 'LIVE일정' 탭) -->
+<section class="live" id="live">
+  <div class="wrap">
+    <div class="live-card">
+      <a class="live-thumb" href="https://www.youtube.com/@purple-universe-kk/streams" target="_blank" rel="noopener" aria-label="유튜브 LIVE 채널 열기">
+        <img src="live-thumb.jpg" alt="퍼플 유니버스 유튜브 LIVE — 무엇이든 물어보세요!">
+        <span class="live-badge"><i></i>LIVE</span>
+      </a>
+      <div class="live-body">
+        <span class="live-eb">매주 목요일 밤 9시 · 유튜브 LIVE</span>
+        <h2>무엇이든 물어보세요</h2>
+        <p>콘텐츠나 비즈니스와 관련해 궁금한 게 있다면, 편히 오셔서 다른 사업가들은 어떻게 해결하고 있는지 보세요.</p>
+        <div class="live-next" id="liveNext">다음 LIVE 일정을 불러오는 중…</div>
+        <div class="live-acts">
+          <button class="btn btn-primary" type="button" id="liveOpen">LIVE 알림 받기</button>
+          <a class="btn btn-ghost" href="https://www.youtube.com/@purple-universe-kk/streams" target="_blank" rel="noopener">유튜브 채널 ↗</a>
+        </div>
+        <form class="live-form" id="liveForm" novalidate hidden>
+          <div class="f-row">
+            <div class="f-field"><label for="lvName">이름</label><input id="lvName" autocomplete="name" maxlength="30"></div>
+            <div class="f-field"><label for="lvPhone">휴대폰 번호</label><input id="lvPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-0000-0000" maxlength="13"></div>
+          </div>
+          <label class="f-check"><input type="checkbox" id="lvAgree"><span><b>[필수]</b> 유튜브 LIVE 알림 문자 수신 및 개인정보 수집에 동의합니다.
+            <small>이름 · 번호는 LIVE 알림(매주 목요일 오전 한 번)에만 쓰고, 해지하면 더 보내지 않아요.</small></span></label>
+          <button class="btn btn-primary f-submit" type="submit" id="lvSubmit">알림 신청하기</button>
+          <p class="f-msg" id="lvMsg" role="alert"></p>
+        </form>
+        <p class="live-foot"><span id="liveCount"></span><button type="button" class="live-leave" id="liveLeave">알림 해지</button></p>
+      </div>
     </div>
   </div>
 </section>
@@ -902,6 +958,46 @@ window.addEventListener('popstate', routeFromUrl);
 
 render();
 routeFromUrl();
+
+/* ---------- 유튜브 LIVE — 다음 일정 · 알림 신청 ---------- */
+(function(){
+  const DOWK = '일월화수목금토';
+  const lbl = k => { const p = k.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]); return p[1] + '월 ' + p[2] + '일 (' + DOWK[d.getDay()] + ')'; };
+  fetch(ENDPOINT + '?action=liveInfo&t=' + Date.now()).then(r => r.json()).then(r => {
+    if(!r.ok) throw 0;
+    $('liveNext').innerHTML = r.next ? '다음 LIVE · <b>' + lbl(r.next.date) + ' ' + esc(r.next.timeK) + '</b>' + (r.next.topic ? ' · ' + esc(r.next.topic) : '') : '이번 주는 쉬어가요. 다음 일정은 곧 알려드릴게요.';
+    if(r.count >= 5) $('liveCount').textContent = r.count + '명이 알림을 받고 있어요';
+  }).catch(() => { $('liveNext').innerHTML = '매주 <b>목요일 밤 9시</b>'; });
+
+  $('liveOpen').addEventListener('click', () => { $('liveForm').hidden = false; $('lvName').focus(); $('liveOpen').style.display = 'none'; });
+  const ph = $('lvPhone');
+  ph.addEventListener('input', () => { const d = ph.value.replace(/\D/g, '').slice(0, 11);
+    ph.value = d.length < 4 ? d : d.length < 8 ? d.slice(0,3) + '-' + d.slice(3) : d.slice(0,3) + '-' + d.slice(3, d.length - 4) + '-' + d.slice(-4); });
+  $('liveForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const msg = $('lvMsg'), btn = $('lvSubmit'), name = $('lvName').value.trim(), phone = ph.value.replace(/\D/g, '');
+    msg.textContent = '';
+    if(!name){ msg.textContent = '이름을 입력해주세요.'; return; }
+    if(!/^01[016789]\d{7,8}$/.test(phone)){ msg.textContent = '휴대폰 번호를 확인해주세요.'; return; }
+    if(!$('lvAgree').checked){ msg.textContent = '알림 문자 수신에 동의해주세요.'; return; }
+    btn.disabled = true; btn.textContent = '신청하는 중…';
+    try{
+      const r = await (await fetch(ENDPOINT, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action:'liveJoin', name, phone, agree:'동의' }) })).json();
+      if(!r.ok) throw new Error(r.error || '');
+      $('liveForm').innerHTML = '<div class="f-done"><div class="ic">💜</div><h4>' + (r.already ? '이미 알림을 받고 계세요' : 'LIVE 알림 신청 완료!') + '</h4>' +
+        '<p>LIVE가 있는 목요일 오전에 문자로 알려드릴게요.</p></div>';
+    }catch(err){ msg.textContent = '신청하지 못했어요. 잠시 뒤 다시 시도해주세요.'; btn.disabled = false; btn.textContent = '알림 신청하기'; }
+  });
+  $('liveLeave').addEventListener('click', async () => {
+    const v = prompt('알림을 해지할 휴대폰 번호를 입력해주세요'); if(!v) return;
+    try{
+      const r = await (await fetch(ENDPOINT, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action:'liveLeave', phone: v.replace(/\D/g, '') }) })).json();
+      alert(r.ok ? '알림을 해지했어요. 그동안 함께해 주셔서 감사해요!' : '신청 내역을 찾지 못했어요. 번호를 다시 확인해주세요.');
+    }catch(e){ alert('잠시 뒤 다시 시도해주세요.'); }
+  });
+})();
 
 /* 헤더 테두리 */
 const header = $('siteHeader');
