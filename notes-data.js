@@ -3,6 +3,38 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "marketing",
+    "date": "2026-10-09",
+    "title": "'고급'을 지우고 사실을 적었더니 전환율 +46%",
+    "desc": "",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1791499627084_5wkdb_1009_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791499629235_lgqgk_1009_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791499631905_ir5xp_1009_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791499633696_mkzqv_1009_B_04_news3.png"
+      }
+    ],
+    "no": 20,
+    "imgtop": 0.106,
+    "ogimg": "images/1791499636551_4uq3g_og-20.jpg",
+    "ogv": 2
+  },
+  {
     "cat": "live",
     "date": "2026-10-08",
     "title": "비즈니스 콘텐츠에 대한 모든 것! 무엇이든 물어보세요!",
