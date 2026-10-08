@@ -288,23 +288,7 @@
               <input type="text" id="fApply" placeholder="유료 클래스 결제 페이지 주소">
               <p class="hint">비워두면 사이트 신청 폼으로 받습니다. 넣으면 '신청하기' 버튼이 이 주소로 연결돼요.</p>
             </div>
-            <div class="field">
-              <label>웨비나 녹화본 페이지 링크 <span style="color:var(--text-faint); font-weight:400;">(선택)</span></label>
-              <input type="text" id="fYt" placeholder="30X 퍼플 노트 녹화본 주소">
-              <p class="hint">웨비나가 끝난 뒤 30X 퍼플 노트의 녹화본 글 주소를 넣어주세요.</p>
-            </div>
-            <div class="field">
-              <label style="display:flex; justify-content:space-between; align-items:center;">
-                <span>자료 링크 <span style="color:var(--text-faint); font-weight:400;">· 30X 퍼플 툴킷 고정</span></span>
-                <button type="button" id="matLock" class="btn btn-ghost" style="padding:3px 11px; font-size:12px;">🔒 수정</button>
-              </label>
-              <input type="text" id="fMat" readonly style="opacity:.7; cursor:not-allowed;">
-            </div>
           </div>
-          <p class="hint" style="margin:-8px 0 20px;">
-            날짜가 지나면 자동으로 '종료'로 바뀌고, 녹화본을 넣어두면 팝업에서 바로 재생됩니다.<br>
-            <b>자료 링크</b>는 사이트에 보이지 않고, 아래 <b>'녹화본 · 자료 문자 보내기'</b>로 신청자에게만 나갑니다.
-          </p>
 
           <div class="field">
             <label>본문</label>
@@ -345,7 +329,26 @@
             </div>
             <button class="btn btn-primary btn-sm" id="codeSave" type="button" style="padding:12px 20px;">코드 저장</button>
           </div>
-          <p class="hint">툴킷 첫 화면에서 <b>신청 번호 + 이 코드</b>를 넣으면 열리고, 아래 명단에 <b>끝까지 참여 ✓</b>가 찍힙니다. 대소문자는 구분하지 않아요. 지난 웨비나 코드로 열었던 분은 그대로 열려요.</p>
+          <p class="hint">툴킷 첫 화면에서 <b>이 코드</b>만 넣으면 열려요. 대소문자는 구분하지 않아요. 웨비나마다 새 코드를 넣어도 <b>지난 코드도 계속 통하고</b>, 한 번 열었던 브라우저는 코드 없이 계속 열려요. (지난 코드를 막으려면 그 웨비나의 코드 칸을 비우고 저장)</p>
+
+          <div class="sms-top" style="margin-top:16px;">
+            <div class="field">
+              <label>녹화본 링크 <span style="color:var(--text-faint); font-weight:400;">· 30X 퍼플 노트 녹화본 글 주소 (웨비나 끝난 뒤)</span></label>
+              <input type="text" id="fYt" placeholder="https://purpleuniverse.net/n/번호">
+            </div>
+            <button class="btn btn-primary btn-sm" id="replaySave" type="button" style="padding:12px 20px;">녹화본 저장</button>
+          </div>
+          <p class="hint">저장하면 웨비나 페이지의 지난 웨비나 카드에 <b>녹화본 보기</b>가 생기고, 아래 <b>녹화본 템플릿</b> 문자에 이 주소가 들어가요.</p>
+
+          <div class="sms-top" style="margin-top:16px;">
+            <div class="field">
+              <label style="display:flex; justify-content:space-between; align-items:center;">
+                <span>자료 링크 <span style="color:var(--text-faint); font-weight:400;">· 30X 퍼플 툴킷 고정 · 사이트에 보이지 않아요</span></span>
+                <button type="button" id="matLock" class="btn btn-ghost" style="padding:3px 11px; font-size:12px;">🔒 수정</button>
+              </label>
+              <input type="text" id="fMat" readonly style="opacity:.7; cursor:not-allowed;">
+            </div>
+          </div>
 
           <div id="importBox" class="import-box" hidden>
             <label>외부 신청자 명단 넣기 <span style="color:var(--text-faint); font-weight:400;">· 에이프라임에서 받은 이름 · 번호</span></label>
@@ -994,7 +997,7 @@ document.querySelectorAll('[data-tpl]').forEach(b => b.onclick = () => {
     (catOf(w) === 'class' ? '■ 30X 퍼플 툴킷 (무료)\n▶ purpleuniverse.net/toolkit\n참석 코드: ' + code + '\n\n' : '') +
     (nW ? '■ 다음 웨비나 [무료] ' + nW.date.slice(5).replace('-', '/') + '\n' + nW.title + '\n▶ purpleuniverse.net/w/' + nW.no + '\n\n' : '') +
     '놓치신 부분이나 다시 보고 싶은 부분, 편하게 돌려보세요!';
-  if(b.dataset.tpl === 'replay' && !rUrl) toast('위 ‘웨비나 녹화본 페이지 링크’에 주소를 넣으면 문자에 자동으로 들어가요.', false);
+  if(b.dataset.tpl === 'replay' && !rUrl) toast('위 ‘녹화본 링크’에 주소를 넣으면 문자에 자동으로 들어가요.', false);
   if($('csText').value.trim() && !confirm('지금 쓴 내용을 템플릿으로 바꿀까요?')) return;
   const T = b.dataset.tpl;
   $('csText').value = T === 'ad' ? ad : T === 'replay' ? replay : info;
@@ -1092,7 +1095,7 @@ function syncCat(){
   const cls = $('fCat').value === 'class';
   $('priceField').style.display = cls ? '' : 'none';
   $('applyField').style.display = cls ? '' : 'none';
-  $('linkRow').className = cls ? 'row3' : 'row';
+  $('linkRow').className = '';
 }
 $('fCat').addEventListener('change', syncCat);
 
@@ -1369,6 +1372,23 @@ function lockMat(on){
   if(!on) f.focus();
 }
 $('matLock').onclick = () => lockMat(!$('fMat').readOnly);
+
+/* 녹화본 · 자료 링크만 바로 저장 (위 '발행하기'를 누르지 않아도) */
+$('replaySave').onclick = async () => {
+  if(editIndex < 0) return;
+  if(!loadOk){ toast('기존 목록을 읽지 못한 상태예요. 새로고침 후 다시 시도해주세요.', false); return; }
+  const w = LIST[editIndex], b = $('replaySave');
+  w.replayYt = $('fYt').value.trim();
+  w.materialUrl = ($('fMat').value.trim() || KIT_URL);
+  b.disabled = true; b.textContent = '저장 중…';
+  try{
+    const res = await putFile(DATA_FILE, b64encode(dataFileText()), dataSha, '녹화본 링크: ' + (w.title || ''));
+    dataSha = res.content.sha;
+    toast(w.replayYt ? '녹화본 저장 완료 — 2~3분 뒤 사이트에 반영돼요' : '녹화본 링크를 비웠어요');
+    renderList();
+  }catch(e){ toast('실패: ' + e.message, false); }
+  finally{ b.disabled = false; b.textContent = '녹화본 저장'; }
+};
 
 /* ---------- 이벤트 ---------- */
 $('loginBtn').onclick = connect;
