@@ -132,6 +132,7 @@
   .att-box{margin:18px 0 6px; padding:14px 16px; border-radius:14px; border:1px dashed var(--border-strong);}
   .att-box label{display:block; font-size:14px; font-weight:700; margin-bottom:8px;}
   .att-box textarea{min-height:90px; font-size:14px;}
+  .lv-send{margin-top:16px; padding-top:14px; border-top:1px solid var(--border);}
   .past-box{margin-top:14px;}
   .past-box summary{cursor:pointer; padding:10px 4px; font-size:14px; font-weight:600; color:var(--text-faint); list-style:none;}
   .past-box summary::before{content:'▸ ';}
@@ -819,11 +820,65 @@ function renderLive(){
   const rows = L.list.length ? L.list.map(x =>
     '<div style="display:flex; gap:8px; align-items:center; padding:7px 0; border-top:1px solid var(--border); font-size:14px; white-space:nowrap;' + (x.status !== '구독' ? ' opacity:.45;' : '') + '">' +
       '<b style="min-width:52px;">' + esc(x.name) + '</b><span style="color:var(--text-dim);">' + esc(x.phone) + '</span>' +
-      '<span style="margin-left:auto; color:var(--text-faint); font-size:12px;">' + (x.status !== '구독' ? '해지' : esc(x.at)) + '</span></div>').join('')
+      '<span style="margin-left:auto; color:var(--text-faint); font-size:12px;">' + (x.status !== '구독' ? '해지' : (x.last === lvToday() ? '<span style="color:#5FD08A;">오늘 알림 ✓</span> · ' : '') + esc(x.at)) + '</span></div>').join('')
     : '<p class="hint" style="margin:8px 0 0;">아직 신청자가 없어요.</p>';
   box.innerHTML = '<div style="margin-bottom:8px;">' + nx + '</div>' +
     '<div style="max-height:320px; overflow:auto;">' + rows + '</div>' +
-    '<p class="hint" style="margin:10px 0 0;">LIVE 당일 오전 10~12시에 구독자에게 알림 문자가 자동으로 나가요. 일정 변경 · 쉬는 주는 시트 <b>LIVE일정</b> 탭에.</p>';
+    '<p class="hint" style="margin:10px 0 0;">LIVE 당일 오전 10~12시에 구독자에게 알림 문자가 자동으로 나가요. 일정 변경 · 쉬는 주는 시트 <b>LIVE일정</b> 탭에.</p>' +
+    '<div class="lv-send">' +
+      '<b style="font-size:14px;">구독자에게 공지 문자</b>' +
+      '<div style="display:flex; gap:6px; flex-wrap:wrap; margin:8px 0;">' +
+        '<button type="button" class="btn btn-ghost btn-sm" data-lvtpl="soon">곧 시작</button>' +
+        '<button type="button" class="btn btn-ghost btn-sm" data-lvtpl="change">일정 변경</button>' +
+        '<button type="button" class="btn btn-ghost btn-sm" data-lvtpl="off">이번 주 쉼</button>' +
+      '</div>' +
+      '<textarea id="lvText" rows="7" placeholder="{이름} 이라고 쓰면 받는 분 이름으로 바뀌어요." style="width:100%; font-size:14px;"></textarea>' +
+      '<div class="hint" id="lvBytes" style="margin:4px 0 8px;"></div>' +
+      '<input type="text" id="lvTest" placeholder="테스트 받을 번호" style="width:100%; margin-bottom:8px;">' +
+      '<div style="display:flex; gap:8px;"><button type="button" class="btn btn-ghost btn-sm" id="lvTestBtn">내 폰으로 테스트</button>' +
+      '<button type="button" class="btn btn-primary btn-sm" id="lvSendBtn">구독자 ' + L.count + '명에게 보내기</button></div>' +
+    '</div>';
+  lvBind(L);
+}
+let LV_DRAFT = '';
+function lvToday(){ const d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function lvBind(L){
+  const ta = $('lvText'), by = () => { const b = csBytes(ta.value); $('lvBytes').textContent = b.toLocaleString() + ' / 2,000 바이트' + (b > 90 ? ' · 장문(LMS)' : ' · 단문'); };
+  ta.value = LV_DRAFT; by();
+  ta.addEventListener('input', () => { LV_DRAFT = ta.value; by(); });
+  try{ $('lvTest').value = localStorage.getItem('pu_cs_test') || ''; }catch(e){}
+  const nx = L.next, when = nx ? (+nx.date.slice(5, 7)) + '월 ' + (+nx.date.slice(8)) + '일 ' + (nx.timeK || nx.time) : '';
+  const T = {
+    soon: '[퍼플 유니버스]\n\n{이름}님, 유튜브 LIVE 「무엇이든 물어보세요」가 곧 시작됩니다!\n\n▶ https://www.youtube.com/@purple-universe-kk/streams\n\n콘텐츠 · 비즈니스 고민, 편하게 들고 오세요.\n알림 해지: purpleuniverse.net/webinar#live',
+    change: '[퍼플 유니버스]\n\n{이름}님, 이번 주 유튜브 LIVE 일정이 바뀌었어요.\n\n■ ' + (when || '○월 ○일 밤 ○시') + '\n▶ https://www.youtube.com/@purple-universe-kk/streams\n\n알림 해지: purpleuniverse.net/webinar#live',
+    off: '[퍼플 유니버스]\n\n{이름}님, 이번 주 유튜브 LIVE는 한 주 쉬어갑니다.\n' + (when ? '다음 LIVE는 ' + when + '에 만나요!' : '다음 주에 만나요!') + '\n\n알림 해지: purpleuniverse.net/webinar#live'
+  };
+  document.querySelectorAll('[data-lvtpl]').forEach(b => b.onclick = () => {
+    if(ta.value.trim() && !confirm('지금 쓴 내용을 템플릿으로 바꿀까요?')) return;
+    ta.value = LV_DRAFT = T[b.dataset.lvtpl]; by();
+  });
+  const send = async extra => {
+    const text = ta.value.trim();
+    if(!text) throw new Error('문자 내용을 입력해주세요');
+    if(csBytes(text) > 2000) throw new Error('2,000바이트를 넘었어요');
+    const r = await apiPost(Object.assign({ action:'liveSend', text }, extra || {}));
+    if(r.sent == null) throw new Error(r.error || '실패 — 앱스 스크립트를 새 버전으로 배포했는지 확인해주세요');
+    return r;
+  };
+  $('lvTestBtn').onclick = async () => {
+    const t = $('lvTest').value.replace(/\D/g, '');
+    if(!/^01\d{8,9}$/.test(t)){ toast('테스트 받을 번호를 넣어주세요.', false); return; }
+    try{ localStorage.setItem('pu_cs_test', $('lvTest').value); }catch(e){}
+    try{ await send({ test: t }); toast('테스트 문자를 보냈어요'); }catch(e){ toast('실패: ' + e.message, false); }
+  };
+  $('lvSendBtn').onclick = async () => {
+    if(!L.count){ toast('구독자가 없어요.', false); return; }
+    if(!confirm('LIVE 구독자 ' + L.count + '명에게 이 문자를 보낼까요?')) return;
+    const b = $('lvSendBtn'); b.disabled = true; b.textContent = '보내는 중…';
+    try{ const r = await send(); toast(r.sent + '명 발송' + (r.failed ? ' · ' + r.failed + '명 실패: ' + (r.error || '') : ' 완료'), !r.failed); LV_DRAFT = ''; ta.value = ''; by(); }
+    catch(e){ toast('실패: ' + e.message, false); }
+    finally{ b.disabled = false; b.textContent = '구독자 ' + L.count + '명에게 보내기'; }
+  };
 }
 async function apiPost(body){
   const r = await fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
