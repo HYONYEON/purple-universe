@@ -28,7 +28,7 @@ window.WEBINARS = [
     "cat": "webinar",
     "price": "",
     "title": "콘텐츠 기획 전문가와 6만 세무사 유튜버가 풀어주는 '전문직 콘텐츠 로드맵'",
-    "host": "",
+    "host": "김동완 세무사",
     "date": "2026-10-16",
     "time": "밤 9시",
     "place": "온라인 (Zoom)",
