@@ -12,10 +12,10 @@ window.WEBINARS = [
     "time": "10:00~15:00",
     "place": "서울 강남구 삼성동 트레이드타워 51층",
     "poster": "images/1791068909299_itllp_class_01_poster.jpg",
-    "desc": "“언젠가 시작해야지”라고 생각하신 지 얼마나 되셨습니까?\n그 사이에도 고객은 먼저 시작한 전문가에게 가고 있습니다.\n\nAI 시대의 SNS는 선택이 아닙니다. 언제 시작하느냐의 문제입니다. \n10월 24일, 5시간이면 무엇을·어디에·어떻게 올릴지가 정해집니다.",
+    "desc": "“언젠가 시작해야지”라고 생각하신 지 얼마나 되셨습니까?\n그 사이에도 고객은 먼저 시작한 전문가에게 가고 있습니다.\n\nAI 시대의 SNS는 선택이 아닙니다. 언제 시작하느냐의 문제입니다. \n10월 24일, 5시간이면 무엇을·어디에·어떻게 올릴지가 정해집니다.\n\n저와 6만 유튜버 [김동완 세무사]가 전문직 콘텐츠를 면밀하게 분석해 드리는 시간입니다.",
     "applyUrl": "https://aprime.kr/classlist2/?c=class_01",
     "replayYt": "",
-    "materialUrl": "https://purpleuniverse.net/kit-bs6e3ec7",
+    "materialUrl": "https://purpleuniverse.net/toolkit",
     "body": [
       {
         "t": "p",
