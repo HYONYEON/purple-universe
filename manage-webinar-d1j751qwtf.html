@@ -834,6 +834,8 @@ function renderLive(){
       '</div>' +
       '<textarea id="lvText" rows="7" placeholder="{이름} 이라고 쓰면 받는 분 이름으로 바뀌어요." style="width:100%; font-size:14px;"></textarea>' +
       '<div class="hint" id="lvBytes" style="margin:4px 0 8px;"></div>' +
+      '<label style="display:flex; gap:8px; align-items:flex-start; font-size:14px; margin:0 0 10px; cursor:pointer;"><input type="checkbox" id="lvNews" style="margin-top:3px;">' +
+        '<span>웨비나 <b>소식 동의자</b>도 함께 <b id="lvNewsN"></b><br><small style="color:var(--text-faint);">광고 문자라 맨 앞 (광고) · 맨 끝 무료수신거부 080 번호가 있어야 보내져요. LIVE 알림을 해지한 분은 빠져요.</small></span></label>' +
       '<input type="text" id="lvTest" placeholder="테스트 받을 번호" style="width:100%; margin-bottom:8px;">' +
       '<div style="display:flex; gap:8px;"><button type="button" class="btn btn-ghost btn-sm" id="lvTestBtn">내 폰으로 테스트</button>' +
       '<button type="button" class="btn btn-primary btn-sm" id="lvSendBtn">구독자 ' + L.count + '명에게 보내기</button></div>' +
@@ -845,6 +847,19 @@ function lvToday(){ const d = new Date(); return d.getFullYear() + '-' + ('0' + 
 function lvBind(L){
   const ta = $('lvText'), by = () => { const b = csBytes(ta.value); $('lvBytes').textContent = b.toLocaleString() + ' / 2,000 바이트' + (b > 90 ? ' · 장문(LMS)' : ' · 단문'); };
   ta.value = LV_DRAFT; by();
+  // 소식 동의자 (LIVE 명단에 이미 있는 번호는 빼고 셈)
+  const lvPh = new Set(L.list.map(x => String(x.phone).replace(/\D/g, '')));
+  const newsN = new Set((ADM.applicants || []).filter(a => a.news === '동의').map(a => String(a.phone).replace(/\D/g, '')).filter(p => p && !lvPh.has(p))).size;
+  $('lvNewsN').textContent = '(+' + newsN + '명)';
+  const total = () => L.count + ($('lvNews').checked ? newsN : 0);
+  const label = () => { $('lvSendBtn').textContent = ($('lvNews').checked ? '구독자 + 소식 동의자 ' : '구독자 ') + total() + '명에게 보내기'; };
+  $('lvNews').onchange = () => {
+    label();
+    if($('lvNews').checked && ta.value.trim() && !/^\(광고\)/.test(ta.value.trim())){
+      ta.value = LV_DRAFT = '(광고)' + ta.value.trim().replace(/\n*알림 해지: purpleuniverse\.net\/webinar#live\s*$/, '') + '\n\n알림 해지: purpleuniverse.net/webinar#live\n무료수신거부 080-000-0000'; by();
+      toast('맨 앞 (광고)와 맨 끝 수신거부 줄을 넣었어요. 080 번호를 실제 번호로 바꿔주세요.');
+    }
+  };
   ta.addEventListener('input', () => { LV_DRAFT = ta.value; by(); });
   try{ $('lvTest').value = localStorage.getItem('pu_cs_test') || ''; }catch(e){}
   const nx = L.next, when = nx ? (+nx.date.slice(5, 7)) + '월 ' + (+nx.date.slice(8)) + '일 ' + (nx.timeK || nx.time) : '';
@@ -861,7 +876,7 @@ function lvBind(L){
     const text = ta.value.trim();
     if(!text) throw new Error('문자 내용을 입력해주세요');
     if(csBytes(text) > 2000) throw new Error('2,000바이트를 넘었어요');
-    const r = await apiPost(Object.assign({ action:'liveSend', text }, extra || {}));
+    const r = await apiPost(Object.assign({ action:'liveSend', text, withNews: $('lvNews').checked }, extra || {}));
     if(r.sent == null) throw new Error(r.error || '실패 — 앱스 스크립트를 새 버전으로 배포했는지 확인해주세요');
     return r;
   };
@@ -872,12 +887,13 @@ function lvBind(L){
     try{ await send({ test: t }); toast('테스트 문자를 보냈어요'); }catch(e){ toast('실패: ' + e.message, false); }
   };
   $('lvSendBtn').onclick = async () => {
-    if(!L.count){ toast('구독자가 없어요.', false); return; }
-    if(!confirm('LIVE 구독자 ' + L.count + '명에게 이 문자를 보낼까요?')) return;
+    if(!total()){ toast('받을 분이 없어요.', false); return; }
+    if($('lvNews').checked && /080-000-0000/.test(ta.value)){ toast('무료수신거부 080 번호를 실제 번호로 바꿔주세요.', false); return; }
+    if(!confirm(($('lvNews').checked ? 'LIVE 구독자 + 소식 동의자 ' : 'LIVE 구독자 ') + total() + '명에게 이 문자를 보낼까요?')) return;
     const b = $('lvSendBtn'); b.disabled = true; b.textContent = '보내는 중…';
     try{ const r = await send(); toast(r.sent + '명 발송' + (r.failed ? ' · ' + r.failed + '명 실패: ' + (r.error || '') : ' 완료'), !r.failed); LV_DRAFT = ''; ta.value = ''; by(); }
     catch(e){ toast('실패: ' + e.message, false); }
-    finally{ b.disabled = false; b.textContent = '구독자 ' + L.count + '명에게 보내기'; }
+    finally{ b.disabled = false; label(); }
   };
 }
 async function apiPost(body){
