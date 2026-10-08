@@ -50,7 +50,7 @@ window.NOTES = [
   {
     "cat": "webinar",
     "date": "2026-10-07",
-    "title": "60회 차 남콘남비 웨비나ㅣ2027년 AI 시대에도 살아남을 '콘텐츠 차별화 전략'",
+    "title": "",
     "desc": "2027년 AI 시대에도 살아남을 '콘텐츠 차별화 전략'",
     "yt": "https://youtu.be/og_Fp1lSDj4",
     "img": "",
