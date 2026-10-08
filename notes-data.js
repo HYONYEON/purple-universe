@@ -354,6 +354,19 @@ window.NOTES = [
     "ogv": 2
   },
   {
+    "cat": "live",
+    "date": "2026-09-17",
+    "title": "비즈니스 콘텐츠에 대한 모든 것! 무엇이든 물어보세요",
+    "desc": "",
+    "yt": "https://youtube.com/live/ud6l8ADoZ7k",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [],
+    "no": 17,
+    "ogv": 2
+  },
+  {
     "cat": "marketing",
     "date": "2026-09-17",
     "title": "시장 떡집 하루 판매가 200개에서 6,000개가 됐습니다",
