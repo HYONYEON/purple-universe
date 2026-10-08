@@ -369,6 +369,19 @@ window.NOTES = [
   {
     "cat": "live",
     "date": "2026-09-17",
+    "title": "비즈니스 콘텐츠에 대한 모든 것! 무엇이든 물어보세요!",
+    "desc": "",
+    "yt": "https://www.youtube.com/watch?v=ud6l8ADoZ7k&t=2095s&pp=0gcJCTcMAYcqIYzv",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [],
+    "no": 19,
+    "ogv": 2
+  },
+  {
+    "cat": "live",
+    "date": "2026-09-17",
     "title": "비즈니스 콘텐츠에 대한 모든 것! 무엇이든 물어보세요",
     "desc": "",
     "yt": "https://youtube.com/live/ud6l8ADoZ7k",
