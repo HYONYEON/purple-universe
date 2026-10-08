@@ -311,7 +311,7 @@
 
       <div class="field">
         <label>제목</label>
-        <input type="text" id="fTitle" placeholder="예: 숏폼 알고리즘 흐름 요약 (유튜브 주소가 있으면 비워도 돼요 — 영상 제목이 자동으로 들어가요)">
+        <input type="text" id="fTitle" placeholder="예: 숏폼 알고리즘 흐름 요약 (유튜브 주소가 있으면 비워도 돼요)">
       </div>
 
       <div class="field" id="descField">
@@ -709,7 +709,7 @@ function ogPageHTML(n){
   const url  = SITE + '/n/' + n.no;
   const hash = '/notes#' + n.no;
   const cat  = CATS[n.cat] || '';
-  const title = n.title + (cat ? ' — ' + cat : '') + ' | 30X 퍼플 노트';
+  const title = (n.title || n.desc || cat || '30X 퍼플 노트 녹화본').split('\n')[0] + (cat ? ' — ' + cat : '') + ' | 30X 퍼플 노트';
   const desc  = summaryOf(n);
   return '<!DOCTYPE html>\n'
    + '<html lang="ko">\n<head>\n<meta charset="UTF-8">\n'
@@ -726,7 +726,7 @@ function ogPageHTML(n){
    + '<meta property="og:image:secure_url" content="' + attr(ogImageOf(n)) + '">\n'
    + '<meta property="og:image:width" content="1200">\n'
    + '<meta property="og:image:height" content="630">\n'
-   + '<meta property="og:image:alt" content="' + attr(n.title) + '">\n'
+   + '<meta property="og:image:alt" content="' + attr(n.title || n.desc || '30X 퍼플 노트') + '">\n'
    + '<meta name="twitter:card" content="summary_large_image">\n'
    + '<meta name="twitter:title" content="' + attr(title) + '">\n'
    + '<meta name="twitter:description" content="' + attr(desc) + '">\n'
@@ -758,20 +758,10 @@ async function putOgPage(n, localDataUrl){
     const f = await gh('/contents/' + path + '?ref=' + BRANCH);
     sha = f.sha;
   }catch(e){ /* 없으면 새로 만듦 */ }
-  await putFile(path, b64encode(ogPageHTML(n)), sha, '공유 페이지: ' + n.title);
+  await putFile(path, b64encode(ogPageHTML(n)), sha, '공유 페이지: ' + (n.title || n.date));
   n.ogv = OG_VER;                 // 이 판으로 만들어졌다는 표시 → 다음엔 건너뜀
 }
 
-/* 유튜브 영상 제목 가져오기 (공개 oEmbed — 키 필요 없음) */
-async function ytTitle(u){
-  try{
-    let url = String(u).trim();
-    if(/^[\w-]{11}$/.test(url)) url = 'https://youtu.be/' + url;
-    const r = await fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent(url));
-    if(!r.ok) return '';
-    return String((await r.json()).title || '').trim();
-  }catch(e){ return ''; }
-}
 async function save(){
   const btn=document.getElementById('saveBtn');
   let title=document.getElementById('fTitle').value.trim();
@@ -780,14 +770,9 @@ async function save(){
     toast('기존 글 목록을 읽지 못한 상태예요. 새로고침 후 다시 시도해주세요.', false);
     return;
   }
-  // 유튜브 주소가 있으면 제목은 비워도 됨 → 유튜브 영상 제목을 가져와서 씀
+  // 유튜브 주소가 있으면 제목은 비워도 됨 (썸네일에 영상 제목이 보이니까) — 비운 채로 저장
   const ytUrl = document.getElementById('fYt').value.trim();
-  if(!title && ytUrl){
-    title = await ytTitle(ytUrl);
-    if(!title) title = (document.getElementById('fDesc').value.trim().split('\n')[0] || '').slice(0, 60);
-    if(title) document.getElementById('fTitle').value = title;
-  }
-  if(!title){ toast(ytUrl ? '유튜브 제목을 못 가져왔어요. 제목을 직접 넣어주세요.' : '제목을 입력해주세요. (유튜브 주소가 있으면 비워도 돼요)', false); return; }
+  if(!title && !ytUrl){ toast('제목을 입력해주세요. (유튜브 주소가 있으면 비워도 돼요)', false); return; }
   if(!date){  toast('날짜를 선택해주세요.', false); return; }
 
   btn.disabled=true; btn.textContent='올리는 중…';
@@ -855,7 +840,7 @@ async function save(){
 }
 
 async function removeItem(i){
-  if(!confirm('"'+NOTES[i].title+'" 글을 삭제할까요?')) return;
+  if(!confirm('"'+(NOTES[i].title||NOTES[i].desc||NOTES[i].date)+'" 글을 삭제할까요?')) return;
   const t=NOTES[i].title;
   NOTES.splice(i,1);
   try{
@@ -916,7 +901,7 @@ function renderList(){
         '<span class="pill '+n.cat+'">'+(CATS[n.cat]||n.cat)+'</span>'+
         (n.no ? '<span class="li-no">/n/'+n.no+'</span>' : '')+
       '</div>'+
-      '<div class="t"><b>'+escapeHtml(n.title)+'</b><span>'+n.date+'</span></div>'+
+      '<div class="t"><b>'+escapeHtml(n.title || ('(제목 없음) ' + (n.desc||'').split('\n')[0]))+'</b><span>'+n.date+'</span></div>'+
       '<div class="li-btns">'+
         '<button class="btn btn-ghost btn-sm" data-edit="'+i+'">수정</button>'+
         '<button class="btn btn-danger btn-sm" data-del="'+i+'">삭제</button>'+

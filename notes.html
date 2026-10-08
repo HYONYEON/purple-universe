@@ -201,7 +201,7 @@
   }
   /* 추천 픽 뱃지 — 카드 윗선 위에 걸쳐서 (썸네일 제목을 가리지 않게) */
   .pick-badge{
-    position:absolute; top:-15px; left:18px; z-index:3;
+    position:absolute; top:-34px; left:0; z-index:3;
     display:inline-flex; align-items:center; gap:6px;
     background:linear-gradient(135deg, var(--gold), var(--gold-soft));
     color:#2A1A06; font-weight:700; font-size:13px;
@@ -231,7 +231,7 @@
   @media(max-width:620px){ .pick-grid{grid-template-columns:1fr;} }
   .pick-card{border-color:rgba(232,184,94,.34); position:relative; overflow:visible;}
   .pick-card .note-thumb{border-radius:17px 17px 0 0;}              /* 카드가 overflow:visible 이라 썸네일 모서리는 여기서 둥글게 */
-  .pick-grid{padding-top:16px;}                                       /* 윗선 위로 올라간 뱃지 자리 */
+  .pick-grid{padding-top:30px; row-gap:52px;}                         /* 카드 위로 올라간 뱃지 자리 */
 
   /* ---------- 가로 슬라이드 ---------- */
   .slider{
@@ -587,7 +587,7 @@ function cardHTML(n, isPick){
     '<div class="note-body">' +
       '<div class="note-meta"><span class="tag ' + n.cat + '">' + esc(cat.tagText) + '</span>' +
       '<span class="note-date">' + fmtDate(n.date) + '</span></div>' +
-      '<h3>' + esc(n.title) + '</h3><p>' + esc(n.desc) + '</p>' + link +
+      (n.title ? '<h3>' + esc(n.title) + '</h3>' : '') + (n.desc ? '<p>' + esc(n.desc) + '</p>' : '') + link +
     '</div></article>';
 }
 
@@ -857,7 +857,7 @@ function openModal(n){
   modalHead.innerHTML =
     '<span class="tag ' + n.cat + '">' + esc(cat.tagText) + '</span>' +
     '<span class="note-date">' + fmtDate(n.date) + '</span>' +
-    '<h3 id="modalTitle">' + esc(n.title) + '</h3>';
+    (n.title ? '<h3 id="modalTitle">' + esc(n.title) + '</h3>' : '');
 
   let html = '';
   const id = ytId(n.yt);
