@@ -3,6 +3,19 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "live",
+    "date": "2026-10-08",
+    "title": "비즈니스 콘텐츠에 대한 모든 것! 무엇이든 물어보세요!",
+    "desc": "",
+    "yt": "https://www.youtube.com/watch?v=Lk9V9BYDeyw",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [],
+    "no": 18,
+    "ogv": 2
+  },
+  {
     "cat": "webinar",
     "date": "2026-10-07",
     "title": "60회 차 남콘남비 웨비나",
