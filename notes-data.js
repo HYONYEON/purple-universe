@@ -446,8 +446,8 @@ window.NOTES = [
   {
     "cat": "insight",
     "date": "2026-09-16",
-    "title": "차원이 다른 마케팅 성과, '1%의 법칙'과 'FREE 전략'ㅣ일헥타르 컴퍼니",
-    "desc": "",
+    "title": "",
+    "desc": "차원이 다른 마케팅 성과, '1%의 법칙'과 'FREE 전략'ㅣ일헥타르 컴퍼니",
     "yt": "https://www.youtube.com/watch?v=T2xmCdS6cF0",
     "img": "",
     "link": "",
