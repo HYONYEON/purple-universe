@@ -374,15 +374,15 @@
           </table></div>
 
           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; align-items:center;">
-            <button class="btn btn-ghost" id="matBtn" type="button">녹화본 · 자료 문자 보내기</button>
-            <button class="btn btn-ghost btn-sm" id="apReload" type="button">새로고침</button>
-            <span class="hint" style="margin:0;">녹화본·자료 링크를 위에 저장하고 1~2분 뒤에 눌러주세요. 이미 받은 분께는 다시 가지 않아요.</span>
+                        <button class="btn btn-ghost btn-sm" id="apReload" type="button">새로고침</button>
+            <span class="hint" style="margin:0;">녹화본 문자는 아래 <b>녹화본 템플릿</b>으로 보내요. (녹화본 링크를 위에 넣고 저장한 뒤)</span>
           </div>
 
           <!-- 직접 쓴 문자 보내기 -->
           <div class="cs-box">
             <div class="cs-head"><b>직접 쓴 문자 보내기</b>
-              <span class="cs-tpl"><button type="button" class="btn btn-ghost btn-sm" data-tpl="info">정보성 템플릿</button>
+              <span class="cs-tpl"><button type="button" class="btn btn-ghost btn-sm" data-tpl="replay">녹화본 템플릿</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-tpl="info">정보성 템플릿</button>
               <button type="button" class="btn btn-ghost btn-sm" data-tpl="ad">광고 템플릿</button></span></div>
             <div class="cs-target">
               <label><input type="radio" name="csTarget" value="attend" checked> <b>끝까지 참여한 분만</b> <small>(툴킷 참석 코드 · 감사 문자)</small></label>
@@ -924,22 +924,6 @@ $('zoomSave').onclick = async () => {
   finally{ b.disabled = false; }
 };
 
-$('matBtn').onclick = async () => {
-  if(editIndex < 0) return;
-  const w = LIST[editIndex];
-  if(!w.replayYt && !w.materialUrl){ toast('녹화본 유튜브나 자료 링크를 먼저 넣고 발행해주세요.', false); return; }
-  const left = ADM.applicants.filter(a => String(a.no) === String(w.no) && !(a.sent && a.sent.materials)).length;
-  if(!left){ toast('보낼 분이 없어요 (모두 받았거나 신청자가 없음).'); return; }
-  if(!confirm(left + '명에게 녹화본·자료 문자를 보낼까요?\n(1건당 약 45원)')) return;
-  const b = $('matBtn'); b.disabled = true; b.textContent = '보내는 중…';
-  try{
-    const r = await apiPost({ action:'sendMaterials', no: w.no });
-    if(r.sent != null) toast(r.sent + '명 발송' + (r.failed ? ' · ' + r.failed + '명 실패: ' + (r.error || '') : ' 완료'), !r.failed);
-    else throw new Error(r.error);
-    await loadAdmin(); renderList(); renderSms();
-  }catch(e){ toast('실패: ' + e.message, false); }
-  finally{ b.disabled = false; b.textContent = '녹화본 · 자료 문자 보내기'; }
-};
 
 /* ---------- 직접 쓴 문자 보내기 ---------- */
 const csBytes = t => [...t].reduce((n, ch) => n + (ch.charCodeAt(0) < 128 ? 1 : 2), 0);
@@ -1000,9 +984,22 @@ document.querySelectorAll('[data-tpl]').forEach(b => b.onclick = () => {
   const ad = '(광고)[퍼플 유니버스]\n\n{이름}님, 이어서 알려드리는 소식이에요.\n\n' +
     (nC ? '■ ' + nC.title + ' [유료] ' + nC.date.slice(5).replace('-', '/') + '\n▶ purpleuniverse.net/w/' + nC.no + '\n\n' : '') +
     '■ 퍼플 유니버스 멤버십\n콘텐츠 · 브랜딩 · 매출 · 협업 고민을 함께 해결하는 곳\n▶ purpleuniverse.net\n\n무료수신거부 080-000-0000';
+  // 녹화본 — 관리 페이지에 저장한 '녹화본 페이지 링크'를 그대로 넣음 (없으면 자리만 표시)
+  const rv = String($('fYt').value || w.replayYt || '').trim();
+  const rUrl = !rv ? '' : /^https?:\/\//.test(rv) ? rv : rv.charAt(0) === '/' ? 'https://purpleuniverse.net' + rv
+             : /^[\w-]{11}$/.test(rv) ? 'https://youtu.be/' + rv : rv;
+  const K = catOf(w) === 'class' ? '클래스' : '웨비나';
+  const replay = '[퍼플 유니버스]\n\n{이름}님, 신청해 주신 ' + K + ' 녹화본이 준비되었습니다.\n\n' +
+    '■ ' + w.title + '\n▶ ' + (rUrl || '(녹화본 주소를 넣어주세요)') + '\n\n' +
+    (catOf(w) === 'class' ? '■ 30X 퍼플 툴킷 (무료)\n▶ purpleuniverse.net/toolkit\n참석 코드: ' + code + '\n\n' : '') +
+    (nW ? '■ 다음 웨비나 [무료] ' + nW.date.slice(5).replace('-', '/') + '\n' + nW.title + '\n▶ purpleuniverse.net/w/' + nW.no + '\n\n' : '') +
+    '놓치신 부분이나 다시 보고 싶은 부분, 편하게 돌려보세요!';
+  if(b.dataset.tpl === 'replay' && !rUrl) toast('위 ‘웨비나 녹화본 페이지 링크’에 주소를 넣으면 문자에 자동으로 들어가요.', false);
   if($('csText').value.trim() && !confirm('지금 쓴 내용을 템플릿으로 바꿀까요?')) return;
-  $('csText').value = b.dataset.tpl === 'ad' ? ad : info;
-  document.querySelector('input[name="csTarget"][value="' + (b.dataset.tpl === 'ad' ? 'news' : 'attend') + '"]').checked = true;
+  const T = b.dataset.tpl;
+  $('csText').value = T === 'ad' ? ad : T === 'replay' ? replay : info;
+  // 받는 사람 기본값: 녹화본 = 신청자 전원 / 정보성(툴킷 코드) = 끝까지 참여 / 광고 = 소식 동의자
+  document.querySelector('input[name="csTarget"][value="' + (T === 'ad' ? 'news' : T === 'replay' ? 'all' : 'attend') + '"]').checked = true;
   csRefresh();
 });
 async function csPost(extra){
