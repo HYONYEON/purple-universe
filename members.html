@@ -202,9 +202,11 @@
   .vote-me .who{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:15px;}
   .vote-me .who b{color:var(--gold-soft);}
   .vote-me .who-l{display:flex; align-items:center; flex-wrap:wrap; gap:10px 14px;}
-  .vconf-pill{display:inline-flex; align-items:center; gap:7px; padding:7px 15px; border-radius:100px; cursor:pointer; font:inherit; font-size:14px;
-              color:#2A1A06; background:linear-gradient(135deg, #F4D58A, #E8B85E); border:none; box-shadow:0 4px 14px rgba(232,184,94,.3);}
-  .vconf-pill b{color:#2A1A06 !important; font-weight:800;}
+  /* .vote-me .who button(보라 글자 · 배경 없음) 보다 우선하도록 선택자를 길게 */
+  .vote-me .who .vconf-pill, .vote-me .vconf-pill{display:inline-flex; align-items:center; gap:7px; padding:7px 15px; border-radius:100px; cursor:pointer;
+              font:inherit; font-size:14px; font-weight:700; color:#2A1A06; background:linear-gradient(135deg, #F4D58A, #E8B85E); border:none;
+              box-shadow:0 4px 14px rgba(232,184,94,.3);}
+  .vote-me .who .vconf-pill b, .vote-me .vconf-pill b{color:#2A1A06; font-weight:800;}
   .vconf-pill i{width:8px; height:8px; border-radius:50%; background:var(--c); box-shadow:0 0 0 2px rgba(42,26,6,.25);}
   .vote-me .who button{background:none; border:none; color:var(--purple-bright); cursor:pointer; font:inherit; font-size:13.5px; font-weight:600;}
   .vote-tabs{display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px;}
