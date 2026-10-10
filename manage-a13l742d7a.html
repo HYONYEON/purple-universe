@@ -871,10 +871,9 @@ function editItem(i){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-/* 마케팅 뉴스클리핑(카드뉴스)은 요약 · 유튜브 · 원문 칸이 필요 없어서 숨김 */
+/* 마케팅 뉴스클리핑(카드뉴스)은 유튜브 · 원문 칸이 필요 없어서 숨김 (한 줄 요약은 다른 글처럼 보임) */
 function syncCat(){
   const mk = document.getElementById('fCat').value === 'marketing';
-  document.getElementById('descField').style.display = mk ? 'none' : '';
   document.getElementById('ytRow').style.display = mk ? 'none' : '';
 }
 document.getElementById('fCat').addEventListener('change', syncCat);
