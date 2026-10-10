@@ -5,7 +5,7 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-09",
-    "title": "'고급'을 지우고 사실을 적었더니 전환율 +46%",
+    "title": "",
     "desc": "",
     "yt": "",
     "img": "",
@@ -31,7 +31,7 @@ window.NOTES = [
     ],
     "no": 20,
     "imgtop": 0.106,
-    "ogimg": "images/1791499636551_4uq3g_og-20.jpg",
+    "ogimg": "images/1791607859502_olywf_og-20.jpg",
     "ogv": 2
   },
   {
