@@ -201,6 +201,11 @@
   .vchip.on{background:var(--purple); border-color:var(--purple); color:#fff;}
   .vote-me .who{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:15px;}
   .vote-me .who b{color:var(--gold-soft);}
+  .vote-me .who-l{display:flex; align-items:center; flex-wrap:wrap; gap:10px 14px;}
+  .vconf-pill{display:inline-flex; align-items:center; gap:7px; padding:7px 15px; border-radius:100px; cursor:pointer; font:inherit; font-size:14px;
+              color:#2A1A06; background:linear-gradient(135deg, #F4D58A, #E8B85E); border:none; box-shadow:0 4px 14px rgba(232,184,94,.3);}
+  .vconf-pill b{color:#2A1A06 !important; font-weight:800;}
+  .vconf-pill i{width:8px; height:8px; border-radius:50%; background:var(--c); box-shadow:0 0 0 2px rgba(42,26,6,.25);}
   .vote-me .who button{background:none; border:none; color:var(--purple-bright); cursor:pointer; font:inherit; font-size:13.5px; font-weight:600;}
   .vote-tabs{display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px;}
   .vote-tabs::-webkit-scrollbar{display:none;}
@@ -1377,9 +1382,13 @@
   }
   function render(){
     // 내 이름 — 로그인 정보에서 자동
+    // 확정된 일정 — 이름 옆에 둥근 박스로 (누르면 그 날짜로 이동)
+    const confs = D.candidates.filter(c => c.confirmed && c.date >= today).sort((a,b) => a.date < b.date ? -1 : 1);
+    const confHTML = confs.map(c => '<button type="button" class="vconf-pill" data-jump="' + esc(c.type) + '|' + c.date + '" style="--c:' + (COLORS[c.type] || '#A98BFF') + '">' +
+      '<i></i><b>' + esc(SHORT[c.type] || c.type) + '</b>ㅣ' + fmtD(c.date) + ' 확정</button>').join('');   // 예) 웰니스ㅣ12월 13일 (일) 확정
     $('voteMe').innerHTML = me
-      ? '<div class="who"><span><b>' + esc(me) + '</b> 님으로 투표 중</span></div>'
-      : '<div class="lb">투표하려면 먼저 휴대폰 번호로 로그인해 주세요.</div>';
+      ? '<div class="who"><span class="who-l"><span><b>' + esc(me) + '</b> 님으로 투표 중</span>' + confHTML + '</span></div>'
+      : '<div class="lb">투표하려면 먼저 휴대폰 번호로 로그인해 주세요.</div>' + (confHTML ? '<div class="who-l">' + confHTML + '</div>' : '');
     // 탭
     $('voteTabs').innerHTML = tabsOf().map(t => {
       const op = openOf(t).length, all = candsOf(t).length;
