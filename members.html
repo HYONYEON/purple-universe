@@ -1401,7 +1401,8 @@
       const answered = new Set(vs.map(v => v.name));
       const none = D.members.filter(n => !answered.has(n));
       const mine = (vs.find(v => v.name === me) || {}).status || '';
-      const best = ok.length && ok.length === maxOf[c.type];
+      const NO_BEST = ['오프라인(세미나)', '전체 줌미팅'];        // 세미나 · 전체 줌미팅은 각자 일정에 맞춰 참여 → '가장 많이 가능' 표시 안 함
+      const best = NO_BEST.indexOf(c.type) < 0 && ok.length && ok.length === maxOf[c.type];
       const col = COLORS[c.type] || '#A98BFF';
       return '<div class="vrow' + (best ? ' best' : '') + '" id="vr-' + esc(c.type) + '-' + c.date + '">' +
         '<div class="vrow-top">' +
