@@ -1338,7 +1338,7 @@
 (function(){
   const API = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
   const COLORS = {'전체 줌미팅':'#A98BFF','오프라인(해커톤)':'#FF8A65','오프라인(세미나)':'#4FB3FF','웰니스 프로그램':'#5FD08A'};
-  const SHORT  = {'전체 줌미팅':'줌','오프라인(해커톤)':'해커톤','오프라인(세미나)':'세미나','웰니스 프로그램':'웰니스'};
+  const SHORT  = {'전체 줌미팅':'줌미팅','오프라인(해커톤)':'해커톤','오프라인(세미나)':'세미나','웰니스 프로그램':'웰니스'};
   const DOW = ['일','월','화','수','목','금','토'];
   /* 탭 묶음 — 오프라인(해커톤) · 오프라인(세미나)는 '오프라인(해커톤∙세미나)' 탭 하나로 (시트 · 달력은 그대로 따로) */
   const GROUPS = {'오프라인(해커톤∙세미나)':['오프라인(해커톤)','오프라인(세미나)']};
@@ -1462,7 +1462,7 @@
         const tags = items.filter(c => c.date === key).map(c => {
           const col = COLORS[c.type] || '#A98BFF';
           const ok = vOf(c.type, c.date).filter(v => v.status === '가능').length;
-          return '<span class="cal-tag cand' + (c.confirmed ? ' conf' : '') + '" style="--c:' + col + '" data-jump="' + esc(c.type) + '|' + c.date + '">' + (c.confirmed ? '✓ ' : '') + esc(SHORT[c.type] || c.type) + (c.confirmed ? ' 확정' : ok ? ' ' + ok : '') + '</span>';
+          return '<span class="cal-tag cand' + (c.confirmed ? ' conf' : '') + '" style="--c:' + col + '" data-jump="' + esc(c.type) + '|' + c.date + '">' + (c.confirmed ? '✓ ' : '') + esc(SHORT[c.type] || c.type) + (c.confirmed ? ' 확정' : '') + '</span>';   // 가능 인원 숫자는 빼고 일정 이름만
         }).join('');
         const bar = breakBar(key, y, m, d, w, days);
         cells += '<div class="cal-c' + (bar ? ' brk' : '') + (key === today ? ' today' : '') + (key < today ? ' past' : '') + (w === 0 ? ' sun' : w === 6 ? ' sat' : '') + '"><span class="cal-d">' + d + '</span>' + bar + tags + '</div>';
@@ -1470,7 +1470,7 @@
       html += '<div class="cal-m"><div class="cal-t">' + y + '년 ' + (m+1) + '월</div><div class="cal-g">' + cells + '</div></div>';
     }
     const legend = D.types.map(t => '<span><i style="background:' + (COLORS[t] || '#A98BFF') + '"></i>' + esc(t) + '</span>').join('') +
-                   '<span class="lg-cand">숫자 = 가능 인원 · 누르면 투표로 이동</span>';
+                   '<span class="lg-cand">누르면 투표로 이동</span>';
     const out = '<div class="cal-legend">' + legend + '</div><div class="cal-wrap">' + html + '</div>';
     $('voteCal').innerHTML = out;
     if($('pageCal')) $('pageCal').innerHTML = out;     // 페이지 '앞으로 3개월 모임 일정'에도 같은 달력을 크게
