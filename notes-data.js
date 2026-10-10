@@ -6,7 +6,7 @@ window.NOTES = [
     "cat": "marketing",
     "date": "2026-10-09",
     "title": "",
-    "desc": "",
+    "desc": "10월 9일 금요일ㅣ마케팅 뉴스클리핑",
     "yt": "",
     "img": "",
     "link": "",
@@ -31,7 +31,7 @@ window.NOTES = [
     ],
     "no": 20,
     "imgtop": 0.106,
-    "ogimg": "images/1791607859502_olywf_og-20.jpg",
+    "ogimg": "images/1791610156277_fl1vj_og-20.jpg",
     "ogv": 2
   },
   {
