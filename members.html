@@ -213,6 +213,10 @@
   .vote-list{display:flex; flex-direction:column; gap:9px;}
   .vrow{padding:14px 15px; border-radius:14px; background:var(--surface); border:1px solid var(--border);}
   .vrow.best{border-color:rgba(232,184,94,.55);}
+  .vrow.confirmed{position:relative; border:2.5px solid #E8B85E; box-shadow:0 0 0 4px rgba(232,184,94,.12), 0 10px 30px rgba(232,184,94,.12);}
+  .vconf{position:absolute; top:-13px; right:16px; transform:rotate(4deg); padding:5px 14px; border-radius:8px;
+         background:linear-gradient(135deg, #F4D58A, #E8B85E); color:#2A1A06; font-size:13px; font-weight:800; letter-spacing:.02em;
+         box-shadow:0 6px 16px rgba(232,184,94,.4);}
   .vrow.fix{border-color:var(--ok); background:rgba(95,208,138,.08);}
   .vrow-top{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .vrow-d{font-size:16px; font-weight:700;}
@@ -294,6 +298,7 @@
   .cal-tag.fix{background:var(--c); color:#120a22;}
   .cal-tag.cand{border:1px dashed var(--c); color:var(--c); cursor:pointer;}
   .cal-tag.cand:hover{background:rgba(255,255,255,.06);}
+  .cal-tag.cand.conf{border:1.5px solid #E8B85E; background:linear-gradient(135deg, #F4D58A, #E8B85E); color:#2A1A06; font-weight:800;}
   @media(max-width:900px){ .cal-wrap{grid-template-columns:1fr;} .cal-c{min-height:48px;} .cal-tag{font-size:10.5px;} }
   @media(max-width:560px){
     .vote-box{padding:24px 18px 18px;}
@@ -1401,10 +1406,13 @@
       const answered = new Set(vs.map(v => v.name));
       const none = D.members.filter(n => !answered.has(n));
       const mine = (vs.find(v => v.name === me) || {}).status || '';
-      const NO_BEST = ['오프라인(세미나)', '전체 줌미팅'];        // 세미나 · 전체 줌미팅은 각자 일정에 맞춰 참여 → '가장 많이 가능' 표시 안 함
-      const best = NO_BEST.indexOf(c.type) < 0 && ok.length && ok.length === maxOf[c.type];
+      // '가장 많이 가능'은 웰니스 프로그램만 (오프라인 · 전체 줌미팅은 각자 일정에 맞춰 참여) — 확정된 날이 있으면 그 일정은 표시 안 함
+      const NO_BEST = ['오프라인(해커톤)', '오프라인(세미나)', '전체 줌미팅'];
+      const hasConf = cs.some(x => x.type === c.type && x.confirmed);
+      const best = !c.confirmed && !hasConf && NO_BEST.indexOf(c.type) < 0 && ok.length && ok.length === maxOf[c.type];
       const col = COLORS[c.type] || '#A98BFF';
-      return '<div class="vrow' + (best ? ' best' : '') + '" id="vr-' + esc(c.type) + '-' + c.date + '">' +
+      return '<div class="vrow' + (best ? ' best' : '') + (c.confirmed ? ' confirmed' : '') + '" id="vr-' + esc(c.type) + '-' + c.date + '">' +
+        (c.confirmed ? '<span class="vconf">✓ 확정</span>' : '') +
         '<div class="vrow-top">' +
           (multi ? '<span class="vkind" style="--c:' + col + '">' + esc(SHORT[c.type] || c.type) + '</span>' : '') +
           '<span class="vrow-d">' + fmtD(c.date) + '</span>' +
@@ -1454,7 +1462,7 @@
         const tags = items.filter(c => c.date === key).map(c => {
           const col = COLORS[c.type] || '#A98BFF';
           const ok = vOf(c.type, c.date).filter(v => v.status === '가능').length;
-          return '<span class="cal-tag cand" style="--c:' + col + '" data-jump="' + esc(c.type) + '|' + c.date + '">' + esc(SHORT[c.type] || c.type) + (ok ? ' ' + ok : '') + '</span>';
+          return '<span class="cal-tag cand' + (c.confirmed ? ' conf' : '') + '" style="--c:' + col + '" data-jump="' + esc(c.type) + '|' + c.date + '">' + (c.confirmed ? '✓ ' : '') + esc(SHORT[c.type] || c.type) + (c.confirmed ? ' 확정' : ok ? ' ' + ok : '') + '</span>';
         }).join('');
         const bar = breakBar(key, y, m, d, w, days);
         cells += '<div class="cal-c' + (bar ? ' brk' : '') + (key === today ? ' today' : '') + (key < today ? ' past' : '') + (w === 0 ? ' sun' : w === 6 ? ' sat' : '') + '"><span class="cal-d">' + d + '</span>' + bar + tags + '</div>';
