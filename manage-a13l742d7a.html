@@ -311,7 +311,7 @@
 
       <div class="field">
         <label>제목</label>
-        <input type="text" id="fTitle" placeholder="예: 숏폼 알고리즘 흐름 요약 (유튜브 주소가 있으면 비워도 돼요)">
+        <input type="text" id="fTitle" placeholder="예: 숏폼 알고리즘 흐름 요약 (유튜브 영상이나 이미지가 있으면 비워도 돼요)">
       </div>
 
       <div class="field" id="descField">
@@ -770,9 +770,11 @@ async function save(){
     toast('기존 글 목록을 읽지 못한 상태예요. 새로고침 후 다시 시도해주세요.', false);
     return;
   }
-  // 유튜브 주소가 있으면 제목은 비워도 됨 (썸네일에 영상 제목이 보이니까) — 비운 채로 저장
+  // 유튜브 영상이나 이미지(대표 · 본문)가 있으면 제목은 비워도 됨 — 썸네일에 제목이 보이니까 (비운 채로 저장)
   const ytUrl = document.getElementById('fYt').value.trim();
-  if(!title && !ytUrl){ toast('제목을 입력해주세요. (유튜브 주소가 있으면 비워도 돼요)', false); return; }
+  const hasImg = !!thumbData || (editIndex > -1 && !!NOTES[editIndex].img) ||
+                 !!document.querySelector('#blocks .thumb-prev[src], #blocks img[src]');
+  if(!title && !ytUrl && !hasImg){ toast('제목을 입력해주세요. (유튜브 영상이나 이미지가 있으면 비워도 돼요)', false); return; }
   if(!date){  toast('날짜를 선택해주세요.', false); return; }
 
   btn.disabled=true; btn.textContent='올리는 중…';
