@@ -221,6 +221,13 @@
   .vote-list{display:flex; flex-direction:column; gap:9px;}
   .vrow{padding:14px 15px; border-radius:14px; background:var(--surface); border:1px solid var(--border);}
   .vrow.best{border-color:rgba(232,184,94,.55);}
+  .vmore{margin-top:4px;}
+  .vmore summary{cursor:pointer; list-style:none; padding:12px 14px; border-radius:12px; border:1px dashed var(--border-strong, rgba(255,255,255,.18));
+                 font-size:14px; font-weight:700; color:var(--text-dim); text-align:center;}
+  .vmore summary::-webkit-details-marker{display:none;}
+  .vmore summary::before{content:'▸ ';}
+  .vmore[open] summary::before{content:'▾ ';}
+  .vmore-list{display:flex; flex-direction:column; gap:9px; margin-top:10px; opacity:.85;}
   .vrow.confirmed{position:relative; border:2.5px solid #E8B85E; box-shadow:0 0 0 4px rgba(232,184,94,.12), 0 10px 30px rgba(232,184,94,.12);}
   .vconf{position:absolute; top:-13px; right:16px; transform:rotate(4deg); padding:5px 14px; border-radius:8px;
          background:linear-gradient(135deg, #F4D58A, #E8B85E); color:#2A1A06; font-size:13px; font-weight:800; letter-spacing:.02em;
@@ -1360,6 +1367,7 @@
   let me = window.PU_MEMBER ? window.PU_MEMBER.name : null;          // 로그인한 멤버 이름으로 자동 투표
   window.addEventListener('pu-member', () => { me = window.PU_MEMBER && window.PU_MEMBER.name; render(); });
   let tab = null;
+  const moreOpen = {};                                                // 탭별 '다른 후보 날짜' 토글 열림 상태
   const now = new Date();
   const today = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
 
@@ -1413,7 +1421,7 @@
     cs.forEach(c => { const k = vOf(c.type, c.date).filter(v => v.status === '가능').length; maxOf[c.type] = Math.max(maxOf[c.type] || 0, k); });
     const multi = typesOf(tab).length > 1;
     const names = arr => arr.map(v => esc(v.name)).join(', ');
-    $('voteList').innerHTML = cs.map(c => {
+    const rowHTML = c => {
       const when = [c.time, c.memo].filter(Boolean).join(' · ');
       const vs = vOf(c.type, c.date), ok = vs.filter(v => v.status === '가능'), no = vs.filter(v => v.status === '어려움');
       const answered = new Set(vs.map(v => v.name));
@@ -1442,7 +1450,16 @@
           '<div><span class="k na">미응답 ' + none.length + '</span>' + (none.length ? none.map(esc).join(', ') : '<em>모두 응답</em>') + '</div>' +
         '</div>' +
       '</div>';
-    }).join('');
+    };
+    // 확정된 일정이 있으면: 확정 날짜만 보이고, 나머지 후보는 '다른 후보 날짜' 토글 안에 접어둠 (지우지 않음)
+    const confTypes = new Set(cs.filter(c => c.confirmed).map(c => c.type));
+    const mainCs = cs.filter(c => c.confirmed || !confTypes.has(c.type));
+    const restCs = cs.filter(c => !c.confirmed && confTypes.has(c.type));
+    $('voteList').innerHTML = mainCs.map(rowHTML).join('') +
+      (restCs.length ? '<details class="vmore"' + (moreOpen[tab] ? ' open' : '') + ' data-more="' + esc(tab) + '"><summary>다른 후보 날짜 ' + restCs.length + '개 보기</summary>' +
+        '<div class="vmore-list">' + restCs.map(rowHTML).join('') + '</div></details>' : '');
+    const det = $('voteList').querySelector('.vmore');
+    if(det) det.addEventListener('toggle', () => { moreOpen[det.dataset.more] = det.open; });
     $('voteFoot').textContent = '같은 버튼을 한 번 더 누르면 취소돼요. 일정이 바뀌어도 언제든 다시 눌러 바꿀 수 있어요.';
   }
   /* 달력에 길게 표시할 기간 (쉬는 기간 등) — 여기에 한 줄씩 추가 */
@@ -1510,7 +1527,7 @@
     else if(t.dataset.v){ vote(t.dataset.t || tab, t.dataset.d, t.dataset.v); }
     else if(t.dataset.jump){                                              // 달력에서 후보 날짜 누르면 그 줄로
       const [ty, dt] = t.dataset.jump.split('|'); tab = groupOf(ty); render();
-      const row = document.getElementById('vr-' + ty + '-' + dt); if(row){ row.scrollIntoView({ behavior:'smooth', block:'center' }); row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 1200); }
+      const row = document.getElementById('vr-' + ty + '-' + dt); if(row){ const dd = row.closest('details'); if(dd){ dd.open = true; moreOpen[tab] = true; } row.scrollIntoView({ behavior:'smooth', block:'center' }); row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 1200); }
     }
   });
   if($('pageCal')) $('pageCal').addEventListener('click', e => {
@@ -1518,7 +1535,7 @@
     if(document.body.classList.contains('peek')){ const lm = $('lockModal'); if(lm) lm.classList.add('show'); return; }
     const [ty, dt] = t.dataset.jump.split('|'); tab = groupOf(ty);
     $('voteBack').classList.add('show'); render();
-    setTimeout(() => { const row = document.getElementById('vr-' + ty + '-' + dt); if(row){ row.scrollIntoView({ behavior:'smooth', block:'center' }); row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 1200); } }, 80);
+    setTimeout(() => { const row = document.getElementById('vr-' + ty + '-' + dt); if(row){ const dd = row.closest('details'); if(dd){ dd.open = true; moreOpen[tab] = true; } row.scrollIntoView({ behavior:'smooth', block:'center' }); row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 1200); } }, 80);
   });
   $('voteClose').addEventListener('click', () => $('voteBack').classList.remove('show'));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') $('voteBack').classList.remove('show'); });
