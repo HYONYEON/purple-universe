@@ -593,7 +593,7 @@ const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'
 const REPO = 'HYONYEON/purple-universe';
 document.getElementById('pList').innerHTML = PROGRAMS.map(p => {
   const fact = (k, v) => v ? '<div class="p-fact"><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>' : '';
-  const act = p.applyUrl
+  const act = (p.applyUrl && p.applyOpen)
     ? '<a class="btn btn-primary" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">신청 · 결제하기</a>'
     : '<button class="btn btn-primary" type="button" disabled>신청 오픈 예정</button>';
   return '<div class="p-wrap" id="' + esc(p.id) + '">' +
