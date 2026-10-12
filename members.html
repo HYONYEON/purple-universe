@@ -1484,7 +1484,9 @@
 
   /* 아래 3개월 달력 — 일정 종류별 색 라벨 + 가능 인원 (누르면 그 날짜로 이동) */
   function renderCal(){
-    const items = D.candidates;
+    // 확정된 날짜가 있는 일정(예: 웰니스)은 확정된 날만 달력에 표시 — 나머지 후보는 투표 목록의 '다른 후보 날짜'에서만
+    const confT = new Set(D.candidates.filter(c => c.confirmed).map(c => c.type));
+    const items = D.candidates.filter(c => c.confirmed || !confT.has(c.type));
     let html = '';
     for(let k = 0; k < 3; k++){
       const first = new Date(now.getFullYear(), now.getMonth() + k, 1);
