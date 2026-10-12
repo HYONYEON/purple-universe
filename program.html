@@ -5,12 +5,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>프로그램 — 퍼플 유니버스</title>
-<meta name="description" content="퍼플 유니버스 멤버들이 함께 만드는 오프라인 프로그램. 원데이 웰니스 프로그램 — 12월 13일(일) 가평 라빌라알바니.">
+<meta name="description" content="퍼플 유니버스 멤버들이 함께 만드는 오프라인 프로그램. 원데이 웰니스 프로그램 — 12월 13일(일) 12:00~20:00.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="퍼플 유니버스">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:title" content="프로그램 — 퍼플 유니버스">
-<meta property="og:description" content="원데이 웰니스 프로그램 — 12월 13일(일) 13:00~21:00 · 가평 라빌라알바니 · 30명 한정">
+<meta property="og:description" content="원데이 웰니스 프로그램 — 12월 13일(일) 12:00~20:00 · 30명 한정 · 참가비 30만 원">
 <meta property="og:url" content="https://purpleuniverse.net/program">
 <meta property="og:image" content="https://purpleuniverse.net/og-webinar.png">
 <meta property="og:image:width" content="1200">
@@ -483,6 +483,13 @@
   .p-acts{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;}
   .p-acts .btn[disabled]{opacity:.55; cursor:default;}
   .p-note{font-size:13.5px; color:var(--text-faint); margin-top:10px;}
+  .p-catch{font-size:18px; font-weight:700; color:#D9A6FF; margin:-2px 0 10px;}
+  .p-detail{max-width:760px; margin:40px auto 0; border-radius:22px; overflow:hidden; border:1px solid var(--border-strong); background:#1A1036;}
+  .p-detail img{display:block; width:100%; height:auto;}
+  .p-loading{padding:40px 20px; text-align:center; color:var(--text-faint); font-size:15px;}
+  .p-detail-foot{padding:26px; text-align:center; background:#1A1036;}
+  .p-wrap{scroll-margin-top:90px;}
+  .p-detail{scroll-margin-top:90px;}
   .p-line{margin-top:30px;}
   .p-line h3{display:flex; align-items:center; gap:10px; font-size:15px; font-weight:700; margin:22px 0 12px;}
   .p-line h3 small{font-family:'Space Grotesk'; font-size:11.5px; letter-spacing:.14em; color:var(--text-faint);}
@@ -558,65 +565,75 @@
 <script>
 /* ===================== 프로그램 목록 =====================
    새 프로그램은 PROGRAMS 에 하나 더 넣으면 카드가 생깁니다. (위가 먼저)
-   applyUrl : 신청 · 결제 링크 — 비어 있으면 '신청 오픈 예정'으로 보여요.
-   poster   : images/ 폴더에 올린 포스터 파일 (없으면 보라색 카드로 대신 표시) */
+   applyUrl  : 신청 · 결제 링크 — 비어 있으면 '신청 오픈 예정'
+   detailDir : 깃허브에 상세 이미지를 올린 폴더 — 파일 이름 순서(01, 02, …)대로 아래에 길게 이어 붙고,
+               첫 번째 이미지가 카드 포스터로 쓰여요. 이미지를 더하거나 바꾸면 페이지는 고칠 필요 없음 */
 const PROGRAMS = [
   {
     id: 'wellness',
-    tag: '웰니스 · 힐링',
+    tag: '원데이 웰니스 · 힐링',
     title: '원데이 웰니스 프로그램',
-    sub: '체형 분석부터 아로마 · 스트레칭 · 건강한 식사까지, 하루 동안 몸과 마음을 돌보는 시간. 퍼플 유니버스 멤버들이 각자의 전문성으로 직접 진행합니다.',
+    catch: '딱 하루, 온전히 나를 위한 휴식',
+    sub: '누구의 엄마, 아빠, 대표로서 살아온 당신에게 — 체형 분석 · 스트레칭 · 아로마 케어 · 셰프의 저녁까지, 쉼을 선물합니다.',
     confirmed: true,
     date: '2026년 12월 13일 (일)',
-    time: '13:00 ~ 21:00',
-    place: '가평 라빌라알바니',
+    time: '12:00 ~ 20:00',
+    place: '서울 · 장소 섭외 중',
     cap: '30명 한정',
-    how: '메인 프로그램은 5명씩 조를 나눠 30분씩 돌아가며 체험해요',
-    poster: 'images/program-wellness.jpg',
-    applyUrl: '',
-    lineup: [
-      { group: '메인 프로그램', en: 'MAIN PROGRAM', people: [
-        { name:'박헌관', role:'체형 밸런스 분석' },
-        { name:'김미경', role:'아로마테라피스트', chap:'BNI · W 챕터' },
-        { name:'정유진', role:'웰니스 스트레칭' },
-        { name:'김정연', role:'웰니스 라이프', chap:'BNI · 라인 챕터' }
-      ]},
-      { group: '별관 라운지', en: 'LOUNGE', people: [
-        { name:'허준수', role:'셰프', chap:'BNI · W 챕터' },
-        { name:'정성애', role:'건강한 베이커리', chap:'BNI · W 챕터' },
-        { name:'윤정하', role:'구강 · 호흡 케어', chap:'BNI · W 챕터' },
-        { name:'김성아', role:'주얼리', chap:'BNI · W 챕터' },
-        { name:'김주식', role:'네이처비아', chap:'BNI · 로얄 챕터' },
-        { name:'신유진', role:'슈링 제품' },
-        { name:'스페셜 게스트', role:'추가 협업 멤버 공개 예정', guest:true }
-      ]}
-    ]
+    price: '30만 원 (1인)',
+    gift: '참가자 전원 웰니스 선물 박스 증정',
+    detailDir: 'images/program-wellness',
+    applyUrl: ''
   }
 ];
 
 const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const REPO = 'HYONYEON/purple-universe';
 document.getElementById('pList').innerHTML = PROGRAMS.map(p => {
   const fact = (k, v) => v ? '<div class="p-fact"><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>' : '';
-  const people = p.lineup.map(g =>
-    '<h3>' + esc(g.group) + ' <small>' + esc(g.en) + '</small></h3><div class="p-people">' +
-    g.people.map(x => '<div class="p-person' + (x.guest ? ' guest' : '') + '"><span class="p-ava">' + (x.guest ? '✦' : esc(x.name.charAt(0))) + '</span>' +
-      '<div><b>' + esc(x.name) + '</b><span>' + esc(x.role) + '</span>' + (x.chap ? '<em>' + esc(x.chap) + '</em>' : '') + '</div></div>').join('') +
-    '</div>').join('');
   const act = p.applyUrl
     ? '<a class="btn btn-primary" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">신청하기</a>'
     : '<button class="btn btn-primary" type="button" disabled>신청 오픈 예정</button>';
-  return '<article class="p-card" id="' + esc(p.id) + '">' +
-    '<div class="p-poster"><img src="' + esc(p.poster) + '" alt="' + esc(p.title) + ' 포스터" onerror="this.remove()">' +
-      '<div class="ph"><small>PURPLE UNIVERSE · WELLNESS</small><b>' + esc(p.title) + '</b></div></div>' +
-    '<div class="p-body">' +
-      '<div class="p-top"><span class="p-chip">' + esc(p.tag) + '</span>' + (p.confirmed ? '<span class="p-conf">✓ 일정 확정</span>' : '') + '</div>' +
-      '<h2>' + esc(p.title) + '</h2><p class="p-sub">' + esc(p.sub) + '</p>' +
-      '<dl class="p-facts">' + fact('일시', p.date) + fact('시간', p.time) + fact('장소', p.place) + fact('정원', p.cap) + '</dl>' +
-      '<div class="p-acts">' + act + '</div>' +
-      (p.how ? '<p class="p-note">' + esc(p.how) + '</p>' : '') +
-      '<div class="p-line">' + people + '</div>' +
-    '</div></article>';
+  return '<div class="p-wrap" id="' + esc(p.id) + '">' +
+    '<article class="p-card">' +
+      '<div class="p-poster" id="poster-' + esc(p.id) + '"><div class="ph"><small>PURPLE UNIVERSE · WELLNESS</small><b>' + esc(p.catch || p.title) + '</b></div></div>' +
+      '<div class="p-body">' +
+        '<div class="p-top"><span class="p-chip">' + esc(p.tag) + '</span>' + (p.confirmed ? '<span class="p-conf">✓ 일정 확정</span>' : '') + '</div>' +
+        '<h2>' + esc(p.title) + '</h2>' + (p.catch ? '<p class="p-catch">' + esc(p.catch) + '</p>' : '') + '<p class="p-sub">' + esc(p.sub) + '</p>' +
+        '<dl class="p-facts">' + fact('일시', p.date) + fact('시간', p.time) + fact('장소', p.place) + fact('모집', p.cap) + fact('참가비', p.price) + fact('선물', p.gift) + '</dl>' +
+        '<div class="p-acts">' + act + '<a class="btn btn-ghost" href="#detail-' + esc(p.id) + '">상세 보기 ↓</a></div>' +
+      '</div>' +
+    '</article>' +
+    '<div class="p-detail" id="detail-' + esc(p.id) + '"><p class="p-loading">상세 내용을 불러오는 중…</p></div>' +
+  '</div>';
 }).join('');
+
+/* 상세 이미지 — 깃허브 폴더 목록을 읽어 이름 순서대로 (10분 동안은 브라우저에 기억) */
+async function listDir(dir){
+  const key = 'pu_dir_' + dir;
+  try{ const c = JSON.parse(sessionStorage.getItem(key) || 'null'); if(c && Date.now() - c.t < 600000) return c.v; }catch(e){}
+  const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + dir.split('/').map(encodeURIComponent).join('/'));
+  if(r.status === 404) return [];                                  // 폴더가 아직 없음 → '준비 중'
+  if(!r.ok) throw new Error(r.status);
+  const v = (await r.json()).filter(x => x.type === 'file' && /\.(jpe?g|png|webp|gif)$/i.test(x.name))
+    .map(x => x.name).sort((a, b) => a.localeCompare(b, undefined, { numeric:true }));
+  try{ sessionStorage.setItem(key, JSON.stringify({ t:Date.now(), v })); }catch(e){}
+  return v;
+}
+PROGRAMS.forEach(async p => {
+  const box = document.getElementById('detail-' + p.id), poster = document.getElementById('poster-' + p.id);
+  if(!p.detailDir){ box.remove(); return; }
+  try{
+    const files = await listDir(p.detailDir);
+    if(!files.length){ box.innerHTML = '<p class="p-loading">상세 이미지를 준비하고 있어요.</p>'; return; }
+    const url = n => '/' + p.detailDir + '/' + encodeURIComponent(n);
+    poster.innerHTML = '<img src="' + url(files[0]) + '" alt="' + esc(p.title) + ' 포스터">';
+    box.innerHTML = files.map((n, i) => '<img src="' + url(n) + '" alt="' + esc(p.title) + ' 상세 ' + (i + 1) + '"' + (i > 1 ? ' loading="lazy"' : '') + '>').join('') +
+      '<div class="p-detail-foot">' + (p.applyUrl ? '<a class="btn btn-primary" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">신청하기</a>' : '<button class="btn btn-primary" type="button" disabled>신청 오픈 예정</button>') + '</div>';
+  }catch(e){
+    box.innerHTML = '<p class="p-loading">상세 이미지를 불러오지 못했어요. 잠시 후 새로고침해 주세요.</p>';
+  }
+});
 
 /* 헤더 테두리 */
 const header = document.getElementById('siteHeader');
