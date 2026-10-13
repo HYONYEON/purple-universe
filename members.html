@@ -300,6 +300,7 @@
   .page-cal{margin-top:6px; padding:20px 22px 22px; border-radius:20px; background:var(--surface); border:1px solid var(--border);}
   .page-cal .cal-legend{font-size:14px; margin-bottom:16px;}
   .page-cal .cal-wrap{gap:24px;}
+  body.peek #pageCal .cal-m:nth-child(n+4){display:none;}   /* 미리보기(로그인 전)는 이번 달 포함 3개월만 — 스크롤 줄이기 */
   .page-cal .cal-t{font-size:18px; margin-bottom:10px;}
   .page-cal .cal-h{font-size:13px; padding:5px 0;}
   .page-cal .cal-g{gap:4px;}
@@ -450,7 +451,11 @@
   body.peek .peek-bar{display:block;}
   /* 협업 맵 — 미리보기에선 통째로 숨기고 잠금 안내만 */
   .net-locked{display:none;}
-  body.peek .net-tabs, body.peek .net-body.net-inline, body.peek .j-wrap{display:none !important;}
+  /* 미리보기(로그인 전): 거미줄 맵은 숨기고, 웰니스 프로그램 여정 맵을 흐리게 + 가운데 멤버 안내 */
+  .net-peek{position:relative;}
+  body.peek .net-peek .net-tabs, body.peek .net-peek .net-body{display:none !important;}
+  body.peek .net-peek .j-wrap{display:block !important; filter:blur(7px) saturate(.9); opacity:.8; pointer-events:none; user-select:none; min-height:360px;}
+  body.peek .net-peek .j-zoom, body.peek .net-peek .j-side{display:none !important;}
   /* 여정 맵 */
   .j-wrap[hidden], .net-body[hidden]{display:none !important;}
   .j-subtabs{display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 12px;}
@@ -483,9 +488,12 @@
   .j-side .j-mem{display:flex; gap:6px; flex-wrap:wrap;} .j-side .j-mem span{padding:4px 11px; border-radius:100px; background:rgba(169,139,255,.14); color:#C9B6FF; font-size:13px;}
   .j-side .j-memo{margin-top:12px; font-size:13px; color:var(--gold-soft);}
   body.peek .net-locked{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:5;
+    width:min(460px, calc(100% - 32px));
     display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
-    margin-top:22px; padding:70px 24px; border-radius:22px; cursor:pointer;
-    border:1px dashed var(--border-strong); background:var(--surface);
+    padding:34px 26px; border-radius:22px; cursor:pointer;
+    border:1px solid var(--border-strong); background:rgba(14,9,28,.82); backdrop-filter:blur(6px);
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
   }
   body.peek .net-locked .nl-ico{font-size:30px;}
   body.peek .net-locked b{font-size:18px;}
@@ -758,7 +766,7 @@
   <section class="m-section">
     <div class="wrap">
       <div class="sched-head">
-      <h2>앞으로 3개월 모임 일정</h2>
+      <h2>앞으로의 모임 일정</h2>
       <!-- 멤버 날짜 투표 (Vote.gs) — 제목 오른쪽 -->
       <button class="vote-cta" id="voteOpen" type="button">
         <span class="vote-cta-ic">🗳</span>
@@ -835,11 +843,7 @@
     <div class="wrap">
       <h2>멤버 협업 맵</h2>
       <p id="netDesc">멤버 각자의 사업을 거미줄처럼 연결했어요. 멤버를 누르면 연결된 협업 아이디어가 오른쪽에 보여요.</p>
-      <div class="net-locked" data-lock>
-        <div class="nl-ico">🔒</div>
-        <b>멤버에게만 공개되는 협업 맵이에요</b>
-        <span>멤버들의 사업과 협업 아이디어는 로그인한 멤버만 볼 수 있어요.</span>
-      </div>
+      <div class="net-peek">
       <div class="net-tabs" id="netTabs"></div>
       <div class="net-body net-inline">
         <div class="net-stage"><svg id="netSvg" viewBox="0 0 800 640" aria-hidden="true"></svg></div>
@@ -853,6 +857,13 @@
           <div class="j-stage" id="jStage"><svg id="jSvg"></svg></div>
         </div>
         <div class="j-side" id="jSide"></div>
+      </div>
+      <!-- 미리보기(로그인 전)에서는 웰니스 여정 맵을 흐리게 보여주고, 이 안내를 가운데에 띄움 -->
+      <div class="net-locked" data-lock>
+        <div class="nl-ico">🔒</div>
+        <b>멤버에게만 공개되는 협업 맵이에요</b>
+        <span>멤버들의 사업과 협업 아이디어는 로그인한 멤버만 볼 수 있어요.</span>
+      </div>
       </div>
       <div class="j-full" id="jFull" role="dialog" aria-label="여정 맵 크게 보기">
         <div class="j-full-h"><div><b id="jFullTitle"></b><span>마우스로 끌어서 이동 · Esc로 닫기</span></div><button class="j-full-x" id="jFullX" type="button" aria-label="닫기">✕</button></div>
@@ -1488,8 +1499,11 @@
     // 확정된 날짜가 있는 일정(예: 웰니스)은 확정된 날만 달력에 표시 — 나머지 후보는 투표 목록의 '다른 후보 날짜'에서만
     const confT = new Set(D.candidates.filter(c => c.confirmed).map(c => c.type));
     const items = D.candidates.filter(c => c.confirmed || !confT.has(c.type));
-    let html = '';
-    for(let k = 0; k < 3; k++){
+    const months = [];
+    // 이번 달부터 CAL_UNTIL 달까지 (최소 3개월) — 더 길게 보려면 CAL_UNTIL 만 바꾸면 됨
+    const CAL_UNTIL = [2027, 3];
+    const nMonths = Math.max(3, (CAL_UNTIL[0] - now.getFullYear()) * 12 + CAL_UNTIL[1] - (now.getMonth() + 1) + 1);
+    for(let k = 0; k < nMonths; k++){
       const first = new Date(now.getFullYear(), now.getMonth() + k, 1);
       const y = first.getFullYear(), m = first.getMonth(), days = new Date(y, m + 1, 0).getDate();
       let cells = DOW.map((d, i) => '<div class="cal-h' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '">' + d + '</div>').join('');
@@ -1504,13 +1518,13 @@
         const bar = breakBar(key, y, m, d, w, days);
         cells += '<div class="cal-c' + (bar ? ' brk' : '') + (key === today ? ' today' : '') + (key < today ? ' past' : '') + (w === 0 ? ' sun' : w === 6 ? ' sat' : '') + '"><span class="cal-d">' + d + '</span>' + bar + tags + '</div>';
       }
-      html += '<div class="cal-m"><div class="cal-t">' + y + '년 ' + (m+1) + '월</div><div class="cal-g">' + cells + '</div></div>';
+      months.push('<div class="cal-m"><div class="cal-t">' + y + '년 ' + (m+1) + '월</div><div class="cal-g">' + cells + '</div></div>');
     }
     const legend = D.types.map(t => '<span><i style="background:' + (COLORS[t] || '#A98BFF') + '"></i>' + esc(t) + '</span>').join('') +
                    '<span class="lg-cand">누르면 투표로 이동</span>';
-    const out = '<div class="cal-legend">' + legend + '</div><div class="cal-wrap">' + html + '</div>';
-    $('voteCal').innerHTML = out;
-    if($('pageCal')) $('pageCal').innerHTML = out;     // 페이지 '앞으로 3개월 모임 일정'에도 같은 달력을 크게
+    const build = list => '<div class="cal-legend">' + legend + '</div><div class="cal-wrap">' + list.join('') + '</div>';
+    $('voteCal').innerHTML = build(months);                                   // 투표 창: CAL_UNTIL 까지 전부
+    if($('pageCal')) $('pageCal').innerHTML = build(months);                  // 페이지: 멤버는 전부, 미리보기는 CSS로 3개월만
   }
   async function vote(type, date, status){
     const M = window.PU_MEMBER; if(!me || !M){ alert('먼저 로그인해 주세요'); return; }
@@ -1748,7 +1762,7 @@
     box.addEventListener('click', e => { if(moved){ e.stopPropagation(); e.preventDefault(); moved = false; } }, true);   // 끌고 난 뒤엔 정거장 클릭 안 되게
   });
   if(window.refreshNetTabs) window.refreshNetTabs();
-  if(!document.getElementById('jWrap').hidden) draw();
+  draw();      // 처음부터 그려둠 (미리보기에서는 흐리게 보이고, 멤버는 탭을 누르면 바로 보임)
 })();
 </script>
 </body>
