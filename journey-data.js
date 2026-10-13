@@ -82,7 +82,7 @@ window.JOURNEY = {
         },
         {
           "title": "2배씩 확장",
-          "sub": "\"비즈니스 안정화가 최우선!\"",
+          "sub": "\"비즈니스 성장의 가속화!\"",
           "icon": "🚀",
           "color": "#A98BFF",
           "members": [],
@@ -96,6 +96,16 @@ window.JOURNEY = {
             "퍼플 웰니스 공식몰(제품 판매)",
             "공간 사업 모델과 연계"
           ],
+          "revenue": [],
+          "memo": ""
+        },
+        {
+          "title": "비즈니스 안정화∙가치 상승",
+          "sub": "",
+          "icon": "✊🏻",
+          "color": "#FF7EB6",
+          "members": [],
+          "todo": [],
           "revenue": [],
           "memo": ""
         }
