@@ -293,8 +293,16 @@
   .cal-d{font-size:11px; color:var(--text-dim); font-weight:600; padding-left:2px;}
   .cal-c.brk{overflow:visible; position:relative;}
   .cal-break{position:absolute; left:3px; top:21px; z-index:2; display:block; height:18px; line-height:18px; padding:0 8px; border-radius:6px; font-size:10.5px; font-weight:700;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#2a1a05;
-    background:linear-gradient(90deg,#F3D89A,#E8B85E);}
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35);
+    /* 크리스마스 분위기 — 초록 · 빨강 + 눈송이 점 (확정 일정의 황금색과 겹치지 않게) */
+    background:
+      radial-gradient(circle at 12% 30%, rgba(255,255,255,.9) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 37% 75%, rgba(255,255,255,.8) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 63% 25%, rgba(255,255,255,.85) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 88% 70%, rgba(255,255,255,.8) 0 1px, transparent 1.6px),
+      linear-gradient(90deg,#1E6B45 0%,#2E8B57 45%,#B8323F 100%);
+    background-size:60px 100%, 60px 100%, 60px 100%, 60px 100%, 100% 100%;
+    border:1px solid rgba(255,255,255,.35);}
   .cal-break-sp{display:block; height:18px;}
   /* 페이지에 크게 보이는 3개월 달력 */
   .page-cal{margin-top:6px; padding:20px 22px 22px; border-radius:20px; background:var(--surface); border:1px solid var(--border);}
@@ -1480,7 +1488,7 @@
   }
   /* 달력에 길게 표시할 기간 (쉬는 기간 등) — 여기에 한 줄씩 추가 */
   const CAL_BREAKS = [
-    { from:'2026-12-23', to:'2027-01-03', text:'연말/연초는 가족과 함께 합시다 :)' }
+    { from:'2026-12-23', to:'2027-01-03', text:'🎄 연말/연초는 가족과 함께 합시다 :) ❄' }
   ];
   const ymdOf = (y, m, d) => y + '-' + pad(m + 1) + '-' + pad(d);
   function breakBar(key, y, m, d, w, days){
