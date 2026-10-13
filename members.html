@@ -1488,7 +1488,7 @@
   }
   /* 달력에 길게 표시할 기간 (쉬는 기간 등) — 여기에 한 줄씩 추가 */
   const CAL_BREAKS = [
-    { from:'2026-12-23', to:'2027-01-03', text:'🎄 연말/연초는 가족과 함께 합시다 :) ❄' }
+    { from:'2026-12-23', to:'2027-01-03', text:'🎄 연말/연초는 가족과 함께' }
   ];
   const ymdOf = (y, m, d) => y + '-' + pad(m + 1) + '-' + pad(d);
   function breakBar(key, y, m, d, w, days){
@@ -1499,7 +1499,7 @@
     let n = 1;
     while(w + n <= 6 && d + n <= days && ymdOf(y, m, d + n) <= b.to) n++;
     return '<span class="cal-break-sp"></span><span class="cal-break" style="width:calc(' + n + '00% + ' + (n - 1) * 3 + 'px - 6px)" title="' + esc(b.text) + '">' +
-           (n >= 2 || key === b.from ? esc(b.text) : '') + '</span>';
+           ((n >= 2 || key === b.from) && key.slice(0, 7) === b.from.slice(0, 7) ? esc(b.text) : '') + '</span>';   // 문구는 시작한 달에만 (다음 달 이어지는 칸은 띠만)
   }
 
   /* 아래 3개월 달력 — 일정 종류별 색 라벨 + 가능 인원 (누르면 그 날짜로 이동) */
