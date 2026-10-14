@@ -293,24 +293,24 @@
   .cal-d{font-size:11px; color:var(--text-dim); font-weight:600; padding-left:2px;}
   .cal-c.brk{overflow:visible; position:relative;}
   .cal-break{position:absolute; left:3px; top:21px; z-index:2; display:block; height:18px; line-height:18px; padding:0 8px; border-radius:6px; font-size:10.5px; font-weight:700;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.35);
-    /* 크리스마스 분위기 — 초록 · 빨강 + 눈송이 점 (확정 일정의 황금색과 겹치지 않게) */
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.5);
+    background:#1B1430; border:1px solid rgba(255,255,255,.28); isolation:isolate;}
+  /* 띠 무늬는 뒤에 30% 불투명도로 깔아서 글자가 잘 보이게 */
+  .cal-break::before{content:''; position:absolute; inset:0; z-index:-1; opacity:.3; pointer-events:none;
+    /* 크리스마스 — 초록 · 빨강 + 눈송이 점 */
     background:
-      radial-gradient(circle at 12% 30%, rgba(255,255,255,.9) 0 1px, transparent 1.6px),
-      radial-gradient(circle at 37% 75%, rgba(255,255,255,.8) 0 1px, transparent 1.6px),
-      radial-gradient(circle at 63% 25%, rgba(255,255,255,.85) 0 1px, transparent 1.6px),
-      radial-gradient(circle at 88% 70%, rgba(255,255,255,.8) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 12% 30%, #fff 0 1px, transparent 1.6px),
+      radial-gradient(circle at 37% 75%, #fff 0 1px, transparent 1.6px),
+      radial-gradient(circle at 63% 25%, #fff 0 1px, transparent 1.6px),
+      radial-gradient(circle at 88% 70%, #fff 0 1px, transparent 1.6px),
       linear-gradient(90deg,#1E6B45 0%,#2E8B57 45%,#B8323F 100%);
-    background-size:60px 100%, 60px 100%, 60px 100%, 60px 100%, 100% 100%;
-    border:1px solid rgba(255,255,255,.35);}
+    background-size:60px 100%, 60px 100%, 60px 100%, 60px 100%, 100% 100%;}
   .cal-break-sp{display:block; height:18px;}
   /* 설 연휴 — 색동 줄무늬 (크리스마스 띠 · 확정 황금색과 구분) */
-  .cal-break.seol{
-    color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.4);
-    background:
-      linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.28)),
-      repeating-linear-gradient(90deg,
-        #D93A4A 0 14px, #F2B63D 14px 28px, #3E9B5F 28px 42px, #3D6FD1 42px 56px, #E86FA8 56px 70px);
+  .cal-break.seol::before{
+    background:repeating-linear-gradient(90deg,
+      #D93A4A 0 14px, #F2B63D 14px 28px, #3E9B5F 28px 42px, #3D6FD1 42px 56px, #E86FA8 56px 70px);
+    background-size:auto;
   }
   /* 페이지에 크게 보이는 3개월 달력 */
   .page-cal{margin-top:6px; padding:20px 22px 22px; border-radius:20px; background:var(--surface); border:1px solid var(--border);}
