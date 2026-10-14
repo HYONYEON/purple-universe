@@ -6,7 +6,7 @@ window.NOTES = [
     "cat": "marketing",
     "date": "2026-10-14",
     "title": "",
-    "desc": "팔릴 이유를 먼저 만드세요, 광고는 그다음",
+    "desc": "10월 14일 수요일ㅣ마케팅 뉴스클리핑",
     "yt": "",
     "img": "",
     "link": "",
@@ -30,8 +30,6 @@ window.NOTES = [
       }
     ],
     "no": 23,
-    "imgtop": 0.106,
-    "ogimg": "images/1791945887248_o9564_og-23.jpg",
     "ogv": 2
   },
   {
