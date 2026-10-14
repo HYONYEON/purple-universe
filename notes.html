@@ -541,8 +541,9 @@ function thumbHTML(n, isPick){
             'allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>';
   } else if(cover){
     // data-top : 제목이 시작되는 위치(원본 높이의 비율). 잘리지 않게 맞추는 데 씀
-    const top = (typeof n.imgtop === 'number' && n.imgtop > 0)
-      ? ' data-top="' + n.imgtop.toFixed(4) + '"' : '';
+    // 위치 계산이 빠진 카드뉴스(뉴스클리핑 등)는 같은 템플릿 기준값(0.106)으로 — 제목이 위에서 잘리지 않게
+    const tv = (typeof n.imgtop === 'number' && n.imgtop > 0) ? n.imgtop : (!n.img ? 0.106 : 0);
+    const top = tv ? ' data-top="' + tv.toFixed(4) + '"' : '';
     inner = '<img src="' + esc(absPath(cover)) + '" alt="" loading="lazy"' + top + '>';
   } else {
     inner = '<div class="ph">자료 준비 중</div>';
