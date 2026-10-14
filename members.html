@@ -1400,6 +1400,9 @@
   const shown = c => c.date >= today;                                  // 지난 날짜는 목록에서 숨김 (달력엔 흐리게)
   const candsOf = g => D.candidates.filter(c => typesOf(g).indexOf(c.type) >= 0 && shown(c)).sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : (a.type < b.type ? -1 : 1));
   const openOf = t => candsOf(t);
+  /* 회차 — 메모에 '2차'처럼 적으면 그 회차끼리 묶임 (없으면 1차). 확정은 회차별로 따로 */
+  const roundOf = c => ((String(c.memo || '').match(/(\d+)\s*차/) || [])[1] || '1');
+  const rk = c => c.type + '#' + roundOf(c);
   const vOf = (t, d) => D.votes.filter(v => v.type === t && v.date === d);
 
   async function load(){
@@ -1442,7 +1445,7 @@
     const total = D.members.length || 1;
     const opens = cs;
     const maxOf = {};                                                   // '가장 많이 가능'은 일정 종류별로
-    cs.forEach(c => { const k = vOf(c.type, c.date).filter(v => v.status === '가능').length; maxOf[c.type] = Math.max(maxOf[c.type] || 0, k); });
+    cs.forEach(c => { const k = vOf(c.type, c.date).filter(v => v.status === '가능').length; maxOf[rk(c)] = Math.max(maxOf[rk(c)] || 0, k); });   // 일정 · 회차별로
     const multi = typesOf(tab).length > 1;
     const names = arr => arr.map(v => esc(v.name)).join(', ');
     const rowHTML = c => {
@@ -1453,8 +1456,8 @@
       const mine = (vs.find(v => v.name === me) || {}).status || '';
       // '가장 많이 가능'은 웰니스 프로그램만 (오프라인 · 전체 줌미팅은 각자 일정에 맞춰 참여) — 확정된 날이 있으면 그 일정은 표시 안 함
       const NO_BEST = ['오프라인(해커톤)', '오프라인(세미나)', '전체 줌미팅'];
-      const hasConf = cs.some(x => x.type === c.type && x.confirmed);
-      const best = !c.confirmed && !hasConf && NO_BEST.indexOf(c.type) < 0 && ok.length && ok.length === maxOf[c.type];
+      const hasConf = cs.some(x => rk(x) === rk(c) && x.confirmed);
+      const best = !c.confirmed && !hasConf && NO_BEST.indexOf(c.type) < 0 && ok.length && ok.length === maxOf[rk(c)];
       const col = COLORS[c.type] || '#A98BFF';
       return '<div class="vrow' + (best ? ' best' : '') + (c.confirmed ? ' confirmed' : '') + '" id="vr-' + esc(c.type) + '-' + c.date + '">' +
         (c.confirmed ? '<span class="vconf">✓ 확정</span>' : '') +
@@ -1476,9 +1479,9 @@
       '</div>';
     };
     // 확정된 일정이 있으면: 확정 날짜만 보이고, 나머지 후보는 '다른 후보 날짜' 토글 안에 접어둠 (지우지 않음)
-    const confTypes = new Set(cs.filter(c => c.confirmed).map(c => c.type));
-    const mainCs = cs.filter(c => c.confirmed || !confTypes.has(c.type));
-    const restCs = cs.filter(c => !c.confirmed && confTypes.has(c.type));
+    const confTypes = new Set(cs.filter(c => c.confirmed).map(rk));            // 확정된 회차 (예: 웰니스 1차)
+    const mainCs = cs.filter(c => c.confirmed || !confTypes.has(rk(c)));       // 확정 날짜 + 아직 투표 중인 다음 회차
+    const restCs = cs.filter(c => !c.confirmed && confTypes.has(rk(c)));       // 확정된 회차의 나머지 후보 → 접기
     $('voteList').innerHTML = mainCs.map(rowHTML).join('') +
       (restCs.length ? '<details class="vmore"' + (moreOpen[tab] ? ' open' : '') + ' data-more="' + esc(tab) + '"><summary>다른 후보 날짜 ' + restCs.length + '개 보기</summary>' +
         '<div class="vmore-list">' + restCs.map(rowHTML).join('') + '</div></details>' : '');
@@ -1505,8 +1508,8 @@
   /* 아래 3개월 달력 — 일정 종류별 색 라벨 + 가능 인원 (누르면 그 날짜로 이동) */
   function renderCal(){
     // 확정된 날짜가 있는 일정(예: 웰니스)은 확정된 날만 달력에 표시 — 나머지 후보는 투표 목록의 '다른 후보 날짜'에서만
-    const confT = new Set(D.candidates.filter(c => c.confirmed).map(c => c.type));
-    const items = D.candidates.filter(c => c.confirmed || !confT.has(c.type));
+    const confT = new Set(D.candidates.filter(c => c.confirmed).map(rk));
+    const items = D.candidates.filter(c => c.confirmed || !confT.has(rk(c)));
     const months = [];
     // 이번 달부터 CAL_UNTIL 달까지 (최소 3개월) — 더 길게 보려면 CAL_UNTIL 만 바꾸면 됨
     const CAL_UNTIL = [2027, 3];
