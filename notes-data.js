@@ -4,6 +4,38 @@
 window.NOTES = [
   {
     "cat": "marketing",
+    "date": "2026-10-14",
+    "title": "",
+    "desc": "팔릴 이유를 먼저 만드세요, 광고는 그다음",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1791945877600_fz379_1014_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791945880325_uzi9g_1014_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791945882409_icwgu_1014_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1791945885242_4i7sh_1014_B_04_news3.png"
+      }
+    ],
+    "no": 23,
+    "imgtop": 0.106,
+    "ogimg": "images/1791945887248_o9564_og-23.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
     "date": "2026-10-12",
     "title": "",
     "desc": "10월 12일 월요일ㅣ마케팅 뉴스클리핑",
