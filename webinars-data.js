@@ -6,6 +6,7 @@ window.WEBINARS = [
     "no": 3,
     "cat": "class",
     "price": "",
+    "status": "closed",
     "title": "전문직의 SNS 실무와 커리어 확장ㅣ항로클래스",
     "host": "A-prime",
     "date": "2026-10-24",
