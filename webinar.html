@@ -226,6 +226,10 @@
   }
   .w-state.soon{color:var(--ok); border:1px solid rgba(95,208,138,.42);}
   .w-state.done{color:var(--text-dim); border:1px solid var(--border-strong);}
+  .w-state.closed{color:#F3D89A; border:1px solid rgba(232,184,94,.5);}
+  .w-state.cancel{color:#FF9AAE; border:1px solid rgba(255,120,140,.5);}
+  .st-note{margin:0 0 16px; padding:14px 16px; border-radius:14px; background:rgba(232,184,94,.1); border:1px solid rgba(232,184,94,.35); color:var(--gold-soft); font-size:15px;}
+  .st-note.cancel{background:rgba(255,120,140,.08); border-color:rgba(255,120,140,.35); color:#FFB3C1;}
   .w-free{
     position:absolute; top:13px; right:13px;
     font-size:12px; font-weight:700; padding:5px 12px; border-radius:100px;
@@ -531,7 +535,7 @@
             <div class="f-field"><label for="lvPhone">휴대폰 번호</label><input id="lvPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-0000-0000" maxlength="13"></div>
           </div>
           <label class="f-check"><input type="checkbox" id="lvAgree"><span><b>[필수]</b> 유튜브 LIVE 알림 문자 수신 및 개인정보 수집에 동의합니다.
-            <small>이름 · 번호는 LIVE 알림(매주 목요일 오전 한 번)에만 쓰고, 해지하면 더 보내지 않아요.</small></span></label>
+            <small>이름 · 번호는 LIVE 알림 문자에만 쓰고, 해지하면 더 보내지 않아요.</small></span></label>
           <button class="btn btn-primary f-submit" type="submit" id="lvSubmit">알림 신청하기</button>
           <p class="f-msg" id="lvMsg" role="alert"></p>
         </form>
@@ -651,7 +655,16 @@ function startMin(t){
   if(/낮/.test(m[1] || '') && h < 6) h += 12;
   return h * 60 + (m[3] ? +m[3] : m[4] ? 30 : 0);
 }
+/* 상태 — 관리 페이지에서 고름: ''(모집 중) · 'closed'(신청 마감) · 'cancel'(취소) */
+const stOf = w => w.status === 'cancel' ? 'cancel' : w.status === 'closed' ? 'closed' : '';
+function stateTag(w, past, modal){
+  const st = stOf(w);
+  const cls = st === 'cancel' ? 'cancel' : past ? 'done' : st === 'closed' ? 'closed' : 'soon';
+  const txt = st === 'cancel' ? '취소' : past ? (modal ? '종료된 ' + KW(w) : '종료') : st === 'closed' ? '신청 마감' : '모집 중';
+  return '<span class="w-state ' + cls + '"' + (modal ? ' style="position:static;"' : '') + '>' + txt + '</span>';
+}
 function isOver(w){
+  if(stOf(w) === 'cancel') return true;                              // 취소된 건 '지난' 쪽으로
   if(isPast(w.date)) return true;
   const p = String(w.date || '').split('-').map(Number), now = new Date();
   if(p.length !== 3 || p[0] !== now.getFullYear() || p[1] !== now.getMonth() + 1 || p[2] !== now.getDate()) return false;
@@ -745,7 +758,7 @@ function cardHTML(w){
         ? posterMedia(poster)
         : '<div class="ph"><span class="big">' + esc(w.title || KW(w)) + '</span>' +
           (w.host ? '<span class="sm">' + esc(w.host) + '</span>' : '') + '</div>') +
-      '<span class="w-state ' + (past ? 'done' : 'soon') + '">' + (past ? '종료' : '모집 중') + '</span>' +
+      stateTag(w, past, false) +
       badgeOf(w) +
     '</div>' +
     '<div class="w-body">' +
@@ -779,8 +792,7 @@ function openModal(w){
 
   modalHead.innerHTML =
     '<div class="top">' +
-      '<span class="w-state ' + (past ? 'done' : 'soon') + '" style="position:static;">' +
-        (past ? '종료된 ' + KW(w) : '모집 중') + '</span>' +
+      stateTag(w, past, true) +
       badgeOf(w).replace('<span class="w-free', '<span style="position:static;" class="w-free') +
     '</div>' +
     '<h2>' + esc(w.title) + '</h2>';
@@ -804,12 +816,15 @@ function openModal(w){
   let rest = (Array.isArray(w.body) ? w.body : []).map(blockHTML).join('');
 
   /* 모집 중이면 팝업 안에서 바로 신청 (따로 신청 링크를 넣은 경우만 그 링크로) */
-  const inline = !past && !w.applyUrl;
+  const open = !past && !stOf(w);                                      // 모집 중일 때만 신청
+  const inline = open && !w.applyUrl;
+  if(stOf(w) === 'cancel') rest = '<div class="st-note cancel">이 ' + KW(w) + '는 사정으로 <b>취소</b>되었어요. 다음 ' + KW(w) + '에서 만나요!</div>' + rest;
+  else if(!past && stOf(w) === 'closed') rest = '<div class="st-note">신청이 <b>마감</b>되었어요. 함께해 주셔서 감사합니다!</div>' + rest;
   if(inline) rest += formHTML(w);
   rest += '<p class="after-m">웨비나는 계속 무료로 엽니다. 1년을 같이 설계하는 과정이 궁금하시면 <a href="/">멤버십</a>을 둘러보세요.</p>';
 
   /* 모집 중인 웨비나엔 '끝까지 참여하면 툴킷' 안내 */
-  const kitNote = (!past && kindOf(w) === 'webinar')
+  const kitNote = (open && kindOf(w) === 'webinar')
     ? '<div class="kit-note">🎁 웨비나 마지막에 <b>콘텐츠 기획력을 30배 올려줄 무료 툴킷 페이지</b> 링크를 공유드리니, <b>꼭 끝까지 참여해 주세요!</b>' +
       '<button type="button" data-peek>30X 퍼플 툴킷에 뭐가 들어있나요? →</button></div>'
     : '';
@@ -828,7 +843,9 @@ function openModal(w){
   let act = '';
   if(inline){
     act = '<button class="btn btn-primary" type="button" id="goForm">' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</button>';
-  }else if(!past && w.applyUrl){
+  }else if(!past && stOf(w) === 'closed'){
+    act = '<button class="btn btn-primary" type="button" disabled style="opacity:.55;">신청 마감</button>';
+  }else if(open && w.applyUrl){
     act = '<a class="btn btn-primary" id="applyLink" href="' + esc(w.applyUrl) + '" target="_blank" rel="noopener">' + (kindOf(w) === 'class' ? '신청하기' : '무료로 신청하기') + '</a>';
   }else if(past && yt){
     act = '<a class="btn btn-ghost" href="https://www.youtube.com/watch?v=' + yt + '" target="_blank" rel="noopener">유튜브에서 보기 ↗</a>';
@@ -1006,7 +1023,7 @@ routeFromUrl();
         body: JSON.stringify({ action:'liveJoin', name, phone, agree:'동의' }) })).json();
       if(!r.ok) throw new Error(r.error || '');
       $('liveForm').innerHTML = '<div class="f-done"><div class="ic">💜</div><h4>' + (r.already ? '이미 알림을 받고 계세요' : 'LIVE 알림 신청 완료!') + '</h4>' +
-        '<p>LIVE가 있는 목요일 오전에 문자로 알려드릴게요.</p></div>';
+        '<p>LIVE가 열리기 전에 문자로 알려드릴게요.</p></div>';
     }catch(err){ msg.textContent = '신청하지 못했어요. 잠시 뒤 다시 시도해주세요.'; btn.disabled = false; btn.textContent = '알림 신청하기'; }
   });
   $('liveLeave').addEventListener('click', async () => {

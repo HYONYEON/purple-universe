@@ -933,7 +933,7 @@ $('shareAll').onclick = () => share('', '');
     const today = new Date(); today.setHours(0,0,0,0);
     const up = (window.WEBINARS || []).filter(w => {
       const p = String(w.date || '').split('-').map(Number);
-      return p.length === 3 && new Date(p[0], p[1]-1, p[2]) >= today;
+      return p.length === 3 && new Date(p[0], p[1]-1, p[2]) >= today && !w.status;   // 취소 · 신청 마감은 빼고
     }).sort((a, b) => a.date < b.date ? -1 : 1)[0];
     if(!up) return;
     const p = up.date.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]);

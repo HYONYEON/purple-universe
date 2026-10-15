@@ -243,6 +243,14 @@
           </div>
 
           <div class="field">
+            <label>상태</label>
+            <select id="fStatus">
+              <option value="">모집 중</option>
+              <option value="closed">신청 마감 (보이지만 신청 버튼 닫힘)</option>
+              <option value="cancel">취소 (지난 목록으로 · 문자 안 나감)</option>
+            </select>
+          </div>
+          <div class="field">
             <label>제목</label>
             <input type="text" id="fTitle" placeholder="예: 스몰 브랜드를 위한 콘텐츠 전략">
           </div>
@@ -616,6 +624,7 @@ function startMin(t){
   return h * 60 + (m[3] ? +m[3] : m[4] ? 30 : 0);
 }
 function isOver(w){
+  if(w.status === 'cancel') return true;                              // 취소는 지난 목록으로
   if(isPast(w.date)) return true;
   const p = String(w.date || '').split('-').map(Number), now = new Date();
   if(p.length !== 3 || p[0] !== now.getFullYear() || p[1] !== now.getMonth() + 1 || p[2] !== now.getDate()) return false;
@@ -636,7 +645,8 @@ function renderList(){
     return '<div class="list-item' + (i === editIndex ? ' editing' : '') + (past ? ' is-past' : '') + '" data-open="' + i + '">' +
       '<div class="li-top">' +
         '<span class="pill ' + (catOf(w) === 'class' ? 'client' : 'fixed') + '">' + CATS[catOf(w)] + '</span>' +
-        '<span class="pill ' + (past ? 'done' : 'soon') + '">' + (past ? '종료' : '모집 중') + '</span>' +
+        '<span class="pill ' + (past ? 'done' : 'soon') + '"' + (w.status === 'cancel' ? ' style="color:#FF9AAE;"' : w.status === 'closed' ? ' style="color:#F3D89A;"' : '') + '>' +
+          (w.status === 'cancel' ? '취소' : past ? '종료' : w.status === 'closed' ? '신청 마감' : '모집 중') + '</span>' +
         '<span class="li-when">' + (w.date || '') + '</span>' +
         (admOk ? '<span class="pill cnt">신청 ' + countFor(w.no) + '</span>' : '') +
         (admOk && ADM.stats && ADM.stats[String(w.no)] ? '<span class="pill cnt" title="팝업을 연 사람 · 신청 버튼을 누른 사람 (브라우저 기준)">👀 ' + ADM.stats[String(w.no)].open.u + ' · 클릭 ' + ADM.stats[String(w.no)].apply.u + '</span>' : '') +
@@ -677,7 +687,7 @@ function resetForm(){
   $('formTitle').textContent = '새 웨비나 등록';
   ['fTitle','fDesc','fHost','fTime','fPlace','fApply','fYt','fMat','fPrice'].forEach(id => $(id).value = '');
   $('fMat').value = KIT_URL; lockMat(true);
-  $('fCat').value = 'webinar'; syncCat();
+  $('fCat').value = 'webinar'; syncCat(); $('fStatus').value = '';
   $('fDate').value = new Date().toISOString().slice(0,10);
   $('fTime').value = '밤 9시';
   $('fPlace').value = '온라인 (Zoom)';
@@ -691,6 +701,7 @@ function editItem(i){
   const w = LIST[i]; editIndex = i;
   $('formTitle').textContent = '웨비나 수정';
   $('fCat').value   = catOf(w);
+  $('fStatus').value = w.status || '';
   $('fPrice').value = w.price || ''; syncCat();
   $('fDate').value  = w.date || '';
   $('fTitle').value = w.title || '';
@@ -732,6 +743,7 @@ async function save(){
       no   : (editIndex > -1 && LIST[editIndex].no) ? LIST[editIndex].no : maxNo() + 1,
       cat  : $('fCat').value,
       price: $('fCat').value === 'class' ? $('fPrice').value.trim() : '',
+      status: $('fStatus').value,
       title: title,
       host : $('fHost').value.trim(),
       date : date,
@@ -824,7 +836,7 @@ function renderLive(){
     : '<p class="hint" style="margin:8px 0 0;">아직 신청자가 없어요.</p>';
   box.innerHTML = '<div style="margin-bottom:8px;">' + nx + '</div>' +
     '<div style="max-height:320px; overflow:auto;">' + rows + '</div>' +
-    '<p class="hint" style="margin:10px 0 0;">LIVE 당일 오전 10~12시에 구독자에게 알림 문자가 자동으로 나가요. 일정 변경 · 쉬는 주는 시트 <b>LIVE일정</b> 탭에.</p>' +
+    '<p class="hint" style="margin:10px 0 0;">알림 문자는 자동으로 나가지 않아요 — 아래에서 직접 보내주세요. 일정 변경 · 쉬는 주는 시트 <b>LIVE일정</b> 탭에.</p>' +
     '<div class="lv-send">' +
       '<b style="font-size:14px;">구독자에게 공지 문자</b>' +
       '<div style="display:flex; gap:6px; flex-wrap:wrap; margin:8px 0;">' +
