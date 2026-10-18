@@ -645,7 +645,8 @@
   .lock-box p{font-size:15px; color:var(--text-dim); line-height:1.6; margin-bottom:24px;}
   .lock-box .btn{width:100%; justify-content:center;}
   .lock-or{margin-top:20px; font-size:14px; color:var(--text-faint);}
-  .lock-pw{display:none; margin-top:16px;}
+  .lock-pw{display:none; margin-top:28px;}
+  .lock-box .lock-join{width:auto; min-width:70%; padding:10px 20px; font-size:14.5px; white-space:nowrap;}   /* 멤버쉽 가입 버튼 — 작게, 번호칸과 띄움 */
   .lock-pw.show{display:block;}
   .lock-pw input{
     width:100%; padding:13px 18px; border-radius:100px; text-align:center;
@@ -660,6 +661,7 @@
   .lock-btn-busy{opacity:.6; pointer-events:none;}
   .m-logout{background:none; border:none; color:var(--text-faint); font:inherit; font-size:13px; text-decoration:underline; cursor:pointer; margin-left:8px;}
   .lock-err{color:#FF8A8A; font-size:13.5px; min-height:18px; margin-top:8px;}
+  .lock-err:empty{min-height:0; margin-top:0;}   /* 오류 없을 땐 자리 차지 안 함 → 아래 가입 문구가 위로 */
   .lock-close{
     position:absolute; top:16px; right:18px; background:none; border:none;
     color:var(--text-faint); font-size:20px; cursor:pointer;
@@ -684,7 +686,7 @@
     <div class="lock-ico">🔒</div>
     <h3>멤버 전용 게시물입니다</h3>
     <p>줌미팅 녹화본, 학습 자료, AI 기획 도구는<br>퍼플 유니버스 멤버에게만 열려 있어요.</p>
-    <a href="/#pricing" class="btn btn-primary">멤버쉽 가입은 여기에서 →</a>
+    <a href="/#pricing" class="btn btn-primary lock-join">멤버쉽 가입은 여기에서 →</a>
     <div class="lock-pw show" id="lockPw">
       <!-- ① 번호 -->
       <div class="lg-step" id="lgPhone">
