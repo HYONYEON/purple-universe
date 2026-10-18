@@ -685,8 +685,7 @@
     <h3>멤버 전용 게시물입니다</h3>
     <p>줌미팅 녹화본, 학습 자료, AI 기획 도구는<br>퍼플 유니버스 멤버에게만 열려 있어요.</p>
     <a href="/#pricing" class="btn btn-primary">멤버쉽 가입은 여기에서 →</a>
-    <p class="lock-or">이미 멤버라면 <button class="peek-link" id="lockPwToggle" type="button">휴대폰 번호로 로그인</button></p>
-    <div class="lock-pw" id="lockPw">
+    <div class="lock-pw show" id="lockPw">
       <!-- ① 번호 -->
       <div class="lg-step" id="lgPhone">
         <input type="tel" id="lgPhoneIn" placeholder="휴대폰 번호 (010-0000-0000)" inputmode="numeric" autocomplete="tel">
@@ -713,7 +712,7 @@
         <p class="lg-hint"><b>가입 신청이 접수되어 있어요.</b><br>승인되면 문자로 바로 알려드릴게요.</p>
       </div>
       <p class="lock-err" id="gateError"></p>
-      <p class="lg-sub" id="lgFirst">처음이신가요? <button class="peek-link" id="lgToApply" type="button">멤버 공간 가입 신청</button></p>
+      <p class="lg-sub" id="lgFirst">멤버이신가요? <button class="peek-link" id="lgToApply" type="button">회원가입 진행할게요</button></p>
     </div>
   </div>
 </div>
@@ -986,12 +985,11 @@
   const lockModal   = document.getElementById('lockModal');
   const lockClose   = document.getElementById('lockClose');
   const lockPw      = document.getElementById('lockPw');
-  const lockPwTggl  = document.getElementById('lockPwToggle');
   const peekLogin   = document.getElementById('peekLogin');
 
   /* 잠금 안내 팝업 열고 닫기 (pw = 비밀번호 칸을 바로 펼칠지) */
   function openLock(pw){
-    lockPw.classList.toggle('show', !!pw);
+    lockPw.classList.add('show');                        // 번호 입력칸은 항상 보임
     gateError.textContent = '';
     lgShow('lgPhone');
     lockModal.classList.add('show');
@@ -1005,10 +1003,6 @@
   });
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape') closeLock();
-  });
-  lockPwTggl.addEventListener('click', function(){
-    lockPw.classList.add('show');
-    gateInput.focus();
   });
   peekLogin.addEventListener('click', function(){ openLock(true); });
 
