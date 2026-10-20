@@ -1462,6 +1462,8 @@
     const opens = cs;
     const maxOf = {};                                                   // '가장 많이 가능'은 일정 종류별로
     cs.forEach(c => { const k = vOf(c.type, c.date).filter(v => v.status === '가능').length; maxOf[rk(c)] = Math.max(maxOf[rk(c)] || 0, k); });   // 일정 · 회차별로
+    const topN = {}, nOf = {};                                          // 회차별 후보 수 · 최다 인원과 같은 날 수
+    cs.forEach(c => { nOf[rk(c)] = (nOf[rk(c)] || 0) + 1; if(vOf(c.type, c.date).filter(v => v.status === '가능').length === maxOf[rk(c)]) topN[rk(c)] = (topN[rk(c)] || 0) + 1; });
     const multi = typesOf(tab).length > 1;
     const names = arr => arr.map(v => esc(v.name)).join(', ');
     const rowHTML = c => {
@@ -1473,7 +1475,8 @@
       // '가장 많이 가능'은 웰니스 프로그램만 (오프라인 · 전체 줌미팅은 각자 일정에 맞춰 참여) — 확정된 날이 있으면 그 일정은 표시 안 함
       const NO_BEST = ['오프라인(해커톤)', '오프라인(세미나)', '전체 줌미팅'];
       const hasConf = cs.some(x => rk(x) === rk(c) && x.confirmed);
-      const best = !c.confirmed && !hasConf && NO_BEST.indexOf(c.type) < 0 && ok.length && ok.length === maxOf[rk(c)];
+      // 후보가 하나뿐인 일정(예: 11/2 김정연 대표님네)이나 동률이면 표시 안 함 — 한 날짜만 앞설 때만
+      const best = !c.confirmed && !hasConf && NO_BEST.indexOf(c.type) < 0 && ok.length && ok.length === maxOf[rk(c)] && nOf[rk(c)] > 1 && topN[rk(c)] === 1;
       const col = COLORS[c.type] || '#A98BFF';
       return '<div class="vrow' + (best ? ' best' : '') + (c.confirmed ? ' confirmed' : '') + '" id="vr-' + esc(c.type) + '-' + c.date + '">' +
         (c.confirmed ? '<span class="vconf">✓ 확정</span>' : '') +
