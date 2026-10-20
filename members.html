@@ -1413,7 +1413,13 @@
   const roundOf = c => { const memo = String(c.memo || '').trim(), m = memo.match(/(\d+)\s*차/);
     return m ? m[1] : (c.type === '웰니스 프로그램' && memo ? 'x:' + memo : '1'); };
   const rk = c => c.type + '#' + roundOf(c);
-  const vOf = (t, d) => D.votes.filter(v => v.type === t && v.date === d);
+  /* 잠시 쉬는 멤버 — 이 기간 일정은 투표 인원·미응답·투표 버튼에서 빠짐 (여기에 한 줄씩) */
+  const AWAY = [
+    { name:'김승리', from:'2026-11-01', to:'2026-12-31' }   // 2027년 1월부터 다시 합류 예정
+  ];
+  const away = (n, d) => AWAY.some(a => a.name === n && d >= a.from && d <= a.to);
+  const membersOn = d => D.members.filter(n => !away(n, d));
+  const vOf = (t, d) => D.votes.filter(v => v.type === t && v.date === d && !away(v.name, d));
 
   async function load(){
     try{
@@ -1462,7 +1468,7 @@
       const when = [c.time, c.memo].filter(Boolean).join(' · ');
       const vs = vOf(c.type, c.date), ok = vs.filter(v => v.status === '가능'), no = vs.filter(v => v.status === '어려움');
       const answered = new Set(vs.map(v => v.name));
-      const none = D.members.filter(n => !answered.has(n));
+      const none = membersOn(c.date).filter(n => !answered.has(n));
       const mine = (vs.find(v => v.name === me) || {}).status || '';
       // '가장 많이 가능'은 웰니스 프로그램만 (오프라인 · 전체 줌미팅은 각자 일정에 맞춰 참여) — 확정된 날이 있으면 그 일정은 표시 안 함
       const NO_BEST = ['오프라인(해커톤)', '오프라인(세미나)', '전체 줌미팅'];
@@ -1476,11 +1482,12 @@
           '<span class="vrow-d">' + fmtD(c.date) + '</span>' +
           (when ? '<span class="vrow-t">' + esc(when) + '</span>' : '') +
           (best ? '<span class="vbadge best">가장 많이 가능</span>' : '') +
+          (me && away(me, c.date) ? '' :                                  // 쉬는 기간이면 투표 버튼 없음
           '<span class="vrow-btns">' +
             '<button class="vbtn ok' + (mine === '가능' ? ' on' : '') + '" type="button" data-v="가능" data-d="' + c.date + '" data-t="' + esc(c.type) + '">가능</button>' +
-            '<button class="vbtn no' + (mine === '어려움' ? ' on' : '') + '" type="button" data-v="어려움" data-d="' + c.date + '" data-t="' + esc(c.type) + '">어려움</button></span>' +
+            '<button class="vbtn no' + (mine === '어려움' ? ' on' : '') + '" type="button" data-v="어려움" data-d="' + c.date + '" data-t="' + esc(c.type) + '">어려움</button></span>') +
         '</div>' +
-        '<div class="vbar"><i style="width:' + Math.round(ok.length / total * 100) + '%"></i></div>' +
+        '<div class="vbar"><i style="width:' + Math.round(ok.length / (membersOn(c.date).length || 1) * 100) + '%"></i></div>' +
         '<div class="vwho">' +
           '<div><span class="k ok">가능 ' + ok.length + '</span>' + (ok.length ? names(ok) : '<em>아직 없음</em>') + '</div>' +
           '<div><span class="k no">어려움 ' + no.length + '</span>' + (no.length ? names(no) : '<em>없음</em>') + '</div>' +
