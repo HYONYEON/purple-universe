@@ -1409,7 +1409,9 @@
   const candsOf = g => D.candidates.filter(c => typesOf(g).indexOf(c.type) >= 0 && shown(c)).sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : (a.type < b.type ? -1 : 1));
   const openOf = t => candsOf(t);
   /* 회차 — 메모에 '2차'처럼 적으면 그 회차끼리 묶임 (없으면 1차). 확정은 회차별로 따로 */
-  const roundOf = c => ((String(c.memo || '').match(/(\d+)\s*차/) || [])[1] || '1');
+  /* 웰니스에서 메모가 'N차'가 아닌 날(예: '오프라인 - 김정연 대표님네')은 별도 일정 → 확정된 회차에 접히지 않고 위에 따로 보임 */
+  const roundOf = c => { const memo = String(c.memo || '').trim(), m = memo.match(/(\d+)\s*차/);
+    return m ? m[1] : (c.type === '웰니스 프로그램' && memo ? 'x:' + memo : '1'); };
   const rk = c => c.type + '#' + roundOf(c);
   const vOf = (t, d) => D.votes.filter(v => v.type === t && v.date === d);
 
