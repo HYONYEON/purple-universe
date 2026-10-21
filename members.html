@@ -1410,7 +1410,7 @@
   const openOf = t => candsOf(t);
   /* 회차 — 메모에 '2차'처럼 적으면 그 회차끼리 묶임 (없으면 1차). 확정은 회차별로 따로 */
   /* 웰니스에서 메모가 'N차'가 아닌 날(예: '오프라인 - 김정연 대표님네')은 별도 일정 → 확정된 회차에 접히지 않고 위에 따로 보임 */
-  const roundOf = c => { const memo = String(c.memo || '').trim(), m = memo.match(/(\d+)\s*차/);
+  const roundOf = c => { const memo = String(c.memo || '').trim(), m = memo.match(/^(\d+)\s*차(?=\s|·|$)/);   // 회차는 메모 맨 앞 'N차'만 (주소의 '센트레빌 2차' 등은 무시)
     return m ? m[1] : (c.type === '웰니스 프로그램' && memo ? 'x:' + memo : '1'); };
   const rk = c => c.type + '#' + roundOf(c);
   /* 잠시 쉬는 멤버 — 이 기간 일정은 투표 인원·미응답·투표 버튼에서 빠짐 (여기에 한 줄씩) */
