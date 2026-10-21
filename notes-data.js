@@ -6,7 +6,7 @@ window.NOTES = [
     "cat": "insight",
     "date": "2026-10-21",
     "title": "",
-    "desc": "세상이 정신없을수록 잘되는 사업ㅣ '디지털 디톡스'",
+    "desc": "세상이 정신없을수록 잘되는 사업 '디지털 디톡스'ㅣ사다리게임",
     "yt": "https://www.youtube.com/watch?v=kzr8cBNon8g",
     "img": "",
     "link": "",
