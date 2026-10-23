@@ -1415,7 +1415,7 @@
   const rk = c => c.type + '#' + roundOf(c);
   /* 잠시 쉬는 멤버 — 이 기간 일정은 투표 인원·미응답·투표 버튼에서 빠짐 (여기에 한 줄씩) */
   const AWAY = [
-    { name:'김승리', from:'2026-11-01', to:'2026-12-31' }   // 2027년 1월부터 다시 합류 예정
+    { name:'김승리', from:'2026-10-01', to:'2026-12-31' }   // 2027년 1월부터 다시 합류 예정
   ];
   const away = (n, d) => AWAY.some(a => a.name === n && d >= a.from && d <= a.to);
   const membersOn = d => D.members.filter(n => !away(n, d));
