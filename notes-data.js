@@ -3,6 +3,38 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "marketing",
+    "date": "2026-10-21",
+    "title": "",
+    "desc": "10월 21일 수요일ㅣ마케팅 뉴스클리핑",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1792928188760_yxtr3_10.21_1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1792928190298_nf12w_10.21_2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1792928192806_8r1hj_10.21_3.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1792928195124_hiax6_10.21_4.png"
+      }
+    ],
+    "no": 28,
+    "imgtop": 0.106,
+    "ogimg": "images/1792928197181_zuzje_og-28.jpg",
+    "ogv": 2
+  },
+  {
     "cat": "insight",
     "date": "2026-10-21",
     "title": "",
