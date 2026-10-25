@@ -240,6 +240,8 @@ window.NOTES = [
       }
     ],
     "no": 23,
+    "imgtop": 0.106,
+    "ogimg": "images/1792969215316_9i9on_og-23.jpg",
     "ogv": 2
   },
   {
