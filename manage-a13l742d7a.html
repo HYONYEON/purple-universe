@@ -345,6 +345,11 @@
           <input type="text" id="fIg" placeholder="https://www.instagram.com/reel/...">
           <p class="hint">팝업 아래에 '원본 인스타그램에서 보기' 버튼으로 붙어요. 다른 분 영상이면 꼭 넣어 주세요.</p>
         </div>
+        <div class="field">
+          <label>출처 표시 <span style="color:var(--text-faint); font-weight:400;">(선택 · 예: @ddu.gyu_edit)</span></label>
+          <input type="text" id="fSrc" placeholder="@계정이름">
+          <p class="hint">팝업 위쪽 날짜 옆에 '출처 @계정'으로 보여요. 비우면 한 줄 요약 끝의 'ㅣ계정'을 자동으로 써요.</p>
+        </div>
       </div>
 
       <div class="field">
@@ -846,7 +851,11 @@ async function save(){
       embed: '',
       body : blocks
     };
-    if(isSns){ item.vid = vidPath; item.ig = document.getElementById('fIg').value.trim(); item.yt = ''; }
+    if(isSns){
+      item.vid = vidPath; item.ig = document.getElementById('fIg').value.trim(); item.yt = '';
+      const src = document.getElementById('fSrc').value.trim();
+      if(src) item.src = src.charAt(0) === '@' || /\s/.test(src) ? src : '@' + src;
+    }
 
     // 글 번호 — 수정이면 기존 번호 유지, 새 글이면 다음 번호
     const filled = backfillNos();                       // 번호 없는 옛 글 보정
@@ -896,6 +905,7 @@ function editItem(i){
   document.getElementById('fYt').value=n.yt||'';
   document.getElementById('fLink').value=n.link||'';
   document.getElementById('fIg').value=n.ig||'';
+  document.getElementById('fSrc').value=n.src||'';
   vidData=null;
   const vp=document.getElementById('vidPrev');
   if(n.vid){ vp.src='/'+String(n.vid).replace(/^\//,''); vp.style.display='block'; document.getElementById('vidDrop').textContent='기존 영상 — 바꾸려면 클릭'; }
@@ -924,7 +934,7 @@ document.getElementById('fCat').addEventListener('change', syncCat);
 function resetForm(){
   editIndex=-1; thumbData=null; vidData=null;
   document.getElementById('formTitle').textContent='새 글 쓰기';
-  ['fTitle','fDesc','fYt','fLink','fIg'].forEach(id=>document.getElementById(id).value='');
+  ['fTitle','fDesc','fYt','fLink','fIg','fSrc'].forEach(id=>document.getElementById(id).value='');
   const vp=document.getElementById('vidPrev'); vp.removeAttribute('src'); vp.style.display='none';
   document.getElementById('vidDrop').textContent='클릭하거나 영상 파일을 여기로 끌어다 놓으세요';
   document.getElementById('fDate').value=new Date().toISOString().slice(0,10);

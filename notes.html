@@ -239,6 +239,8 @@
   .pick-card{border-color:rgba(232,184,94,.34); position:relative; overflow:visible;}
   .pick-card .note-thumb{border-radius:17px 17px 0 0;}              /* 카드가 overflow:visible 이라 썸네일 모서리는 여기서 둥글게 */
   .pick-grid{padding-top:30px; row-gap:52px;}
+  /* 추천 픽 가로 줄 — 뱃지가 카드 위로 올라가 있어 위 여백 필요, 카드 높이는 각자 */
+  .pick-rail{padding-top:36px; align-items:flex-start;}
   .pick-card .note-meta{display:none;}                                  /* 추천 픽은 분류 · 날짜 숨김 (뱃지만) */
 
   /* ---------- 가로 슬라이드 ---------- */
@@ -277,6 +279,9 @@
     padding:20px 60px 18px 26px; border-bottom:1px solid var(--border); flex-shrink:0;
   }
   .modal-head h3{font-size:21px; font-weight:700; line-height:1.4; width:100%; order:2;}
+  .m-src{font-size:14px; color:var(--text-faint);}
+  .m-src a{color:var(--text-dim); font-weight:600; text-decoration:underline; text-underline-offset:3px;}
+  .m-src a:hover{color:var(--text);}
   .modal-close{
     position:absolute; top:16px; right:18px; z-index:4;
     width:38px; height:38px; border-radius:50%; cursor:pointer;
@@ -640,10 +645,16 @@ function render(query){
       if(latest) picks.push(latest);
     });
     if(picks.length){
+      // 최신순으로 가로로 넘겨 보기 (세로 릴스도 잘리지 않게 9:16 그대로)
+      picks.sort((a,b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
       html += '<section class="sec" style="margin-top:10px;">' +
         '<div class="sec-head"><h2>금주의 추천 픽</h2>' +
-        '<span class="count">분류별 최신 자료</span></div>' +
-        '<div class="pick-grid">' + picks.map(n => cardHTML(n, true)).join('') + '</div></section>';
+        '<span class="count">분류별 최신 자료 · 최신순</span>' +
+        '<div class="navbtns">' +
+          '<button type="button" data-slider="slider-pick" data-dir="-1" aria-label="이전">' + ARROW_L + '</button>' +
+          '<button type="button" data-slider="slider-pick" data-dir="1" aria-label="다음">' + ARROW_R + '</button>' +
+        '</div></div>' +
+        '<div class="slider pick-rail" id="slider-pick">' + picks.map(n => cardHTML(n, true)).join('') + '</div></section>';
     }
   }
 
@@ -870,12 +881,24 @@ function copyLink(url, btn){
   }
 }
 
+/* 출처 — 관리 페이지 '출처' 칸 → 인스타 주소의 계정 → 요약 끝 'ㅣ계정' 순서로 찾음 */
+function srcOf(n){
+  if(n.src) return String(n.src).trim();
+  const m = String(n.ig || '').match(/instagram\.com\/(?!p\/|reel\/|reels\/|tv\/|stories\/)([A-Za-z0-9._]+)/);
+  if(m) return '@' + m[1];
+  if(n.cat === 'sns'){
+    const t = String(n.desc || n.title || '').split('ㅣ');
+    if(t.length > 1 && t[t.length-1].trim()) return '@' + t[t.length-1].trim().replace(/^@/, '');
+  }
+  return '';
+}
 function openModal(n){
   if(!n) return;
   const cat = CATS.find(c => c.key === n.cat) || CATS[0];
   modalHead.innerHTML =
     '<span class="tag ' + n.cat + '">' + esc(cat.tagText) + '</span>' +
     '<span class="note-date">' + fmtDate(n.date) + '</span>' +
+    (srcOf(n) ? '<span class="m-src">출처 ' + (n.ig ? '<a href="' + esc(n.ig) + '" target="_blank" rel="noopener">' + esc(srcOf(n)) + '</a>' : esc(srcOf(n))) + '</span>' : '') +
     (n.title ? '<h3 id="modalTitle">' + esc(n.title) + '</h3>' : '');
 
   let html = '';
