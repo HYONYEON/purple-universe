@@ -19,6 +19,7 @@ window.NOTES = [
     ],
     "vid": "videos/1793166715170_xq486_2026-10-28_ddu.gyu_edit_De-yVmSy2wM.mp4",
     "ig": "https://www.instagram.com/p/De-yVmSy2wM/",
+    "src": "@ddu.gyu_edit",
     "no": 31,
     "imgtop": 0.7047,
     "ogimg": "images/1793167134643_dqljl_og-31.jpg",

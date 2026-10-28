@@ -297,6 +297,13 @@
   .modal-scroll .m-video iframe{width:100%; height:100%; border:0; display:block;}
   .modal-scroll .m-reel{width:min(100%, 360px); aspect-ratio:9/16; max-height:72vh; margin:0 auto 24px; border-radius:14px; overflow:hidden; border:1px solid var(--border); background:#000;}
   .modal-scroll .m-reel video{width:100%; height:100%; object-fit:contain; display:block;}
+  /* 릴스 팝업 — 왼쪽 영상, 오른쪽 글 */
+  .reel-split{display:grid; grid-template-columns:minmax(0,360px) minmax(0,1fr); gap:36px; align-items:start;}
+  .reel-split .m-reel{margin:0; width:100%; position:sticky; top:0;}
+  .reel-text{min-width:0; padding-top:4px;}
+  .reel-text > :first-child{margin-top:0;}
+  .modal-scroll .reel-text .reel-lead{font-size:18px; font-weight:700; color:var(--text); line-height:1.6;}
+  @media(max-width:760px){ .reel-split{grid-template-columns:1fr; gap:22px;} .reel-split .m-reel{position:static; width:min(100%,340px); margin:0 auto;} }
   .modal-scroll .m-embed{width:100%; height:66vh; border:0; border-radius:14px; background:#fff;}
   .modal-scroll p{font-size:16.5px; color:var(--text-dim); line-height:1.85; margin-bottom:18px;}
   .modal-scroll h4{font-size:19px; font-weight:700; color:var(--text); margin:30px 0 12px;}
@@ -904,9 +911,15 @@ function openModal(n){
   let html = '';
   const id = ytId(n.yt);
   if(n.vid){
-    html += '<div class="m-reel"><video src="' + esc(absPath(n.vid)) + '"' +
-            (coverOf(n) ? ' poster="' + esc(absPath(coverOf(n))) + '"' : '') +
-            ' controls playsinline autoplay preload="metadata"></video></div>';
+    // 릴스 — 왼쪽 세로 영상, 오른쪽 본문 (휴대폰에서는 위아래)
+    const txt = (Array.isArray(n.body) && n.body.length) ? bodyHTML(n.body)
+              : (n.desc ? '<p>' + esc(n.desc) + '</p>' : '');
+    html += '<div class="reel-split">' +
+              '<div class="m-reel"><video src="' + esc(absPath(n.vid)) + '"' +
+              (coverOf(n) ? ' poster="' + esc(absPath(coverOf(n))) + '"' : '') +
+              ' controls playsinline autoplay preload="metadata"></video></div>' +
+              '<div class="reel-text">' + (n.desc && Array.isArray(n.body) && n.body.length ? '<p class="reel-lead">' + esc(n.desc) + '</p>' : '') + txt + '</div>' +
+            '</div>';
   }
   if(id){
     html += '<div class="m-video"><iframe src="https://www.youtube.com/embed/' + id +
@@ -914,9 +927,11 @@ function openModal(n){
             'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
             'referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
   }
-  if(Array.isArray(n.body) && n.body.length){
+  if(n.vid){
+    // 본문은 위 reel-split 오른쪽에 이미 넣음
+  } else if(Array.isArray(n.body) && n.body.length){
     html += bodyHTML(n.body);
-  } else if(!id && !n.embed && !n.vid){
+  } else if(!id && !n.embed){
     html += '<p>' + esc(n.desc || '') + '</p>';
   }
   if(n.embed){
