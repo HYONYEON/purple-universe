@@ -485,15 +485,15 @@
   .p-acts .btn[disabled]{opacity:.55; cursor:default;}
   .p-note{font-size:13.5px; color:var(--text-faint); margin-top:10px;}
   .p-catch{font-size:18px; font-weight:700; color:#D9A6FF; margin:-2px 0 10px;}
-  .p-detail{max-width:760px; margin:40px auto 0; border-radius:22px; overflow:hidden; border:1px solid var(--border-strong); background:#3A2570;}
+  .p-detail{max-width:760px; margin:40px auto 0; border-radius:22px; overflow:hidden; border:1px solid var(--border-strong); background:#26184C;}
   .p-detail img{display:block; width:100%; height:auto;}
-  /* 카드뉴스 사이 쉼 공간: 앞 장 아래색(#3A2570) → 다음 장 위색(#231649)으로 이어지는 별 배경 → 경계 없이 한 장처럼 */
+  /* 카드뉴스 사이 쉼 공간: 앞 장 아래색(#26184C) → 다음 장 위색(#1A1033)으로 이어지는 별 배경 → 경계 없이 한 장처럼 */
   .p-seg{position:relative;}
   .p-gap{padding-top:8%;
          background:radial-gradient(1.2px 1.2px at 23px 31px,rgba(255,255,255,.75),transparent),radial-gradient(1px 1px at 97px 12px,rgba(255,255,255,.55),transparent),
                     radial-gradient(1.4px 1.4px at 151px 58px,rgba(255,255,255,.7),transparent),radial-gradient(1px 1px at 61px 77px,rgba(255,255,255,.45),transparent),
                     radial-gradient(1px 1px at 199px 39px,rgba(255,255,255,.5),transparent),radial-gradient(1.2px 1.2px at 233px 84px,rgba(255,255,255,.6),transparent),
-                    linear-gradient(#3A2570,#231649);
+                    linear-gradient(#26184C,#1A1033);
          background-size:260px 96px,260px 96px,260px 96px,260px 96px,260px 96px,260px 96px,100% 100%;}
   /* 좌우로 넘겨 보는 묶음 (쉼의 정의 · 대표님 소개) */
   .p-rail-track{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain;}
@@ -507,7 +507,7 @@
   .p-rail-btn.next.nudge{animation:pNudge 1.4s ease-in-out infinite;}
   @keyframes pNudge{0%,100%{transform:translateY(-50%) translateX(0);} 50%{transform:translateY(-50%) translateX(6px);}}
   /* 넘기기 표시줄: 점 + 몇 번째 장 (바탕은 이미지 아래색과 같게) */
-  .p-rail-bar{display:flex; align-items:center; justify-content:center; gap:14px; padding:6px 16px 4px; background:#3A2570;}
+  .p-rail-bar{display:flex; align-items:center; justify-content:center; gap:14px; padding:6px 16px 4px; background:#26184C;}
   .p-dots{display:flex; gap:7px; flex-wrap:wrap; justify-content:center;}
   .p-dots button{width:9px; height:9px; padding:0; border:none; border-radius:5px; background:rgba(255,255,255,.35); cursor:pointer; transition:width .25s,background .25s;}
   .p-dots button.on{width:26px; background:#E3A6FF;}
@@ -516,7 +516,7 @@
   @media(max-width:560px){ .p-rail-btn{width:42px; height:42px; font-size:22px; box-shadow:0 0 0 4px rgba(124,77,255,.28),0 6px 16px rgba(0,0,0,.45);} .p-rail-btn.prev{left:8px;} .p-rail-btn.next{right:8px;}
                            .p-rail-bar{flex-direction:column; gap:8px;} .p-dots button{width:7px; height:7px;} .p-dots button.on{width:20px;} .p-rail-num{font-size:13px;} }
   .p-loading{padding:40px 20px; text-align:center; color:var(--text-faint); font-size:15px;}
-  .p-detail-foot{padding:26px; text-align:center; background:#3A2570;}
+  .p-detail-foot{padding:26px; text-align:center; background:#26184C;}
   .p-wrap{scroll-margin-top:90px;}
   .p-detail{scroll-margin-top:90px;}
   .p-line{margin-top:30px;}
