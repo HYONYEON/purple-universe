@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>프로그램 — 퍼플 유니버스</title>
-<meta name="description" content="퍼플 유니버스 멤버들의 전문성을 하나로 모은 오프라인 프로그램. 원데이 웰니스 프로그램 — 12월 13일(일) 12:00~20:00.">
+<meta name="description" content="퍼플 유니버스 멤버들의 전문성을 하나로 모은 오프라인 협업 프로그램. 원데이 웰니스 프로그램 — 12월 13일(일) 12:00~20:00.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="퍼플 유니버스">
 <meta property="og:locale" content="ko_KR">
@@ -568,7 +568,7 @@
 <section class="p-hero">
   <div class="wrap">
     <span class="eyebrow">PROGRAM</span>
-    <h1>퍼플 유니버스 멤버들의<br class="mo"> 전문성을<br class="pc"> 하나로 모은<br class="mo"> 오프라인 프로그램</h1>
+    <h1>퍼플 유니버스 멤버들의<br class="mo"> 전문성을<br class="pc"> 하나로 모은<br class="mo"> 오프라인 협업 프로그램</h1>
   </div>
 </section>
 
@@ -603,7 +603,8 @@ const PROGRAMS = [
     id: 'wellness',
     tag: '원데이 웰니스 · 힐링',
     title: '원데이 웰니스 프로그램',
-    catch: '딱 하루, 온전히 나를 위한 휴식',
+    catch: '딱 하루, 온전히 나를 위한 휴식',   // 포스터 대체 글자로만 쓰임
+    showText: false,          // 카드 오른쪽 제목·한 줄 소개·설명·'일정 확정' 숨김 (표지 이미지와 겹쳐서, 10/29 대표님)
     sub: '누구의 엄마, 아빠, 대표로서 살아온 당신에게 — 체형 분석 · 스트레칭 · 아로마 케어 · 셰프의 저녁까지, 쉼을 선물합니다.',
     confirmed: true,
     date: '2026년 12월 13일 (일)',
@@ -632,8 +633,8 @@ document.getElementById('pList').innerHTML = PROGRAMS.map(p => {
       '<div class="p-poster" id="poster-' + esc(p.id) + '"><div class="ph"><small>PURPLE UNIVERSE · WELLNESS</small><b>' + esc(p.catch || p.title) + '</b></div>' +
         (p.poster ? '<img src="/' + esc(p.poster) + '" alt="' + esc(p.title) + ' 포스터" onerror="this.remove()" style="position:relative;">' : '') + '</div>' +
       '<div class="p-body">' +
-        '<div class="p-top"><span class="p-chip">' + esc(p.tag) + '</span>' + (p.confirmed ? '<span class="p-conf">✓ 일정 확정</span>' : '') + '</div>' +
-        '<h2>' + esc(p.title) + '</h2>' + (p.catch ? '<p class="p-catch">' + esc(p.catch) + '</p>' : '') + '<p class="p-sub">' + esc(p.sub) + '</p>' +
+        '<div class="p-top"><span class="p-chip">' + esc(p.tag) + '</span>' + (p.confirmed && p.showText !== false ? '<span class="p-conf">✓ 일정 확정</span>' : '') + '</div>' +
+        (p.showText === false ? '' : '<h2>' + esc(p.title) + '</h2>' + (p.catch ? '<p class="p-catch">' + esc(p.catch) + '</p>' : '') + '<p class="p-sub">' + esc(p.sub) + '</p>') +
         '<dl class="p-facts">' + fact('일시', p.date) + fact('시간', p.time) + fact('장소', p.place) + fact('모집', p.cap) + fact('참가비', p.price) + fact('선물', p.gift) + '</dl>' +
         '<div class="p-acts">' + act + '</div>' +
       '</div>' +
