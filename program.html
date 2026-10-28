@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>프로그램 — 퍼플 유니버스</title>
-<meta name="description" content="퍼플 유니버스 멤버들이 함께 만드는 오프라인 프로그램. 원데이 웰니스 프로그램 — 12월 13일(일) 12:00~20:00.">
+<meta name="description" content="퍼플 유니버스 멤버들의 전문성을 하나로 모은 오프라인 프로그램. 원데이 웰니스 프로그램 — 12월 13일(일) 12:00~20:00.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="퍼플 유니버스">
 <meta property="og:locale" content="ko_KR">
@@ -461,6 +461,8 @@
   /* ---------- 프로그램 페이지 ---------- */
   .p-hero{padding:170px 0 10px; text-align:center;}
   .p-hero h1{font-size:clamp(30px,5vw,54px); font-weight:700; margin-top:16px; line-height:1.25;}
+  .p-hero .mo{display:none;}
+  @media(max-width:560px){ .p-hero .pc{display:none;} .p-hero .mo{display:inline;} }   /* 제목 줄바꿈: PC 2줄 · 폰 3줄 */
   .p-hero .lead{max-width:640px; margin:18px auto 0; font-size:18px; line-height:1.75; color:var(--text-dim);}
   .p-list{margin-top:64px; display:flex; flex-direction:column; gap:40px;}
   .p-card{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:40px; padding:32px; border-radius:26px;
@@ -566,8 +568,7 @@
 <section class="p-hero">
   <div class="wrap">
     <span class="eyebrow">PROGRAM</span>
-    <h1>멤버들이 함께 만드는<br class="mbr"> 오프라인 프로그램</h1>
-    <p class="lead">퍼플 유니버스 멤버들의 전문성을 하나로 모아,<br>하루 동안 직접 경험하는 프로그램을 엽니다.</p>
+    <h1>퍼플 유니버스 멤버들의<br class="mo"> 전문성을<br class="pc"> 하나로 모은<br class="mo"> 오프라인 프로그램</h1>
   </div>
 </section>
 
