@@ -192,6 +192,12 @@
     border-bottom:1px solid var(--border); overflow:hidden;
   }
   .note-thumb iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+  .note-thumb video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; background:#000;}
+  /* SNS 인사이트 — 세로 영상(릴스) 카드. 목록 줄에서는 9:16, 추천 픽에서는 다른 카드와 같은 16:9로 */
+  .slider .note-card.vert{flex:0 0 230px;}
+  .slider .note-card.vert .note-thumb{aspect-ratio:9/16;}
+  @media(max-width:520px){ .slider .note-card.vert{flex:0 0 62%;} }
+  .note-thumb .reel-mark{position:absolute; right:10px; top:10px; z-index:2; font-size:11.5px; font-weight:700; padding:4px 9px; border-radius:100px; background:rgba(8,5,15,.62); color:#fff; letter-spacing:.02em;}
   /* 카드뉴스처럼 세로로 긴 이미지는 위쪽(제목 영역)을 보여줌 */
   .note-thumb img{width:100%; height:100%; object-fit:cover; object-position:top center;}
   .note-thumb .ph{
@@ -219,6 +225,7 @@
   .tag.insight{background:rgba(232,184,94,.16); color:var(--gold-soft);}
   .tag.webinar{background:rgba(88,200,140,.16); color:#7FD8A8;}
   .tag.live{background:rgba(255,90,120,.16); color:#FF9AAE;}
+  .tag.sns{background:rgba(110,190,255,.16); color:#9CCBFF;}
   .note-date{font-size:13.5px; color:var(--text-faint); font-family:'Pretendard','IBM Plex Sans KR',sans-serif;}
   .note-card h3{font-size:18.5px; font-weight:700; line-height:1.45;}
   .note-card p{font-size:14.5px; color:var(--text-dim); line-height:1.6;}
@@ -283,6 +290,8 @@
     border:1px solid var(--border); margin-bottom:24px; background:#000;
   }
   .modal-scroll .m-video iframe{width:100%; height:100%; border:0; display:block;}
+  .modal-scroll .m-reel{width:min(100%, 360px); aspect-ratio:9/16; max-height:72vh; margin:0 auto 24px; border-radius:14px; overflow:hidden; border:1px solid var(--border); background:#000;}
+  .modal-scroll .m-reel video{width:100%; height:100%; object-fit:contain; display:block;}
   .modal-scroll .m-embed{width:100%; height:66vh; border:0; border-radius:14px; background:#fff;}
   .modal-scroll p{font-size:16.5px; color:var(--text-dim); line-height:1.85; margin-bottom:18px;}
   .modal-scroll h4{font-size:19px; font-weight:700; color:var(--text); margin:30px 0 12px;}
@@ -489,6 +498,7 @@ const CATS = [
   { key:'live',      label:'LIVE',           tagText:'LIVE' },
   { key:'marketing', label:'마케팅 뉴스클리핑',      tagText:'마케팅 뉴스클리핑' },
   { key:'insight',   label:'비즈니스 인사이트', tagText:'인사이트' },
+  { key:'sns',       label:'SNS 인사이트',     tagText:'SNS 인사이트' },
 ];
 
 // 섹션 묶음 — 태그 여러 개를 한 섹션에 모을 수 있음
@@ -496,6 +506,7 @@ const SECTIONS = [
   { id:'rec',      title:'웨비나 · LIVE 녹화본', cats:['webinar','live'] },
   { id:'marketing',title:'마케팅 뉴스클리핑',                cats:['marketing'] },
   { id:'insight',  title:'비즈니스 인사이트',           cats:['insight'] },
+  { id:'sns',      title:'SNS 인사이트',               cats:['sns'] },
 ];
 
 const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.6l2.7 5.9 6.4.7-4.8 4.3 1.3 6.3L12 16.6 6.4 19.8l1.3-6.3L2.9 9.2l6.4-.7z"/></svg>';
@@ -535,7 +546,11 @@ function thumbHTML(n, isPick){
   const id = ytId(n.yt);
   const cover = coverOf(n);
   let inner;
-  if(id){
+  if(n.vid){
+    // 릴스 영상 파일 — 소리 없이 자동 반복 재생 (누르면 팝업에서 소리와 함께)
+    inner = '<video src="' + esc(absPath(n.vid)) + '"' + (cover ? ' poster="' + esc(absPath(cover)) + '"' : '') +
+            ' muted loop playsinline autoplay preload="metadata"></video><span class="reel-mark">▶ 릴스</span>';
+  } else if(id){
     inner = '<iframe src="https://www.youtube.com/embed/' + id + '" title="' + esc(n.title) +
             '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen ' +
             'allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>';
@@ -574,7 +589,7 @@ function placeCovers(root){
 }
 
 function hasDetail(n){
-  return (Array.isArray(n.body) && n.body.length) || n.embed || ytId(n.yt);
+  return (Array.isArray(n.body) && n.body.length) || n.embed || ytId(n.yt) || n.vid;
 }
 
 function cardHTML(n, isPick){
@@ -584,7 +599,7 @@ function cardHTML(n, isPick){
   const link = openable
     ? '<span class="note-link">자세히 보기 →</span>'
     : (n.link ? '<a class="note-link" href="' + esc(n.link) + '" target="_blank" rel="noopener">자세히 보기 →</a>' : '');
-  return '<article class="note-card' + (isPick ? ' pick-card' : '') + (openable ? ' clickable' : '') +
+  return '<article class="note-card' + (isPick ? ' pick-card' : '') + (openable ? ' clickable' : '') + (n.vid ? ' vert' : '') +
     '" data-idx="' + idx + '">' +
     (isPick ? '<span class="pick-badge">' + STAR + '추천 픽</span>' : '') +
     thumbHTML(n, isPick) +
@@ -865,6 +880,11 @@ function openModal(n){
 
   let html = '';
   const id = ytId(n.yt);
+  if(n.vid){
+    html += '<div class="m-reel"><video src="' + esc(absPath(n.vid)) + '"' +
+            (coverOf(n) ? ' poster="' + esc(absPath(coverOf(n))) + '"' : '') +
+            ' controls playsinline autoplay preload="metadata"></video></div>';
+  }
   if(id){
     html += '<div class="m-video"><iframe src="https://www.youtube.com/embed/' + id +
             '" title="' + esc(n.title) + '" allowfullscreen ' +
@@ -873,7 +893,7 @@ function openModal(n){
   }
   if(Array.isArray(n.body) && n.body.length){
     html += bodyHTML(n.body);
-  } else if(!id && !n.embed){
+  } else if(!id && !n.embed && !n.vid){
     html += '<p>' + esc(n.desc || '') + '</p>';
   }
   if(n.embed){
@@ -892,7 +912,8 @@ function openModal(n){
     : location.origin + location.pathname + '#' + slug;
 
   modalFoot.innerHTML =
-    (n.link ? '<a href="' + esc(n.link) + '" target="_blank" rel="noopener">원문 새 탭에서 열기 ↗</a>' : '<span></span>') +
+    (n.ig ? '<a href="' + esc(n.ig) + '" target="_blank" rel="noopener">원본 인스타그램에서 보기 ↗</a>'
+          : n.link ? '<a href="' + esc(n.link) + '" target="_blank" rel="noopener">원문 새 탭에서 열기 ↗</a>' : '<span></span>') +
     '<button type="button" class="copy-link" id="copyLinkBtn">이 자료 주소 복사</button>';
   const cbtn = document.getElementById('copyLinkBtn');
   if(cbtn) cbtn.onclick = () => copyLink(shareUrl, cbtn);

@@ -118,6 +118,7 @@
   .pill{font-size:12px; font-weight:700; padding:3px 10px; border-radius:100px;}
   .pill.marketing{background:rgba(124,77,255,.18); color:var(--purple-bright);}
   .pill.insight{background:rgba(232,184,94,.16); color:var(--gold-soft);}
+  .pill.sns{background:rgba(110,190,255,.16); color:#9CCBFF;}
   .pill.webinar{background:rgba(88,200,140,.16); color:#7FD8A8;}
   .pill.live{background:rgba(255,90,120,.16); color:#FF9AAE;}
 
@@ -301,6 +302,7 @@
             <option value="live">LIVE</option>
             <option value="marketing">마케팅 뉴스클리핑</option>
             <option value="insight">비즈니스 인사이트</option>
+            <option value="sns">SNS 인사이트 (세로 영상)</option>
           </select>
         </div>
         <div class="field">
@@ -327,6 +329,22 @@
         </div>
         <!-- 원문 링크 칸은 뺐습니다 (예전 글에 들어 있던 값은 그대로 유지) -->
         <input type="hidden" id="fLink">
+      </div>
+
+      <!-- SNS 인사이트 — 릴스 영상 파일을 직접 올림 (분류가 SNS 인사이트일 때만 보임) -->
+      <div id="snsRow" style="display:none;">
+        <div class="field">
+          <label>릴스 영상 파일 <span style="color:var(--text-faint); font-weight:400;">(mp4 · 40MB 이하)</span></label>
+          <div class="drop" id="vidDrop">클릭하거나 영상 파일을 여기로 끌어다 놓으세요</div>
+          <input type="file" id="vidFile" accept="video/mp4,video/quicktime,video/webm" style="display:none;">
+          <video id="vidPrev" muted loop playsinline controls style="display:none; width:180px; aspect-ratio:9/16; object-fit:cover; border-radius:12px; margin-top:10px; background:#000;"></video>
+          <p class="hint">카드에서는 소리 없이 자동 재생, 누르면 팝업에서 소리와 함께 재생돼요. 대표 이미지를 안 넣으면 영상 첫 장면을 표지로 자동으로 써요.</p>
+        </div>
+        <div class="field">
+          <label>원본 인스타그램 링크 <span style="color:var(--text-faint); font-weight:400;">(출처 · 권장)</span></label>
+          <input type="text" id="fIg" placeholder="https://www.instagram.com/reel/...">
+          <p class="hint">팝업 아래에 '원본 인스타그램에서 보기' 버튼으로 붙어요. 다른 분 영상이면 꼭 넣어 주세요.</p>
+        </div>
       </div>
 
       <div class="field">
@@ -368,10 +386,11 @@
 /* ===================== 설정 ===================== */
 const DATA_FILE = 'notes-data.js';
 const IMG_DIR   = 'images';
-const CATS = { webinar:'웨비나', live:'LIVE', marketing:'마케팅 뉴스클리핑', insight:'비즈니스 인사이트' };
+const VID_DIR   = 'videos';   // SNS 인사이트 릴스 영상
+const CATS = { webinar:'웨비나', live:'LIVE', marketing:'마케팅 뉴스클리핑', insight:'비즈니스 인사이트', sns:'SNS 인사이트' };
 
 let TOKEN='', OWNER='', REPO='', BRANCH='main';
-let NOTES=[], dataSha=null, editIndex=-1, thumbData=null;
+let NOTES=[], dataSha=null, editIndex=-1, thumbData=null, vidData=null;
 
 /* ===================== 공통 ===================== */
 function toast(msg, ok){
@@ -772,7 +791,9 @@ async function save(){
   }
   // 유튜브 영상이나 이미지(대표 · 본문)가 있으면 제목은 비워도 됨 — 썸네일에 제목이 보이니까 (비운 채로 저장)
   const ytUrl = document.getElementById('fYt').value.trim();
-  const hasImg = !!thumbData || (editIndex > -1 && !!NOTES[editIndex].img) ||
+  const hasVid = !!vidData || (editIndex > -1 && !!NOTES[editIndex].vid);
+  if(document.getElementById('fCat').value === 'sns' && !hasVid){ toast('릴스 영상 파일을 넣어주세요.', false); return; }
+  const hasImg = hasVid || !!thumbData || (editIndex > -1 && !!NOTES[editIndex].img) ||
                  !!document.querySelector('#blocks .thumb-prev[src], #blocks img[src]');
   if(!title && !ytUrl && !hasImg){ toast('제목을 입력해주세요. (유튜브 영상이나 이미지가 있으면 비워도 돼요)', false); return; }
   if(!date){  toast('날짜를 선택해주세요.', false); return; }
@@ -784,7 +805,7 @@ async function save(){
     /* 대표로 쓸 이미지의 원본 데이터를 미리 챙겨둡니다.
        업로드 직후 사이트에서 다시 불러오려 하면 GitHub 빌드 전이라 404 가 나서
        썸네일 위치 계산이 실패합니다. 원본을 들고 있으면 그럴 일이 없습니다. */
-    let localCover = (thumbData && thumbData.dataUrl) || '';
+    let localCover = (thumbData && thumbData.dataUrl) || (vidData && vidData.poster && vidData.poster.dataUrl) || '';
     if(!localCover){
       const firstImg = blocks.find(b => b.t === 'img' && b._img);
       if(firstImg) localCover = firstImg._img.dataUrl;
@@ -802,6 +823,18 @@ async function save(){
     let imgPath = (editIndex>-1 ? (NOTES[editIndex].img||'') : '');
     if(thumbData){ imgPath = await uploadImage(thumbData); }
 
+    // 릴스 영상 업로드 (SNS 인사이트)
+    const isSns = document.getElementById('fCat').value === 'sns';
+    let vidPath = (isSns && editIndex>-1) ? (NOTES[editIndex].vid||'') : '';
+    if(isSns && vidData){
+      btn.textContent='영상 올리는 중…';
+      const stamp = Date.now()+'_'+Math.random().toString(36).slice(2,7);
+      vidPath = VID_DIR+'/'+stamp+'_'+vidData.name;
+      await putFile(vidPath, vidData.b64, null, '영상 추가: '+vidData.name);
+      if(!imgPath && vidData.poster){ imgPath = await uploadImage(vidData.poster); }   // 표지 자동(첫 장면)
+      btn.textContent='올리는 중…';
+    }
+
     const item = {
       cat  : document.getElementById('fCat').value,
       date : date,
@@ -813,6 +846,7 @@ async function save(){
       embed: '',
       body : blocks
     };
+    if(isSns){ item.vid = vidPath; item.ig = document.getElementById('fIg').value.trim(); item.yt = ''; }
 
     // 글 번호 — 수정이면 기존 번호 유지, 새 글이면 다음 번호
     const filled = backfillNos();                       // 번호 없는 옛 글 보정
@@ -861,6 +895,11 @@ function editItem(i){
   document.getElementById('fDesc').value=n.desc||'';
   document.getElementById('fYt').value=n.yt||'';
   document.getElementById('fLink').value=n.link||'';
+  document.getElementById('fIg').value=n.ig||'';
+  vidData=null;
+  const vp=document.getElementById('vidPrev');
+  if(n.vid){ vp.src='/'+String(n.vid).replace(/^\//,''); vp.style.display='block'; document.getElementById('vidDrop').textContent='기존 영상 — 바꾸려면 클릭'; }
+  else { vp.removeAttribute('src'); vp.style.display='none'; document.getElementById('vidDrop').textContent='클릭하거나 영상 파일을 여기로 끌어다 놓으세요'; }
   syncCat();
   const prev=document.getElementById('thumbPrev');
   if(n.img){ prev.src=n.img; prev.style.display='block'; } else { prev.style.display='none'; }
@@ -873,15 +912,19 @@ function editItem(i){
 
 /* 마케팅 뉴스클리핑(카드뉴스)은 유튜브 · 원문 칸이 필요 없어서 숨김 (한 줄 요약은 다른 글처럼 보임) */
 function syncCat(){
-  const mk = document.getElementById('fCat').value === 'marketing';
-  document.getElementById('ytRow').style.display = mk ? 'none' : '';
+  const c  = document.getElementById('fCat').value;
+  const mk = c === 'marketing', sns = c === 'sns';
+  document.getElementById('ytRow').style.display  = (mk || sns) ? 'none' : '';
+  document.getElementById('snsRow').style.display = sns ? '' : 'none';
 }
 document.getElementById('fCat').addEventListener('change', syncCat);
 
 function resetForm(){
-  editIndex=-1; thumbData=null;
+  editIndex=-1; thumbData=null; vidData=null;
   document.getElementById('formTitle').textContent='새 글 쓰기';
-  ['fTitle','fDesc','fYt','fLink'].forEach(id=>document.getElementById(id).value='');
+  ['fTitle','fDesc','fYt','fLink','fIg'].forEach(id=>document.getElementById(id).value='');
+  const vp=document.getElementById('vidPrev'); vp.removeAttribute('src'); vp.style.display='none';
+  document.getElementById('vidDrop').textContent='클릭하거나 영상 파일을 여기로 끌어다 놓으세요';
   document.getElementById('fDate').value=new Date().toISOString().slice(0,10);
   document.getElementById('blocks').innerHTML='';
   document.getElementById('thumbPrev').style.display='none';
@@ -1037,6 +1080,40 @@ dropZone(tDrop, f=>pickImage(f, d=>{
   const p=document.getElementById('thumbPrev'); p.src=d.dataUrl; p.style.display='block';
   tDrop.textContent='이미지 선택됨 — 바꾸려면 클릭';
 }));
+
+/* ===================== 릴스 영상 (SNS 인사이트) =====================
+   ─ 40MB 까지. 고르면 미리보기 + 첫 장면(0.5초)을 표지 이미지로 만들어 둠 */
+function pickVideo(file){
+  if(!file) return;
+  if(!/^video\//.test(file.type) && !/\.(mp4|mov|webm)$/i.test(file.name)){ toast('영상 파일(mp4)을 넣어주세요', false); return; }
+  if(file.size > 40*1024*1024){ toast('영상이 너무 커요 (40MB 이하로 올려주세요)', false); return; }
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const dataUrl=rd.result, name=file.name.replace(/[^\w.\-]/g,'_');
+    vidData={ b64:dataUrl.split(',')[1], name:name, poster:null };
+    const vp=document.getElementById('vidPrev');
+    vp.src=URL.createObjectURL(file); vp.style.display='block';
+    document.getElementById('vidDrop').textContent='영상 선택됨 ('+(file.size/1048576).toFixed(1)+'MB) — 바꾸려면 클릭';
+    const grab=()=>{
+      try{
+        const c=document.createElement('canvas'); c.width=vp.videoWidth; c.height=vp.videoHeight;
+        if(!c.width) return;
+        c.getContext('2d').drawImage(vp,0,0,c.width,c.height);
+        const pu=c.toDataURL('image/jpeg',0.86);
+        vidData.poster={ dataUrl:pu, b64:pu.split(',')[1], name:name.replace(/\.\w+$/,'')+'_cover.jpg' };
+      }catch(e){}
+    };
+    vp.addEventListener('loadeddata', ()=>{ try{ vp.currentTime=Math.min(0.5, (vp.duration||1)/2); }catch(e){} }, { once:true });
+    vp.addEventListener('seeked', grab, { once:true });
+  };
+  rd.readAsDataURL(file);
+}
+(function(){
+  const d=document.getElementById('vidDrop'), f=document.getElementById('vidFile');
+  d.onclick=()=>f.click();
+  f.onchange=e=>pickVideo(e.target.files[0]);
+  dropZone(d, pickVideo);
+})();
 
 /* ===================== 신청 현황 =====================
    purpleuniverse.net/apply 로 들어온 신청을 구글 앱스 스크립트에서 읽어옵니다.
