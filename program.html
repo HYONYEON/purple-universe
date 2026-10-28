@@ -519,6 +519,11 @@
                            .p-rail-bar{flex-direction:column; gap:8px;} .p-dots button{width:7px; height:7px;} .p-dots button.on{width:20px;} .p-rail-num{font-size:13px;} }
   .p-loading{padding:40px 20px; text-align:center; color:var(--text-faint); font-size:15px;}
   .p-detail-foot{padding:26px; text-align:center; background:#1E133F;}
+  /* 화면 아래에 떠 있는 신청 버튼 (카드를 숨겼을 때). 맨 아래 신청 버튼이 보이면 숨김 */
+  .p-float{position:fixed; left:50%; bottom:calc(18px + env(safe-area-inset-bottom)); transform:translateX(-50%); z-index:90;
+           padding:16px 38px; font-size:17px; box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 0 4px rgba(124,77,255,.25); transition:opacity .25s,transform .25s;}
+  .p-float.off{opacity:0; pointer-events:none; transform:translate(-50%,20px);}
+  @media(max-width:560px){ .p-float{width:calc(100% - 32px); max-width:420px; text-align:center; padding:15px 20px;} }
   .p-wrap{scroll-margin-top:90px;}
   .p-detail{scroll-margin-top:90px;}
   .p-line{margin-top:30px;}
@@ -605,6 +610,7 @@ const PROGRAMS = [
     title: '원데이 웰니스 프로그램',
     catch: '딱 하루, 온전히 나를 위한 휴식',   // 포스터 대체 글자로만 쓰임
     showText: false,          // 카드 오른쪽 제목·한 줄 소개·설명·'일정 확정' 숨김 (표지 이미지와 겹쳐서, 10/29 대표님)
+    hideCard: true,           // 프로그램 카드 통째로 숨김 → 제목 아래 바로 상세 이미지(표지). 신청 버튼은 화면 아래에 떠 있음 (10/29 대표님)
     sub: '누구의 엄마, 아빠, 대표로서 살아온 당신에게 — 체형 분석 · 스트레칭 · 아로마 케어 · 셰프의 저녁까지, 쉼을 선물합니다.',
     confirmed: true,
     date: '2026년 12월 13일 (일)',
@@ -628,7 +634,7 @@ document.getElementById('pList').innerHTML = PROGRAMS.map(p => {
   const act = (p.applyUrl && p.applyOpen)
     ? '<a class="btn btn-primary" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">프로그램 신청하기</a>'
     : '<button class="btn btn-primary" type="button" disabled>신청 오픈 예정</button>';
-  return '<div class="p-wrap" id="' + esc(p.id) + '">' +
+  return '<div class="p-wrap" id="' + esc(p.id) + '">' + (p.hideCard ? '' :
     '<article class="p-card">' +
       '<div class="p-poster" id="poster-' + esc(p.id) + '"><div class="ph"><small>PURPLE UNIVERSE · WELLNESS</small><b>' + esc(p.catch || p.title) + '</b></div>' +
         (p.poster ? '<img src="/' + esc(p.poster) + '" alt="' + esc(p.title) + ' 포스터" onerror="this.remove()" style="position:relative;">' : '') + '</div>' +
@@ -638,10 +644,18 @@ document.getElementById('pList').innerHTML = PROGRAMS.map(p => {
         '<dl class="p-facts">' + fact('일시', p.date) + fact('시간', p.time) + fact('장소', p.place) + fact('모집', p.cap) + fact('참가비', p.price) + fact('선물', p.gift) + '</dl>' +
         '<div class="p-acts">' + act + '</div>' +
       '</div>' +
-    '</article>' +
+    '</article>') +
     '<div class="p-detail" id="detail-' + esc(p.id) + '"><p class="p-loading">상세 내용을 불러오는 중…</p></div>' +
   '</div>';
 }).join('');
+
+/* 카드를 숨긴 프로그램: 신청 버튼을 화면 아래에 띄움 (상세 맨 아래 신청 버튼이 화면에 들어오면 숨김) */
+PROGRAMS.filter(p => p.hideCard && p.applyUrl && p.applyOpen).slice(0, 1).forEach(p => {
+  document.body.insertAdjacentHTML('beforeend', '<a class="btn btn-primary p-float" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">프로그램 신청하기</a>');
+  const fl = document.querySelector('.p-float');
+  const upd = () => { const ft = document.querySelector('#detail-' + p.id + ' .p-detail-foot'); fl.classList.toggle('off', !!ft && ft.getBoundingClientRect().top < innerHeight); };
+  addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); upd();
+});
 
 /* 상세 이미지 — 깃허브 폴더 목록을 읽어 이름 순서대로 (10분 동안은 브라우저에 기억) */
 async function listDir(dir){
@@ -662,8 +676,8 @@ PROGRAMS.forEach(async p => {
     const files = await listDir(p.detailDir);
     if(!files.length){ box.innerHTML = '<p class="p-loading">상세 이미지를 준비하고 있어요.</p>'; return; }
     const url = n => '/' + p.detailDir + '/' + encodeURIComponent(n);
-    const pi = poster.querySelector('img');
-    if(!pi || (pi.complete && !pi.naturalWidth)) poster.insertAdjacentHTML('beforeend', '<img src="' + url(files[0]) + '" alt="' + esc(p.title) + ' 포스터" style="position:relative;">');
+    const pi = poster && poster.querySelector('img');
+    if(poster && (!pi || (pi.complete && !pi.naturalWidth))) poster.insertAdjacentHTML('beforeend', '<img src="' + url(files[0]) + '" alt="' + esc(p.title) + ' 포스터" style="position:relative;">');
     const img = (n, i, cls) => '<img' + (cls ? ' class="' + cls + '"' : '') + ' src="' + url(n) + '" alt="' + esc(p.title) + ' 상세 ' + (i + 1) + '"' + (i > 1 ? ' loading="lazy"' : '') + '>';
     const railOf = n => (p.rails || []).find(r => parseInt(n, 10) >= r[0] && parseInt(n, 10) <= r[1]);
     const segs = [];
