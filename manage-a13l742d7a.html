@@ -902,10 +902,12 @@ function editItem(i){
   else { vp.removeAttribute('src'); vp.style.display='none'; document.getElementById('vidDrop').textContent='클릭하거나 영상 파일을 여기로 끌어다 놓으세요'; }
   syncCat();
   const prev=document.getElementById('thumbPrev');
-  if(n.img){ prev.src=n.img; prev.style.display='block'; } else { prev.style.display='none'; }
+  prev.onerror=()=>{ prev.style.display='none'; };            // 방금 올린 이미지가 아직 반영 전이면 깨진 아이콘 대신 숨김
+  if(n.img){ prev.src='/'+String(n.img).replace(/^\//,''); prev.style.display='block'; } else { prev.style.display='none'; }
   thumbData=null;
   document.getElementById('blocks').innerHTML='';
   (n.body||[]).forEach(b=> addBlock(b.t||'p', b.v, b.cap));
+  if(!(n.body||[]).length) addBlock('p');                     // 본문이 비어 있던 글도 바로 쓸 수 있게 빈 문단 하나
   renderList();                                  // 선택 표시 갱신
   window.scrollTo({top:0, behavior:'smooth'});
 }
