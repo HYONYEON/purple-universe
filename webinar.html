@@ -187,6 +187,7 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center;
     color:var(--text-faint); padding:24px;}
   .empty-card b{color:var(--text-dim); font-size:18px;}
+  .empty-card.short{aspect-ratio:auto; max-height:none; padding:40px 20px;}   /* 지난 것만 있을 때 — 빈 자리를 작게 */
   .w-free.paid{background:rgba(124,77,255,.22); color:var(--purple-pale); border-color:rgba(169,139,255,.4);}
   @media(max-width:900px){ .duo{grid-template-columns:1fr; gap:64px;} }
 
@@ -597,7 +598,7 @@ const SECTIONS = [
     empty:'다음 웨비나를 준비하고 있어요' },
   { key:'class',   title:'클래스', unit:'개', rest:'다음 클래스', past:'지난 클래스',
     desc:'퍼플 유니버스 자체 클래스 혹은 외부 협업으로 진행하는 클래스들이 있습니다.',
-    empty:'첫 클래스를 준비하고 있어요' }
+    empty:'다음 클래스를 준비하고 있어요' }
 ];
 /* 예전 분류(fixed · client)는 모두 웨비나로 봅니다 */
 /* 포스터가 영상(mp4)이면 자동 재생 · 소리 없음 · 반복 */
@@ -723,9 +724,11 @@ function render(){
     if(!list.length){
       html += '<div class="empty-card"><b>' + sec.empty + '</b>열리면 이 자리에서 가장 먼저 알려드릴게요.</div>';
     }else{
-      html += '<div class="feat">' + cardHTML(list[0]) + '</div>';
-      const rest = list.slice(1);
-      const nextL = rest.filter(w => !isOver(w)), pastL = rest.filter(w => isOver(w));
+      // 크게 보이는 자리는 앞으로 열릴 것만. 종료·취소된 건 전부 아래 '지난 ○○' 줄에 작게 접어둠
+      const upL = list.filter(w => !isOver(w)), pastL = list.filter(w => isOver(w));
+      html += upL.length ? '<div class="feat">' + cardHTML(upL[0]) + '</div>'
+                         : '<div class="empty-card short"><b>' + sec.empty + '</b>열리면 이 자리에서 가장 먼저 알려드릴게요.</div>';
+      const nextL = upL.slice(1);
       const rail = (id, label, arr) => !arr.length ? '' :
         '<div class="rail-head"><span>' + label + ' ' + arr.length + '</span>' +
         (arr.length > 2 ? '<div class="rail-btns"><button type="button" data-rail="' + id + '" data-dir="-1" aria-label="이전">←</button>' +
