@@ -3,6 +3,23 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "sns",
+    "date": "2026-10-28",
+    "title": "",
+    "desc": "인스타에 최대 90분짜리 가로 영상 올라간다?!ㅣddu.gyu_edit",
+    "yt": "",
+    "img": "images/1793166720746_s20kd_2026-10-28_ddu.gyu_edit_De-yVmSy2wM_cover.jpg",
+    "link": "",
+    "embed": "",
+    "body": [],
+    "vid": "videos/1793166715170_xq486_2026-10-28_ddu.gyu_edit_De-yVmSy2wM.mp4",
+    "ig": "https://www.instagram.com/p/De-yVmSy2wM/",
+    "no": 31,
+    "imgtop": 0.7047,
+    "ogimg": "images/1793166722528_84hvf_og-31.jpg",
+    "ogv": 2
+  },
+  {
     "cat": "marketing",
     "date": "2026-10-24",
     "title": "",
