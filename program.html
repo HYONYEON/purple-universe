@@ -499,11 +499,22 @@
   .p-rail-track{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain;}
   .p-rail-track::-webkit-scrollbar{display:none;}
   .p-rail-track img{flex:0 0 100%; scroll-snap-align:start;}
-  .p-rail-btn{position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.28);
-              background:rgba(8,5,15,.55); color:#fff; font-size:20px; line-height:1; cursor:pointer; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); transition:opacity .2s;}
-  .p-rail-btn.prev{left:12px;} .p-rail-btn.next{right:12px;}
+  .p-rail-btn{position:absolute; top:50%; transform:translateY(-50%); width:54px; height:54px; border-radius:50%; border:2px solid rgba(255,255,255,.9);
+              background:#7C4DFF; color:#fff; font-size:28px; font-weight:700; line-height:1; cursor:pointer; padding-bottom:3px;
+              box-shadow:0 0 0 6px rgba(124,77,255,.28),0 8px 22px rgba(0,0,0,.45); transition:opacity .2s;}
+  .p-rail-btn.prev{left:14px;} .p-rail-btn.next{right:14px;}
   .p-rail-btn[disabled]{opacity:0; pointer-events:none;}
-  @media(max-width:560px){ .p-rail-btn{width:34px; height:34px; font-size:16px;} .p-rail-btn.prev{left:6px;} .p-rail-btn.next{right:6px;} }
+  .p-rail-btn.next.nudge{animation:pNudge 1.4s ease-in-out infinite;}
+  @keyframes pNudge{0%,100%{transform:translateY(-50%) translateX(0);} 50%{transform:translateY(-50%) translateX(6px);}}
+  /* 넘기기 표시줄: 점 + 몇 번째 장 (바탕은 이미지 아래색과 같게) */
+  .p-rail-bar{display:flex; align-items:center; justify-content:center; gap:14px; padding:6px 16px 4px; background:#3A2570;}
+  .p-dots{display:flex; gap:7px; flex-wrap:wrap; justify-content:center;}
+  .p-dots button{width:9px; height:9px; padding:0; border:none; border-radius:5px; background:rgba(255,255,255,.35); cursor:pointer; transition:width .25s,background .25s;}
+  .p-dots button.on{width:26px; background:#E3A6FF;}
+  .p-rail-num{font-size:14px; font-weight:700; color:#fff; white-space:nowrap;}
+  .p-rail-num small{font-weight:500; color:rgba(255,255,255,.7); margin-left:6px;}
+  @media(max-width:560px){ .p-rail-btn{width:42px; height:42px; font-size:22px; box-shadow:0 0 0 4px rgba(124,77,255,.28),0 6px 16px rgba(0,0,0,.45);} .p-rail-btn.prev{left:8px;} .p-rail-btn.next{right:8px;}
+                           .p-rail-bar{flex-direction:column; gap:8px;} .p-dots button{width:7px; height:7px;} .p-dots button.on{width:20px;} .p-rail-num{font-size:13px;} }
   .p-loading{padding:40px 20px; text-align:center; color:var(--text-faint); font-size:15px;}
   .p-detail-foot{padding:26px; text-align:center; background:#3A2570;}
   .p-wrap{scroll-margin-top:90px;}
@@ -659,14 +670,24 @@ PROGRAMS.forEach(async p => {
       if(!r){ segs.push(img(files[i], i, 'p-seg')); continue; }
       let j = i; while(j + 1 < files.length && railOf(files[j + 1]) === r) j++;
       segs.push('<div class="p-seg p-rail"><div class="p-rail-track">' + files.slice(i, j + 1).map((n, k) => img(n, i + k)).join('') + '</div>' +
-        '<button class="p-rail-btn prev" type="button" aria-label="이전" disabled>‹</button><button class="p-rail-btn next" type="button" aria-label="다음">›</button></div>');
+        '<button class="p-rail-btn prev" type="button" aria-label="이전" disabled>‹</button><button class="p-rail-btn next" type="button" aria-label="다음">›</button></div>' +
+        '<div class="p-rail-bar"><div class="p-dots">' + files.slice(i, j + 1).map((n, k) => '<button type="button" aria-label="' + (k + 1) + '번째"></button>').join('') + '</div>' +
+        '<span class="p-rail-num"><b>1</b> / ' + (j - i + 1) + '<small>옆으로 넘겨 보세요</small></span></div>');
       i = j;
     }
     box.innerHTML = segs.join('<div class="p-gap"></div>') +
       '<div class="p-detail-foot">' + ((p.applyUrl && p.applyOpen) ? '<a class="btn btn-primary" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">신청 · 결제하기</a>' : '<button class="btn btn-primary" type="button" disabled>신청 오픈 예정</button>') + '</div>';
     box.querySelectorAll('.p-rail').forEach(rl => {
       const tr = rl.querySelector('.p-rail-track'), pv = rl.querySelector('.prev'), nx = rl.querySelector('.next');
-      const upd = () => { pv.disabled = tr.scrollLeft < 5; nx.disabled = tr.scrollLeft + tr.clientWidth >= tr.scrollWidth - 5; };
+      const bar = rl.nextElementSibling, dots = [...bar.querySelectorAll('.p-dots button')], num = bar.querySelector('.p-rail-num b');
+      const upd = () => {
+        pv.disabled = tr.scrollLeft < 5; nx.disabled = tr.scrollLeft + tr.clientWidth >= tr.scrollWidth - 5;
+        const k = Math.round(tr.scrollLeft / (tr.clientWidth || 1));
+        dots.forEach((d, x) => d.classList.toggle('on', x === k)); num.textContent = k + 1;
+        if(tr.scrollLeft > 5) nx.classList.remove('nudge');
+      };
+      nx.classList.add('nudge');
+      dots.forEach((d, x) => d.onclick = () => tr.scrollTo({ left: x * tr.clientWidth, behavior: 'smooth' }));
       pv.onclick = () => tr.scrollBy({ left: -tr.clientWidth, behavior: 'smooth' });
       nx.onclick = () => tr.scrollBy({ left: tr.clientWidth, behavior: 'smooth' });
       tr.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd);
