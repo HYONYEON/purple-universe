@@ -485,10 +485,22 @@
   .p-acts .btn[disabled]{opacity:.55; cursor:default;}
   .p-note{font-size:13.5px; color:var(--text-faint); margin-top:10px;}
   .p-catch{font-size:18px; font-weight:700; color:#D9A6FF; margin:-2px 0 10px;}
-  .p-detail{max-width:760px; margin:40px auto 0; border-radius:22px; overflow:hidden; border:1px solid var(--border-strong); background:#1A1036;}
+  .p-detail{max-width:760px; margin:40px auto 0; border-radius:22px; overflow:hidden; border:1px solid var(--border-strong); background:#3A2570;}
   .p-detail img{display:block; width:100%; height:auto;}
+  /* 카드뉴스 경계: 다음 장의 위쪽 4%를 앞 장 아래에 겹쳐 서서히 나타나게 → 한 장처럼 이어짐 */
+  .p-seg{position:relative;}
+  .p-seg + .p-seg{margin-top:-5%; -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 4%); mask-image:linear-gradient(to bottom,transparent 0,#000 4%);}
+  /* 좌우로 넘겨 보는 묶음 (쉼의 정의 · 대표님 소개) */
+  .p-rail-track{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain;}
+  .p-rail-track::-webkit-scrollbar{display:none;}
+  .p-rail-track img{flex:0 0 100%; scroll-snap-align:start;}
+  .p-rail-btn{position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.28);
+              background:rgba(8,5,15,.55); color:#fff; font-size:20px; line-height:1; cursor:pointer; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); transition:opacity .2s;}
+  .p-rail-btn.prev{left:12px;} .p-rail-btn.next{right:12px;}
+  .p-rail-btn[disabled]{opacity:0; pointer-events:none;}
+  @media(max-width:560px){ .p-rail-btn{width:34px; height:34px; font-size:16px;} .p-rail-btn.prev{left:6px;} .p-rail-btn.next{right:6px;} }
   .p-loading{padding:40px 20px; text-align:center; color:var(--text-faint); font-size:15px;}
-  .p-detail-foot{padding:26px; text-align:center; background:#1A1036;}
+  .p-detail-foot{padding:26px; text-align:center; background:#3A2570;}
   .p-wrap{scroll-margin-top:90px;}
   .p-detail{scroll-margin-top:90px;}
   .p-line{margin-top:30px;}
@@ -585,6 +597,7 @@ const PROGRAMS = [
     gift: '참가자 전원 웰니스 선물 박스 증정',
     poster: 'images/program-wellness/01.jpg',   // 카드 포스터 (없으면 상세 이미지 첫 장)
     detailDir: 'images/program-wellness',
+    rails: [[2, 6], [18, 29]],   // 좌우로 넘겨 보는 묶음 — 파일 번호 범위 (쉼의 정의 02~06 · 대표님 소개 18~29)
     applyUrl: 'https://www.payapp.kr/L/z4m8VC',
     applyOpen: true           // ← false 로 바꾸면 버튼이 닫혀요. true 일 때 [신청 · 결제하기] 버튼이 열려요
   }
@@ -633,8 +646,27 @@ PROGRAMS.forEach(async p => {
     const url = n => '/' + p.detailDir + '/' + encodeURIComponent(n);
     const pi = poster.querySelector('img');
     if(!pi || (pi.complete && !pi.naturalWidth)) poster.insertAdjacentHTML('beforeend', '<img src="' + url(files[0]) + '" alt="' + esc(p.title) + ' 포스터" style="position:relative;">');
-    box.innerHTML = files.map((n, i) => '<img src="' + url(n) + '" alt="' + esc(p.title) + ' 상세 ' + (i + 1) + '"' + (i > 1 ? ' loading="lazy"' : '') + '>').join('') +
+    const img = (n, i, cls) => '<img' + (cls ? ' class="' + cls + '"' : '') + ' src="' + url(n) + '" alt="' + esc(p.title) + ' 상세 ' + (i + 1) + '"' + (i > 1 ? ' loading="lazy"' : '') + '>';
+    const railOf = n => (p.rails || []).find(r => parseInt(n, 10) >= r[0] && parseInt(n, 10) <= r[1]);
+    let html = '';
+    for(let i = 0; i < files.length; i++){
+      const r = railOf(files[i]);
+      if(!r){ html += img(files[i], i, 'p-seg'); continue; }
+      let j = i; while(j + 1 < files.length && railOf(files[j + 1]) === r) j++;
+      html += '<div class="p-seg p-rail"><div class="p-rail-track">' + files.slice(i, j + 1).map((n, k) => img(n, i + k)).join('') + '</div>' +
+        '<button class="p-rail-btn prev" type="button" aria-label="이전" disabled>‹</button><button class="p-rail-btn next" type="button" aria-label="다음">›</button></div>';
+      i = j;
+    }
+    box.innerHTML = html +
       '<div class="p-detail-foot">' + ((p.applyUrl && p.applyOpen) ? '<a class="btn btn-primary" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">신청 · 결제하기</a>' : '<button class="btn btn-primary" type="button" disabled>신청 오픈 예정</button>') + '</div>';
+    box.querySelectorAll('.p-rail').forEach(rl => {
+      const tr = rl.querySelector('.p-rail-track'), pv = rl.querySelector('.prev'), nx = rl.querySelector('.next');
+      const upd = () => { pv.disabled = tr.scrollLeft < 5; nx.disabled = tr.scrollLeft + tr.clientWidth >= tr.scrollWidth - 5; };
+      pv.onclick = () => tr.scrollBy({ left: -tr.clientWidth, behavior: 'smooth' });
+      nx.onclick = () => tr.scrollBy({ left: tr.clientWidth, behavior: 'smooth' });
+      tr.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd);
+      tr.querySelectorAll('img').forEach(im => im.addEventListener('load', upd)); upd();
+    });
   }catch(e){
     box.innerHTML = '<p class="p-loading">상세 이미지를 불러오지 못했어요. 잠시 후 새로고침해 주세요.</p>';
   }
