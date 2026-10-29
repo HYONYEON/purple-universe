@@ -522,6 +522,8 @@
   /* 화면 아래에 떠 있는 신청 버튼 (카드를 숨겼을 때). 맨 아래 신청 버튼이 보이면 숨김 */
   .p-float{position:fixed; left:50%; bottom:calc(18px + env(safe-area-inset-bottom)); transform:translateX(-50%); z-index:90;
            padding:16px 38px; font-size:17px; box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 0 4px rgba(124,77,255,.25); transition:opacity .25s,transform .25s;}
+  .p-float.has-note{flex-direction:column; gap:3px; padding-top:12px; padding-bottom:12px; line-height:1.3;}
+  .p-float-note{font-size:13px; font-weight:600; color:#B8F5E4; letter-spacing:-.01em;}   /* 버튼 글자 아래 작은 안내 (얼리버드 등) */
   .p-float.off{opacity:0; pointer-events:none; transform:translate(-50%,20px);}
   @media(max-width:560px){ .p-float{width:calc(100% - 32px); max-width:420px; text-align:center; padding:15px 20px;} }
   .p-wrap{scroll-margin-top:90px;}
@@ -624,7 +626,8 @@ const PROGRAMS = [
     rails: [[2, 6], [18, 29]],   // 좌우로 넘겨 보는 묶음 — 파일 번호 범위 (쉼의 정의 02~06 · 대표님 소개 18~29)
     applyUrl: 'https://www.payapp.kr/L/z4m8VC',
     applyOpen: true,          // ← false 로 바꾸면 버튼이 닫혀요. true 일 때 신청 버튼이 열려요
-    applyLabel: '웰니스 프로그램 신청하기'   // 신청 버튼 글자 (떠 있는 버튼 · 맨 아래 버튼)
+    applyLabel: '웰니스 프로그램 신청하기',  // 신청 버튼 글자 (떠 있는 버튼 · 맨 아래 버튼)
+    applyNote: '런칭 기념 얼리버드 · 11월 30일까지'   // 떠 있는 버튼 글자 아래 작은 안내. 12/1부터는 '' 로 비우기
   }
 ];
 
@@ -652,7 +655,7 @@ document.getElementById('pList').innerHTML = PROGRAMS.map(p => {
 
 /* 카드를 숨긴 프로그램: 신청 버튼을 화면 아래에 띄움 (상세 맨 아래 신청 버튼이 화면에 들어오면 숨김) */
 PROGRAMS.filter(p => p.hideCard && p.applyUrl && p.applyOpen).slice(0, 1).forEach(p => {
-  document.body.insertAdjacentHTML('beforeend', '<a class="btn btn-primary p-float" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">' + esc(p.applyLabel || '프로그램 신청하기') + '</a>');
+  document.body.insertAdjacentHTML('beforeend', '<a class="btn btn-primary p-float' + (p.applyNote ? ' has-note' : '') + '" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener"><span>' + esc(p.applyLabel || '프로그램 신청하기') + '</span>' + (p.applyNote ? '<span class="p-float-note">' + esc(p.applyNote) + '</span>' : '') + '</a>');
   const fl = document.querySelector('.p-float');
   const upd = () => { const ft = document.getElementById('foot-' + p.id); fl.classList.toggle('off', !!ft && ft.getBoundingClientRect().top < innerHeight); };
   addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); upd();
