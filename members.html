@@ -1537,7 +1537,7 @@
     const items = D.candidates.filter(c => c.confirmed || !confT.has(rk(c)));
     const months = [];
     // 이번 달부터 CAL_UNTIL 달까지 (최소 3개월) — 더 길게 보려면 CAL_UNTIL 만 바꾸면 됨
-    const CAL_UNTIL = [2027, 3];
+    const CAL_UNTIL = [2027, 4];
     const nMonths = Math.max(3, (CAL_UNTIL[0] - now.getFullYear()) * 12 + CAL_UNTIL[1] - (now.getMonth() + 1) + 1);
     for(let k = 0; k < nMonths; k++){
       const first = new Date(now.getFullYear(), now.getMonth() + k, 1);
