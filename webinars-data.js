@@ -9,7 +9,7 @@ window.WEBINARS = [
     "status": "",
     "title": "팔리는 브랜드의 페르소나",
     "host": "",
-    "date": "2026-11-06",
+    "date": "2026-11-08",
     "time": "오후 1시",
     "place": "온라인 (Zoom)",
     "poster": "images/1793966913853_o1kuf_____________________v10.png",
