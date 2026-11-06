@@ -321,6 +321,9 @@
 
   /* ---------- 유튜브 LIVE ---------- */
   .live{margin:72px 0 24px;}
+  /* 감춘 동안 문자의 해지 주소(#live)로 온 사람에게만 '알림 해지'를 보여줌 */
+  .live.leave-only .live-thumb, .live.leave-only .live-eb, .live.leave-only .live-body > p:not(.live-foot), .live.leave-only .live-next, .live.leave-only .live-acts{display:none;}
+  .live.leave-only .live-card{grid-template-columns:1fr;}
   .live-card{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:32px; align-items:center; padding:24px; border-radius:24px;
     background:linear-gradient(135deg,rgba(124,77,255,.16),rgba(124,77,255,.04)); border:1px solid var(--border-strong);}
   .live-thumb{position:relative; display:block; border-radius:16px; overflow:hidden; aspect-ratio:16/9; border:1px solid var(--border);}
@@ -513,8 +516,8 @@
 <div class="wrap" id="content"></div>
 <p class="no-result" id="noResult">아직 등록된 웨비나·클래스가 없어요.</p>
 
-<!-- 유튜브 LIVE — 썸네일은 그대로, 일정만 매주 자동으로 바뀝니다 (일정 · 쉬는 주는 시트 'LIVE일정' 탭) -->
-<section class="live" id="live">
+<!-- 유튜브 LIVE — 지금은 감춤. 다시 열려면 아래 hidden을 지우고 스크립트의 LIVE_ON을 true로 (일정 · 쉬는 주는 시트 'LIVE일정' 탭) -->
+<section class="live" id="live" hidden>
   <div class="wrap">
     <div class="live-card">
       <a class="live-thumb" href="https://www.youtube.com/@purple-universe-kk/streams" target="_blank" rel="noopener" aria-label="유튜브 LIVE 채널 열기">
@@ -1001,9 +1004,15 @@ routeFromUrl();
 
 /* ---------- 유튜브 LIVE — 다음 일정 · 알림 신청 ---------- */
 (function(){
+  const LIVE_ON = false;   // LIVE를 다시 열 때 true (위 section의 hidden도 함께 지우기)
+  if(!LIVE_ON && location.hash === '#live'){
+    const sec = $('live');
+    sec.hidden = false; sec.classList.add('leave-only');
+    sec.scrollIntoView({ block:'center' });
+  }
   const DOWK = '일월화수목금토';
   const lbl = k => { const p = k.split('-').map(Number), d = new Date(p[0], p[1]-1, p[2]); return p[1] + '월 ' + p[2] + '일 (' + DOWK[d.getDay()] + ')'; };
-  fetch(ENDPOINT + '?action=liveInfo&t=' + Date.now()).then(r => r.json()).then(r => {
+  if(LIVE_ON) fetch(ENDPOINT + '?action=liveInfo&t=' + Date.now()).then(r => r.json()).then(r => {
     if(!r.ok) throw 0;
     $('liveNext').innerHTML = r.next ? '다음 LIVE · <b>' + lbl(r.next.date) + ' ' + esc(r.next.timeK) + '</b>' + (r.next.topic ? ' · ' + esc(r.next.topic) : '') : '이번 주는 쉬어가요. 다음 일정은 곧 알려드릴게요.';
     if(r.count >= 5) $('liveCount').textContent = r.count + '명이 알림을 받고 있어요';
