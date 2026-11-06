@@ -1064,9 +1064,8 @@ document.querySelectorAll('[data-tpl]').forEach(b => b.onclick = () => {
   const nextOf = cat => LIST.filter(x => catOf(x) === cat && x.date > w.date).sort((a, b) => a.date < b.date ? -1 : 1)[0];
   const nW = nextOf('webinar'), nC = nextOf('class');
   const info = '[퍼플 유니버스]\n\n{이름}님, 오늘 ' + (catOf(w) === 'class' ? '클래스' : '웨비나') + ' 끝까지 함께해 주셔서 감사합니다!\n\n' +
-    '■ 30X 퍼플 툴킷 (무료)\n▶ purpleuniverse.net/toolkit\n참석 코드: ' + code + '\n(PC 권장 / 지인 공유 OK)\n\n' +
-    (nW ? '■ 다음 웨비나 [무료] ' + nW.date.slice(5).replace('-', '/') + '\n' + nW.title + '\n▶ purpleuniverse.net/w/' + nW.no + '\n\n' : '') +
-    '■ 매주 목요일 밤 9시 유튜브 LIVE\n「무엇이든 물어보세요」 알림 받기\n▶ purpleuniverse.net/webinar#live';
+    '■ 30X 퍼플 툴킷 (무료)\n▶ purpleuniverse.net/toolkit\n참석 코드: ' + code + '\n(PC 권장 / 지인 공유 OK)' +
+    (nW ? '\n\n■ 다음 웨비나 [무료] ' + nW.date.slice(5).replace('-', '/') + '\n' + nW.title + '\n▶ purpleuniverse.net/w/' + nW.no : '');
   const ad = '(광고)[퍼플 유니버스]\n\n{이름}님, 이어서 알려드리는 소식이에요.\n\n' +
     (nC ? '■ ' + nC.title + ' [유료] ' + nC.date.slice(5).replace('-', '/') + '\n▶ purpleuniverse.net/w/' + nC.no + '\n\n' : '') +
     '■ 퍼플 유니버스 멤버십\n콘텐츠 · 브랜딩 · 매출 · 협업 고민을 함께 해결하는 곳\n▶ purpleuniverse.net\n\n무료수신거부 080-000-0000';
