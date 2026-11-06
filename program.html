@@ -489,7 +489,6 @@
   .p-catch{font-size:18px; font-weight:700; color:#D9A6FF; margin:-2px 0 10px;}
   .p-detail{max-width:760px; margin:40px auto 0; border-radius:22px; overflow:hidden; border:1px solid var(--border-strong); background:#1E133F;}
   .p-detail img{display:block; width:100%; height:auto;}
-  .p-detail video{display:block; width:100%; height:auto; aspect-ratio:720/640; background:#1E133F;}
   /* 카드뉴스 사이 쉼 공간: 이미지 배경과 같은 단색(#1E133F) 별 배경 → 경계 없이 한 장처럼. 이미지 배경색을 바꾸면 여기 색도 같이 */
   .p-seg{position:relative;}
   .p-gap{padding-top:8%;
@@ -498,6 +497,8 @@
                     radial-gradient(1px 1px at 199px 39px,rgba(255,255,255,.5),transparent),radial-gradient(1.2px 1.2px at 233px 84px,rgba(255,255,255,.6),transparent),
                     linear-gradient(#1E133F,#1E133F);
          background-size:260px 96px,260px 96px,260px 96px,260px 96px,260px 96px,260px 96px,100% 100%;}
+  .p-gap.p-motion{padding:0 10%;}   /* 움직이는 그림: 폭 80%, 양옆은 같은 별 배경 */
+  .p-motion img{aspect-ratio:720/640;}
   /* 좌우로 넘겨 보는 묶음 (쉼의 정의 · 대표님 소개) */
   .p-rail-track{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain;}
   .p-rail-track::-webkit-scrollbar{display:none;}
@@ -625,7 +626,7 @@ const PROGRAMS = [
     gift: '참가자 전원 웰니스 선물 박스 증정',
     poster: 'images/program-wellness/01.jpg',   // 카드 포스터 (없으면 상세 이미지 첫 장)
     detailDir: 'images/program-wellness',
-    motions: { 7: 'logout', 15: 'stars', 17: 'box' },   // 이 번호 카드 바로 앞에 넣는 짧은 영상 — images/program-motion/이름.mp4 (+ 같은 이름 .jpg = 재생 전 정지 화면)
+    motions: { 7: 'logout', 15: 'stars', 17: 'box' },   // 이 번호 카드 바로 앞에 넣는 움직이는 그림 — images/program-motion/이름.webp (mp4는 아이폰에서 색이 달라져 경계가 보여서 안 씀)
     rails: [[2, 6], [9, 14], [24, 35]],   // 좌우로 넘겨 보는 묶음 — 파일 번호 범위 (쉼의 정의 02~06 · 쉼의 과학 09~14 · 대표님 소개 24~35)
     applyUrl: 'https://www.payapp.kr/L/z4m8VC',
     applyOpen: true,          // ← false 로 바꾸면 버튼이 닫혀요. true 일 때 신청 버튼이 열려요
@@ -690,7 +691,7 @@ PROGRAMS.forEach(async p => {
     const segs = [];
     for(let i = 0; i < files.length; i++){
       const mv = (p.motions || {})[parseInt(files[i], 10)];
-      if(mv) segs.push('<video class="p-seg" src="/images/program-motion/' + mv + '.mp4" poster="/images/program-motion/' + mv + '.jpg" muted loop playsinline preload="metadata" aria-hidden="true"></video>');
+      if(mv) segs.push('<div class="p-seg p-gap p-motion"><img src="/images/program-motion/' + mv + '.webp" alt="" loading="lazy"></div>');
       const r = railOf(files[i]);
       if(!r){ segs.push(img(files[i], i, 'p-seg')); continue; }
       let j = i; while(j + 1 < files.length && railOf(files[j + 1]) === r) j++;
@@ -703,16 +704,6 @@ PROGRAMS.forEach(async p => {
     box.innerHTML = segs.join('<div class="p-gap"></div>');
     box.insertAdjacentHTML('afterend',   // 맨 아래 신청 버튼: 상세 이미지 박스 밖(페이지 바탕)에
       '<div class="p-detail-foot" id="foot-' + esc(p.id) + '">' + ((p.applyUrl && p.applyOpen) ? '<a class="btn btn-primary" href="' + esc(p.applyUrl) + '" target="_blank" rel="noopener">' + esc(p.applyLabel || '프로그램 신청하기') + '</a>' : '<button class="btn btn-primary" type="button" disabled>신청 오픈 예정</button>') + '</div>');
-    /* 영상은 화면에 들어올 때 처음부터 재생, 벗어나면 멈춤 */
-    const vids = box.querySelectorAll('video');
-    if(vids.length && 'IntersectionObserver' in window){
-      const io = new IntersectionObserver(es => es.forEach(e => {
-        const v = e.target;
-        if(e.isIntersecting){ if(v.paused){ if(v.currentTime) v.currentTime = 0; const pr = v.play(); if(pr) pr.catch(() => {}); } }
-        else v.pause();
-      }), { threshold: .4 });
-      vids.forEach(v => { v.muted = true; io.observe(v); });
-    }
     box.querySelectorAll('.p-rail').forEach(rl => {
       const tr = rl.querySelector('.p-rail-track'), pv = rl.querySelector('.prev'), nx = rl.querySelector('.next');
       const bar = rl.nextElementSibling, dots = [...bar.querySelectorAll('.p-dots button')], num = bar.querySelector('.p-rail-num b');
