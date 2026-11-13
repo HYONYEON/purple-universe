@@ -4,6 +4,38 @@
 window.NOTES = [
   {
     "cat": "marketing",
+    "date": "2026-11-13",
+    "title": "",
+    "desc": "11월 13일 금요일ㅣ마케팅 뉴스클리핑",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1794563735114_vwwc8_1113_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1794563738728_6244b_1113_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1794563741915_2z6d3_1113_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1794563743799_f8ki5_1113_B_04_news3.png"
+      }
+    ],
+    "no": 43,
+    "imgtop": 0.108,
+    "ogimg": "images/1794563746023_8iyf7_og-43.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
     "date": "2026-11-11",
     "title": "",
     "desc": "11월 11일 수요일ㅣ마케팅 뉴스클리핑",
