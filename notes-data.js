@@ -562,8 +562,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-19",
-    "title": "",
-    "desc": "10월 19일 월요일ㅣ마케팅 뉴스클리핑",
+    "title": "팔로워, 앱, 공식몰, 손님이 모일 자리부터 만들어 뒀습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -588,7 +588,7 @@ window.NOTES = [
     ],
     "no": 27,
     "imgtop": 0.106,
-    "ogimg": "images/1792928153015_jct4a_og-27.jpg",
+    "ogimg": "images/1794705746871_zg3hc_og-27.jpg",
     "ogv": 2
   },
   {
