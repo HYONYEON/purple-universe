@@ -722,8 +722,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-10",
-    "title": "",
-    "desc": "10월 10일 토요일ㅣ마케팅 뉴스클리핑",
+    "title": "이번 주 브랜드들은 고객을 넓히는 대신 한 사람을 정했습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -748,7 +748,7 @@ window.NOTES = [
     ],
     "no": 21,
     "imgtop": 0.106,
-    "ogimg": "images/1791809105377_16j0u_og-21.jpg",
+    "ogimg": "images/1794705713487_phi78_og-21.jpg",
     "ogv": 2
   },
   {
