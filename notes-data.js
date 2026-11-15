@@ -55,8 +55,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-11-13",
-    "title": "",
-    "desc": "11월 13일 금요일ㅣ마케팅 뉴스클리핑",
+    "title": "댓글도 대기자도 손님이 먼저 보낸 메시지입니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -81,7 +81,7 @@ window.NOTES = [
     ],
     "no": 43,
     "imgtop": 0.108,
-    "ogimg": "images/1794563746023_8iyf7_og-43.jpg",
+    "ogimg": "images/1794705822663_i2uh6_og-43.jpg",
     "ogv": 2
   },
   {
