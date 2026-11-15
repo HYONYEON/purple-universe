@@ -448,8 +448,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-24",
-    "title": "",
-    "desc": "10월 24일 토요일ㅣ마케팅 뉴스클리핑",
+    "title": "광고를 사기 전에 손에 있는 것부터 썼습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -474,7 +474,7 @@ window.NOTES = [
     ],
     "no": 30,
     "imgtop": 0.106,
-    "ogimg": "images/1792935512677_4634q_og-30.jpg",
+    "ogimg": "images/1794705762561_ngn0x_og-30.jpg",
     "ogv": 2
   },
   {
