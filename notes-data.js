@@ -201,8 +201,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-11-06",
-    "title": "",
-    "desc": "11월 6일 금요일ㅣ마케팅 뉴스클리핑",
+    "title": "광고판을 사기 전에, 손님이 이미 보는 화면부터 찾으세요",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -227,7 +227,7 @@ window.NOTES = [
     ],
     "no": 39,
     "imgtop": 0.106,
-    "ogimg": "images/1794267148205_l9bma_og-39.jpg",
+    "ogimg": "images/1794705802511_x4drg_og-39.jpg",
     "ogv": 2
   },
   {
