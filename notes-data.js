@@ -416,8 +416,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-26",
-    "title": "",
-    "desc": "10월 26일 월요일ㅣ마케팅 뉴스클리핑",
+    "title": "제품은 그대로, 사는 단위만 바꿨습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -442,7 +442,7 @@ window.NOTES = [
     ],
     "no": 32,
     "imgtop": 0.108,
-    "ogimg": "images/1793226141802_qmg3f_og-32.jpg",
+    "ogimg": "images/1794705767398_bqsqe_og-32.jpg",
     "ogv": 2
   },
   {
