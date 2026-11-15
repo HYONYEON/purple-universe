@@ -233,8 +233,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-11-04",
-    "title": "",
-    "desc": "11월 4일 수요일ㅣ마케팅 뉴스클리핑",
+    "title": "설명은 한 줄, 그 한 줄이 퍼지자 줄이 뒤따랐습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -259,7 +259,7 @@ window.NOTES = [
     ],
     "no": 38,
     "imgtop": 0.106,
-    "ogimg": "images/1794267102821_u6wzk_og-38.jpg",
+    "ogimg": "images/1794705796467_ph43u_og-38.jpg",
     "ogv": 2
   },
   {
