@@ -480,8 +480,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-23",
-    "title": "",
-    "desc": "10월 23일 금요일ㅣ마케팅 뉴스클리핑",
+    "title": "손님도, 영상도, 빵도 짝과 나눠 쓴 브랜드 셋",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -506,7 +506,7 @@ window.NOTES = [
     ],
     "no": 29,
     "imgtop": 0.106,
-    "ogimg": "images/1792928295632_vdrl9_og-29.jpg",
+    "ogimg": "images/1794705757871_57km1_og-29.jpg",
     "ogv": 2
   },
   {
