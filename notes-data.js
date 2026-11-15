@@ -119,8 +119,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-11-09",
-    "title": "",
-    "desc": "11월 9일 월요일ㅣ마케팅 뉴스클리핑",
+    "title": "주인공이 아니어도 팔립니다, 보이기만 하면",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -145,7 +145,7 @@ window.NOTES = [
     ],
     "no": 41,
     "imgtop": 0.106,
-    "ogimg": "images/1794267421645_0yth6_og-41.jpg",
+    "ogimg": "images/1794705813361_4iadx_og-41.jpg",
     "ogv": 2
   },
   {
