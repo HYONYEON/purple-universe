@@ -329,8 +329,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-30",
-    "title": "",
-    "desc": "10월 30일 금요일ㅣ마케팅 뉴스클리핑",
+    "title": "손님에게 역할을 하나씩 준 브랜드가 더 오래 팔 겁니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -355,7 +355,7 @@ window.NOTES = [
     ],
     "no": 34,
     "imgtop": 0.106,
-    "ogimg": "images/1793410833118_pd5cd_og-34.jpg",
+    "ogimg": "images/1794705777873_7ymir_og-34.jpg",
     "ogv": 2
   },
   {
