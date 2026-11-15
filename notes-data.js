@@ -626,8 +626,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-16",
-    "title": "",
-    "desc": "10월 16일 금요일ㅣ마케팅 뉴스클리핑",
+    "title": "품절 뒤에 다음 손님이 줄을 섭니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -652,7 +652,7 @@ window.NOTES = [
     ],
     "no": 24,
     "imgtop": 0.106,
-    "ogimg": "images/1792297897981_pgt2z_og-24.jpg",
+    "ogimg": "images/1794705730612_1mgpf_og-24.jpg",
     "ogv": 2
   },
   {
