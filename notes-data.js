@@ -265,8 +265,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-11-02",
-    "title": "",
-    "desc": "11월 2일 월요일ㅣ마케팅 뉴스클리핑",
+    "title": "믿음은 광고가 아니라 자리에서 생깁니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -291,7 +291,7 @@ window.NOTES = [
     ],
     "no": 37,
     "imgtop": 0.106,
-    "ogimg": "images/1794267068162_obs1b_og-37.jpg",
+    "ogimg": "images/1794705790312_z4qqq_og-37.jpg",
     "ogv": 2
   },
   {
