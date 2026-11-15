@@ -512,8 +512,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-21",
-    "title": "",
-    "desc": "10월 21일 수요일ㅣ마케팅 뉴스클리핑",
+    "title": "얘깃거리가 생기면 광고보다 먼저 손님이 퍼뜨립니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -538,7 +538,7 @@ window.NOTES = [
     ],
     "no": 28,
     "imgtop": 0.106,
-    "ogimg": "images/1792928197181_zuzje_og-28.jpg",
+    "ogimg": "images/1794705752647_gparx_og-28.jpg",
     "ogv": 2
   },
   {
