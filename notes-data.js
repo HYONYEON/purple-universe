@@ -754,8 +754,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-09",
-    "title": "",
-    "desc": "10월 9일 금요일ㅣ마케팅 뉴스클리핑",
+    "title": "'고급'을 지우고 사실을 적었더니 전환율 +46%",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -780,7 +780,7 @@ window.NOTES = [
     ],
     "no": 20,
     "imgtop": 0.106,
-    "ogimg": "images/1791610156277_fl1vj_og-20.jpg",
+    "ogimg": "images/1794705696670_j1ahm_og-20.jpg",
     "ogv": 2
   },
   {
