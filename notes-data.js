@@ -361,8 +361,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-28",
-    "title": "",
-    "desc": "10월 28일 수요일ㅣ마케팅 뉴스클리핑",
+    "title": "그 제품, 제일 좋아하는 사람이 팔고 있나요?",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -387,7 +387,7 @@ window.NOTES = [
     ],
     "no": 33,
     "imgtop": 0.106,
-    "ogimg": "images/1793226181831_wljcm_og-33.jpg",
+    "ogimg": "images/1794705772672_d5ebb_og-33.jpg",
     "ogv": 2
   },
   {
