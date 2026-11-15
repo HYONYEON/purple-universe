@@ -297,8 +297,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-31",
-    "title": "",
-    "desc": "10월 31일 토요일ㅣ마케팅 뉴스클리핑",
+    "title": "설득이 필요 없는 손님은 이미 어딘가에서 열광하고 있습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -323,7 +323,7 @@ window.NOTES = [
     ],
     "no": 35,
     "imgtop": 0.106,
-    "ogimg": "images/1793410890309_ztost_og-35.jpg",
+    "ogimg": "images/1794705783681_0tnr0_og-35.jpg",
     "ogv": 2
   },
   {
