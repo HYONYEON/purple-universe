@@ -23,8 +23,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-11-14",
-    "title": "",
-    "desc": "11월 14일 토요일ㅣ마케팅 뉴스클리핑",
+    "title": "터진 건 하루, 판 건 그 다음 주에 한 일이었습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -49,7 +49,7 @@ window.NOTES = [
     ],
     "no": 44,
     "imgtop": 0.106,
-    "ogimg": "images/1794631317928_zjkih_og-44.jpg",
+    "ogimg": "images/1794705827664_o5jvo_og-44.jpg",
     "ogv": 2
   },
   {
