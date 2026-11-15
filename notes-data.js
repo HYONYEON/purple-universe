@@ -690,8 +690,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-12",
-    "title": "",
-    "desc": "10월 12일 월요일ㅣ마케팅 뉴스클리핑",
+    "title": "답은 이미 손님 피드에 올라와 있습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -716,7 +716,7 @@ window.NOTES = [
     ],
     "no": 22,
     "imgtop": 0.106,
-    "ogimg": "images/1791809184279_06609_og-22.jpg",
+    "ogimg": "images/1794705719499_reqa2_og-22.jpg",
     "ogv": 2
   },
   {
