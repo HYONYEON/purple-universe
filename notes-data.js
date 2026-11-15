@@ -87,8 +87,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-11-11",
-    "title": "",
-    "desc": "11월 11일 수요일ㅣ마케팅 뉴스클리핑",
+    "title": "모델 대신 직원이 입었더니 한 주 판매 7배",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -113,7 +113,7 @@ window.NOTES = [
     ],
     "no": 42,
     "imgtop": 0.106,
-    "ogimg": "images/1794363494499_146u1_og-42.jpg",
+    "ogimg": "images/1794705818002_9r12f_og-42.jpg",
     "ogv": 2
   },
   {
