@@ -594,8 +594,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-10-17",
-    "title": "",
-    "desc": "10월 17일 토요일ㅣ마케팅 뉴스클리핑",
+    "title": "이번 주 잘 팔린 것들은 브랜드 혼자 만들지 않았습니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -620,7 +620,7 @@ window.NOTES = [
     ],
     "no": 25,
     "imgtop": 0.106,
-    "ogimg": "images/1792297961926_l49qo_og-25.jpg",
+    "ogimg": "images/1794705735750_craik_og-25.jpg",
     "ogv": 2
   },
   {
