@@ -169,8 +169,8 @@ window.NOTES = [
   {
     "cat": "marketing",
     "date": "2026-11-07",
-    "title": "",
-    "desc": "11월 7일 토요일ㅣ마케팅 뉴스클리핑",
+    "title": "손님 폰에 찍힌 건 만든 콘텐츠가 아니라 매일 하던 일입니다",
+    "desc": "",
     "yt": "",
     "img": "",
     "link": "",
@@ -195,7 +195,7 @@ window.NOTES = [
     ],
     "no": 40,
     "imgtop": 0.106,
-    "ogimg": "images/1794267357135_r5ddu_og-40.jpg",
+    "ogimg": "images/1794705808098_o7oyk_og-40.jpg",
     "ogv": 2
   },
   {
