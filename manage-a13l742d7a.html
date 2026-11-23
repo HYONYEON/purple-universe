@@ -164,15 +164,17 @@
   }
 
   /* ---------- 신청 현황 ---------- */
-  #applyBadge{
+  #applyBadge, #aioBadge{
     font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:100px;
     background:rgba(124,77,255,.18); color:var(--purple-bright); white-space:nowrap;
   }
-  #applyBadge.new{
+  #applyBadge.new, #aioBadge.new{
     background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff;
     box-shadow:0 0 14px rgba(124,77,255,.55);
   }
-  #applyBadge.zero{background:var(--surface); color:var(--text-faint);}
+  #applyBadge.zero, #aioBadge.zero{background:var(--surface); color:var(--text-faint);}
+  .ap-tags{display:flex; flex-wrap:wrap; gap:5px; margin-top:7px;}
+  .ap-tag{font-size:12px; font-weight:600; padding:2px 9px; border-radius:100px; background:rgba(232,184,94,.13); color:var(--gold-soft);}
   .ap-list{display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; margin:0 -4px; padding:0 4px;}
   .ap-list::-webkit-scrollbar{width:6px;}
   .ap-list::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:3px;}
@@ -281,6 +283,17 @@
                   style="margin-left:auto; padding:5px 12px; font-size:12.5px;">새로고침</button>
         </h2>
         <div id="applyBody"></div>
+      </section>
+
+      <!-- 올인원 서비스(숏폼) 121 신청 — apply2 페이지로 들어온 신청 -->
+      <section class="card" id="aioCard" style="margin-bottom:16px;">
+        <h2 style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+          올인원 신청
+          <span id="aioBadge"></span>
+          <button class="btn btn-ghost btn-sm" id="aioRefresh" type="button"
+                  style="margin-left:auto; padding:5px 12px; font-size:12.5px;">새로고침</button>
+        </h2>
+        <div id="aioBody"></div>
       </section>
 
       <section class="card">
@@ -1176,6 +1189,8 @@ async function loadApplications(){
   const body  = document.getElementById('applyBody');
   if(!badge || !body) return;
 
+  loadAllinone();                         // 올인원 신청도 같이 (같은 조회 키)
+
   const key = applyKey();
   if(!key){ askApplyKey(); return; }
 
@@ -1264,6 +1279,86 @@ function markSeen(items){
     setTimeout(function(){ localStorage.setItem('pu_apply_seen', newest); }, 1500);
   }
 }
+
+/* ===================== 올인원 신청 =====================
+   purpleuniverse.net/apply2 로 들어온 올인원 서비스(숏폼) 121 신청. 시트 '올인원신청' 탭.
+   위 신청 현황과 같은 조회 키를 씁니다. 이름이 '시험 신청'으로 시작하는 줄은 숨깁니다. */
+function aioSeen(){ return localStorage.getItem('pu_aio_seen') || ''; }
+
+async function loadAllinone(){
+  const badge = document.getElementById('aioBadge');
+  const body  = document.getElementById('aioBody');
+  if(!badge || !body) return;
+
+  const key = applyKey();
+  if(!key){
+    badge.className = 'zero'; badge.textContent = '—';
+    body.innerHTML = '<p class="ap-empty">위 신청 현황에 조회 키를 넣으면 같이 보여요.</p>';
+    return;
+  }
+  badge.className = 'zero'; badge.textContent = '…';
+  body.innerHTML = '<p class="ap-empty">불러오는 중…</p>';
+
+  let data;
+  try{
+    const url = APPLY_ENDPOINT + '?action=allinoneList&key=' + encodeURIComponent(key) + '&limit=30';
+    const r = await fetch(url, { redirect:'follow' });
+    data = await r.json();
+  }catch(e){
+    badge.className = 'zero'; badge.textContent = '?';
+    body.innerHTML = '<p class="ap-empty">올인원 신청 목록을 불러오지 못했어요. 새로고침을 눌러주세요.</p>';
+    return;
+  }
+  if(!data || data.ok === false || !data.items){
+    badge.className = 'zero'; badge.textContent = '?';
+    body.innerHTML = '<p class="ap-empty">' + (data && data.error === 'unauthorized' ? '조회 키가 맞지 않아요.' : '오류: ' + apEsc((data && data.error) || '알 수 없음')) + '</p>';
+    return;
+  }
+
+  const links = '<a href="https://purpleuniverse.net/apply2" target="_blank" rel="noopener" style="font-size:13px;">신청 페이지 ↗</a> · ' +
+    '<a href="https://docs.google.com/spreadsheets/d/1g2GO2DxfN1abIpnzVoI0NiU0yMhQCqs19jSj2BTdF8c/edit" target="_blank" rel="noopener" style="font-size:13px;">시트 ↗</a>';
+  const items = data.items.filter(function(it){ return !it.test; });
+  const seen  = aioSeen();
+  const fresh = items.filter(function(it){ return !seen || it.at > seen; });
+
+  if(fresh.length){ badge.className = 'new'; badge.textContent = '새 신청 ' + fresh.length + '건'; }
+  else if(data.total){ badge.className = ''; badge.textContent = '누적 ' + data.total + '명'; }
+  else { badge.className = 'zero'; badge.textContent = '0명'; }
+
+  if(!items.length){
+    body.innerHTML = '<p class="ap-empty">아직 신청이 없어요.<br>' + links + '</p>';
+    return;
+  }
+
+  body.innerHTML =
+    '<div class="ap-list">' +
+      items.map(function(it){
+        const isFresh = !seen || it.at > seen;
+        return '<div class="ap-item' + (isFresh ? ' fresh' : '') + '">' +
+          '<div class="ap-top">' +
+            '<span class="ap-name">' + apEsc(it.name || '(이름 없음)') + '</span>' +
+            '<span class="ap-when">' + apEsc(apWhen(it.at)) + '</span>' +
+          '</div>' +
+          '<div class="ap-meta">' +
+            apEsc([it.biz, it.chapter].filter(Boolean).join(' · ')) +
+            (it.area ? '<br>' + apEsc(it.area) : '') +
+          '</div>' +
+          '<div class="ap-tags">' +
+            (it.shoot  ? '<span class="ap-tag">촬영 · ' + apEsc(it.shoot) + '</span>' : '') +
+            (it.manage ? '<span class="ap-tag">운영 · ' + apEsc(it.manage) + '</span>' : '') +
+          '</div>' +
+          (it.concern ? '<p class="ap-concern">' + apEsc(it.concern) + '</p>' : '') +
+          (it.when ? '<p class="ap-concern">121 편한 시간 · ' + apEsc(it.when) + '</p>' : '') +
+          (it.phone ? '<p class="ap-phone">' + apEsc(it.phone) + '</p>' : '') +
+        '</div>';
+      }).join('') +
+    '</div>' +
+    '<p class="ap-empty" style="margin-top:12px;">누적 ' + data.total + '명 / 선착순 5명<br>' + links + '</p>';
+
+  const newest = items.reduce(function(a,b){ return (a.at > b.at) ? a : b; }).at;
+  setTimeout(function(){ localStorage.setItem('pu_aio_seen', newest); }, 1500);
+}
+document.getElementById('aioRefresh').onclick = function(){ loadAllinone(); };
 
 document.getElementById('applyRefresh').onclick = function(){
   localStorage.setItem('pu_apply_seen', lastSeen());   // 그대로 두고 다시 조회
