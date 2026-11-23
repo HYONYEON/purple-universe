@@ -198,7 +198,11 @@
   }
 
   /* ---------- 올인원 서비스: 4단계 한눈에 ---------- */
-  .a-hero h1{color:var(--gold);}
+  .a-hero h1{color:var(--gold); white-space:nowrap; font-size:clamp(19px,5.2vw,40px);}
+  .notice .only{display:block; margin-top:6px; font-size:15px; font-weight:700; color:var(--gold-soft);}
+  /* 동의 칸: 체크박스와 글자를 나란히, 세로 가운데 */
+  .agree-box.field > label.opt{display:flex; align-items:center; gap:10px; margin-bottom:0;}
+  .agree-box .opt input{margin-top:0;}
   .a-pill{display:inline-block; font-size:15px; font-weight:700; color:var(--gold-soft); border:1px solid rgba(243,216,154,.4); padding:5px 16px; border-radius:100px;}
   .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:30px;}
   .steps div{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 10px; text-align:center;}
@@ -226,7 +230,7 @@
   <section class="a-hero">
     <div class="wrap">
       <span class="a-pill">선착순 5명 · BNI 대표님</span>
-      <h1>퍼플 유니버스<br>올인원 서비스(숏폼)</h1>
+      <h1>퍼플 유니버스 올인원 서비스(숏폼)</h1>
       <p>기획부터 운영까지 한 번에 끝내 드려요.<br>아래를 적어 주시면 121 일정을 잡을게요.</p>
       <div class="steps">
         <div><small>1단계</small><b>기획</b><span>첫 미팅에서 기획안 · 스크립트 · 콘티</span></div>
@@ -245,7 +249,7 @@
         <li><b>선착순 5명</b>의 BNI 대표님께만 먼저 열어요.</li>
         <li>신청하시면 <b>121 미팅</b>에서 진행 방법을 자세히 안내해 드려요.</li>
         <li>촬영은 <b>첫 1회</b>만 함께하고, 그 뒤에는 직접 찍어서 촬영본을 보내 주세요.</li>
-        <li>수정은 완성본 10개를 다 보신 뒤 <b>한 번에</b> 받아요.</li>
+        <li>수정은 완성본 10개를 다 보신 뒤 <b>한 번에</b> 받아요.<span class="only">*수정은 1회만 가능</span></li>
       </ol>
     </div>
 
