@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>올인원 서비스(숏폼) 신청 — 퍼플 유니버스</title>
+<meta name="description" content="기획 · 촬영 · 편집 · 운영을 한 번에. 퍼플 유니버스 올인원 서비스(숏폼) 신청.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="퍼플 유니버스">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="올인원 서비스(숏폼) 신청 — 퍼플 유니버스">
+<meta property="og:description" content="기획 · 촬영 · 편집 · 운영을 한 번에.">
+<meta property="og:url" content="https://purpleuniverse.net/apply3">
+<meta property="og:image" content="https://purpleuniverse.net/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="올인원 서비스(숏폼) 신청 — 퍼플 유니버스">
+<meta name="twitter:image" content="https://purpleuniverse.net/og-image.png">
+<link rel="canonical" href="https://purpleuniverse.net/apply3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08050F; --bg-alt:#0F0A1E; --bg-alt2:#140D26;
+    --surface:rgba(255,255,255,.045); --surface-2:rgba(255,255,255,.07);
+    --border:rgba(184,155,255,.16); --border-strong:rgba(184,155,255,.32);
+    --purple:#7C4DFF; --purple-deep:#5626C4; --purple-bright:#A98BFF; --purple-pale:#C9B6FF;
+    --gold:#E8B85E; --gold-soft:#F3D89A;
+    --text:#F4F1FC; --text-dim:#B7ACD1; --text-faint:#756A94;
+    --warn:#FF8A8A;
+    --radius:20px; --maxw:760px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans KR', sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    word-break:keep-all; overflow-wrap:break-word;
+  }
+  body::before{
+    content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:
+      radial-gradient(1.6px 1.6px at 40px 60px, rgba(232,225,255,.4), transparent),
+      radial-gradient(1.2px 1.2px at 140px 20px, rgba(255,255,255,.3), transparent),
+      radial-gradient(1.8px 1.8px at 230px 130px, rgba(184,155,255,.35), transparent),
+      radial-gradient(1px 1px at 70px 170px, rgba(255,255,255,.25), transparent),
+      radial-gradient(1.4px 1.4px at 310px 90px, rgba(232,184,94,.28), transparent);
+    background-repeat:repeat; background-size:420px 420px;
+  }
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  .eyebrow{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:14px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--purple-bright);
+  }
+
+  /* ---------- HEADER ---------- */
+  header{border-bottom:1px solid var(--border); background:var(--bg-alt); padding:18px 0;}
+  .a-nav{display:flex; align-items:center; justify-content:space-between; gap:14px;}
+  .a-back{font-weight:600; font-size:16px; color:var(--text-dim);}
+  .a-back:hover{color:var(--text);}
+  .a-tag{
+    font-family:'Space Grotesk'; font-size:12.5px; letter-spacing:.1em; font-weight:600;
+    color:var(--gold-soft); border:1px solid rgba(243,216,154,.35);
+    padding:6px 14px; border-radius:100px; white-space:nowrap;
+  }
+
+  /* ---------- HERO ---------- */
+  .a-hero{padding:56px 0 8px; text-align:center;}
+  .a-hero h1{font-size:clamp(28px,5vw,40px); font-weight:700; margin-top:14px;}
+  .a-hero p{color:var(--text-dim); margin-top:14px; font-size:16.5px;}
+
+  /* ---------- 필독 사항 ---------- */
+  .notice{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:18px; padding:26px 28px; margin-top:34px;
+  }
+  .notice h2{font-size:17px; font-weight:700; margin-bottom:16px; color:var(--gold-soft);}
+  .notice ol{list-style:none; counter-reset:n; display:flex; flex-direction:column; gap:16px;}
+  .notice li{counter-increment:n; position:relative; padding-left:30px; font-size:15px; color:var(--text-dim); line-height:1.65;}
+  .notice li::before{
+    content:'[' counter(n) ']'; position:absolute; left:0; top:0;
+    font-family:'Space Grotesk'; font-size:13px; font-weight:700; color:var(--purple-bright);
+  }
+  .notice li b{color:var(--text); font-weight:600;}
+  .notice .sub{display:block; margin-top:7px; font-size:14px; color:var(--text-faint);}
+  /* 딸린 설명 항목 — 한 줄에 하나, 넘치는 줄은 글자 아래로 맞춰 들여쓰기 */
+  .notice .sublist{list-style:none; margin-top:10px; display:flex; flex-direction:column; gap:8px;}
+  .notice .sublist li{
+    position:relative; padding-left:15px; text-align:left;
+    font-size:14px; color:var(--text-faint); line-height:1.65;
+  }
+  .notice .sublist li::before{
+    content:'·'; position:absolute; left:3px; top:0; color:var(--purple-bright);
+  }
+  @media(max-width:520px){ .notice{padding:22px 20px;} }
+
+  /* ---------- FORM ---------- */
+  form{margin-top:34px; padding-bottom:20px;}
+  .field{margin-bottom:28px;}
+  .field > label{
+    display:block; font-size:16px; font-weight:600; color:var(--text);
+    margin-bottom:6px; line-height:1.5;
+  }
+  .req{color:var(--purple-bright); margin-left:4px;}
+  .hint{font-size:14px; color:var(--text-faint); line-height:1.6; margin-bottom:10px; white-space:pre-line;}
+  input[type=text], input[type=tel], textarea{
+    width:100%; padding:14px 17px; border-radius:12px;
+    border:1px solid var(--border); background:var(--bg-alt);
+    color:var(--text); font-size:16px; font-family:inherit; line-height:1.6;
+  }
+  input:focus, textarea:focus{outline:none; border-color:var(--purple-bright);}
+  input::placeholder, textarea::placeholder{color:#5B5278;}
+  textarea{resize:vertical; min-height:120px;}
+  .field.bad input, .field.bad textarea, .field.bad .opts{border-color:var(--warn);}
+  .err{display:none; color:var(--warn); font-size:13.5px; margin-top:7px;}
+  .field.bad .err{display:block;}
+
+  /* 선택 항목 */
+  .opts{display:flex; flex-direction:column; gap:9px;}
+  .opt{
+    display:flex; align-items:flex-start; gap:11px; cursor:pointer;
+    padding:14px 16px; border-radius:12px;
+    background:var(--bg-alt); border:1px solid var(--border);
+    font-size:15px; color:var(--text-dim); line-height:1.55;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover{border-color:var(--border-strong);}
+  .opt input{
+    flex:0 0 auto; width:19px; height:19px; margin-top:1px;
+    accent-color:var(--purple); cursor:pointer;
+  }
+  .opt input:checked ~ span{color:var(--text);}
+  .opt:has(input:checked){
+    border-color:var(--purple-bright); background:rgba(124,77,255,.10);
+  }
+  .opt b{color:var(--purple-pale); font-weight:700;}
+
+  /* 동의 */
+  .agree-box{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:20px 22px; margin-bottom:26px;
+  }
+  .agree-box p{font-size:14px; color:var(--text-faint); line-height:1.7; margin-bottom:14px;}
+  .agree-box .opt{background:transparent; border:none; padding:0; font-size:15px; color:var(--text);}
+  .agree-box .opt:hover{border:none;}
+
+  /* 제출 */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:16px 28px; border-radius:100px; border:none; cursor:pointer;
+    font-weight:600; font-size:17px; font-family:inherit;
+    transition:transform .2s ease, opacity .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn:disabled{opacity:.5; cursor:not-allowed; transform:none;}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff;
+    box-shadow:0 8px 30px rgba(124,77,255,.4); width:100%;
+  }
+  .btn-ghost{background:var(--surface); color:var(--text); border:1px solid var(--border-strong);}
+  .submit-note{margin-top:14px; font-size:13.5px; color:var(--text-faint); text-align:center; line-height:1.6;}
+  .form-err{
+    display:none; margin-top:16px; padding:14px 18px; border-radius:12px;
+    background:rgba(255,90,90,.10); border:1px solid rgba(255,90,90,.3);
+    color:#FF9B9B; font-size:14.5px; line-height:1.6;
+  }
+  .form-err.show{display:block;}
+
+  /* ---------- 완료 화면 ---------- */
+  .done{display:none; padding:80px 0 100px; text-align:center;}
+  .done.show{display:block;}
+  .done-ico{
+    width:74px; height:74px; margin:0 auto 24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:34px;
+    background:rgba(124,77,255,.16); border:1px solid var(--border-strong);
+  }
+  .done h2{font-size:clamp(24px,4vw,32px); font-weight:700; margin-bottom:14px;}
+  .done p{color:var(--text-dim); font-size:16.5px; line-height:1.75; margin-bottom:10px;}
+  .done .next{
+    margin:30px auto 0; max-width:460px; text-align:left;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:22px 24px;
+  }
+  .done .next h3{font-size:15px; font-weight:700; color:var(--gold-soft); margin-bottom:12px;}
+  .done .next li{font-size:14.5px; color:var(--text-dim); line-height:1.7; padding-left:16px; position:relative; list-style:none;}
+  .done .next li::before{content:''; position:absolute; left:0; top:11px; width:5px; height:5px; border-radius:50%; background:var(--purple-bright);}
+  .done-btns{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:30px;}
+
+  footer{
+    padding:36px 0 44px; text-align:center;
+    color:var(--text-faint); font-size:13.5px;
+    border-top:1px solid var(--border); margin-top:30px;
+  }
+
+  /* ---------- 올인원 서비스: 4단계 한눈에 ---------- */
+  .a-hero h1{color:var(--gold); white-space:nowrap; font-size:clamp(19px,5.2vw,40px);}
+  .notice .only{display:block; margin-top:6px; font-size:15px; font-weight:700; color:var(--gold-soft);}
+  /* 동의 칸: 체크박스와 글자를 나란히, 세로 가운데 */
+  .agree-box.field > label.opt{display:flex; align-items:center; gap:10px; margin-bottom:0;}
+  .agree-box .opt input{margin-top:0;}
+  .opt input{accent-color:var(--gold);}
+  .opt:has(input:checked){border-color:var(--gold); background:rgba(232,184,94,.10);}
+  .opt:has(input:checked) b{color:var(--gold);}
+  .agree-box .opt:has(input:checked){border:none; background:transparent;}
+  .a-hero .a-lead{font-size:clamp(16.5px,2vw,19px); margin-top:18px;} .a-hero{padding-bottom:28px;} .a-lead b{color:var(--text);}
+  .a-pill{display:inline-block; font-size:15px; font-weight:700; color:var(--gold-soft); border:1px solid rgba(243,216,154,.4); padding:5px 16px; border-radius:100px;}
+  /* 4단계 도식 (올인원 서비스 도식과 같은 모양) */
+  .flow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr auto 1fr; align-items:stretch; gap:6px; text-align:left;
+    width:min(1180px, calc(100vw - 48px)); margin:48px 0 0 50%; transform:translateX(-50%);}
+  .fl-step{display:flex; flex-direction:column; padding:22px 18px 18px; border-radius:22px; background:linear-gradient(170deg,rgba(124,77,255,.20),rgba(20,16,34,.9) 55%); border:1px solid var(--border-strong);}
+  .fl-no{align-self:flex-start; font-size:14.5px; font-weight:700; color:var(--purple-bright); border:1px solid var(--border-strong); border-radius:999px; padding:2px 12px;}
+  .fl-step h2{font-size:27px; font-weight:700; margin:12px 0 4px; color:var(--text);}
+  .flow .fl-hook{font-size:16.5px; font-weight:600; color:var(--text); min-height:53px; line-height:1.55; margin:0;}
+  .fl-step ul{list-style:none; padding:0; margin:14px 0 18px; display:flex; flex-direction:column; gap:9px; flex:1;}
+  .fl-step li{position:relative; padding-left:16px; font-size:15.5px; color:var(--text-dim); line-height:1.55;}
+  .fl-step li::before{content:''; position:absolute; left:0; top:.62em; width:6px; height:6px; border-radius:50%; background:var(--purple-bright); box-shadow:0 0 8px var(--purple-bright);}
+  .fl-step li b{color:var(--text); font-weight:600;}
+  .fl-end{display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:12px; font-size:16.5px; font-weight:700; color:var(--gold); border:1px solid rgba(232,184,94,.55); background:rgba(232,184,94,.09);}
+  .fl-end::before{content:''; width:13px; height:7px; border-left:2.5px solid var(--gold); border-bottom:2.5px solid var(--gold); transform:rotate(-45deg) translateY(-2px);}
+  .fl-arw{align-self:center; flex:0 0 auto; width:52px; height:52px; fill:none; stroke:var(--purple-bright); stroke-width:4; stroke-linecap:round; stroke-linejoin:round;
+    filter:drop-shadow(0 0 6px var(--purple-bright)) drop-shadow(0 0 16px var(--purple));}
+  .fl-arw polyline{opacity:.25; animation:flArw 1.6s ease-in-out infinite;}
+  .fl-arw polyline:nth-child(2){animation-delay:.22s;} .fl-arw polyline:nth-child(3){animation-delay:.44s;}
+  @keyframes flArw{0%,70%,100%{opacity:.25;} 25%{opacity:1;}}
+  @media (prefers-reduced-motion:reduce){ .fl-arw polyline{animation:none; opacity:.9;} }
+  @media(max-width:1100px){ .fl-arw{width:36px; height:36px;} .fl-step{padding:20px 14px 16px;} .fl-step h2{font-size:24px;} .flow .fl-hook{font-size:15.5px; min-height:72px;} .fl-step li{font-size:15px;} }
+  /* 좁은 화면: 옆으로 넘겨 보기 */
+  @media(max-width:900px){
+    .flow{display:flex; width:100vw; overflow-x:auto; padding:0 24px 6px; scroll-snap-type:x mandatory; scroll-padding:0 24px; scrollbar-width:none; -webkit-overflow-scrolling:touch;}
+    .flow::-webkit-scrollbar{display:none;}
+    .fl-step{flex:0 0 min(74vw,300px); scroll-snap-align:start;}
+    .flow .fl-hook{min-height:50px;}
+    .fl-arw{width:30px; height:30px;}
+  }
+  .fl-price{margin:48px auto 0; display:grid; grid-template-columns:auto auto auto; justify-content:center; align-items:center; gap:44px; padding:24px 26px; border-radius:22px; background:#141022; border:1px solid var(--border-strong);}
+  .fl-p{text-align:center;}
+  .fl-p small{display:block; font-size:15.5px; color:var(--text-dim); margin-bottom:4px;}
+  .fl-p b{font-size:clamp(25px,3.2vw,34px); font-weight:700; line-height:1.2;}
+  .fl-p.out b{color:#8A829E; text-decoration:line-through; text-decoration-thickness:2px;}
+  .fl-p.in b{color:var(--gold);}
+  .fl-p span{display:block; font-size:14.5px; color:#8A829E; margin-top:4px;}
+  .fl-vs{font-size:44px; line-height:1; font-weight:700; color:var(--purple-bright); text-shadow:0 0 14px var(--purple);}
+  @media(max-width:560px){ .fl-price{grid-template-columns:1fr; gap:8px; padding:20px 18px; margin-top:34px;} .flow{margin-top:36px;} .a-hero{padding-bottom:14px;} .fl-vs{transform:rotate(90deg);} }
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:0 14px;}
+  @media(max-width:560px){ .two{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap a-nav">
+    <a href="/" class="a-back">← 퍼플 유니버스</a>
+  </div>
+</header>
+
+<!-- ===== 신청 화면 ===== -->
+<div id="applyView">
+
+  <section class="a-hero">
+    <div class="wrap">
+      <h1>퍼플 유니버스 올인원 서비스(숏폼)</h1>
+      <p class="a-lead">대표님들의 마케팅 고민은 결국 하나예요.<br><b>"뭘 기획하고, 어떻게 찍고 · 편집하고 · 운영할지 모르겠어요."</b></p>
+      <div class="flow">
+        <article class="fl-step"><span class="fl-no">1단계</span><h2>기획</h2><p class="fl-hook">뭘 찍을지 몰라도 돼요</p><ul><li><b>첫 미팅</b>에서 기획안을 완성해요</li><li>기획안은 <b>분기마다 한 번</b> 새로 고쳐요</li><li><b>스크립트와 콘티</b>를 드려요</li></ul><div class="fl-end">기획 끝</div></article>
+        <svg class="fl-arw" viewBox="0 0 60 60" aria-hidden="true"><polyline points="5,8 23,30 5,52"/><polyline points="21,8 39,30 21,52"/><polyline points="37,8 55,30 37,52"/></svg>
+        <article class="fl-step"><span class="fl-no">2단계</span><h2>촬영</h2><p class="fl-hook">생활하는 곳에서 찍는 법을 알려드려요</p><ul><li><b>구주인 대표</b>가 전담해요</li><li>삼각대 + 휴대폰 + 무선 마이크면 돼요</li><li>첫 1회 뒤에는 <b>직접 찍어서</b> 촬영본만 보내요</li></ul><div class="fl-end">촬영 끝</div></article>
+        <svg class="fl-arw" viewBox="0 0 60 60" aria-hidden="true"><polyline points="5,8 23,30 5,52"/><polyline points="21,8 39,30 21,52"/><polyline points="37,8 55,30 37,52"/></svg>
+        <article class="fl-step"><span class="fl-no">3단계</span><h2>편집</h2><p class="fl-hook">콘텐츠 10개를 하루 만에 만들어요</p><ul><li>퍼플 유니버스가 직접 만든 <b>AI 편집 프로그램</b>을 써요</li><li>수정은 10개를 다 보고 <b>한 번에</b> 해요</li></ul><div class="fl-end">편집 끝</div></article>
+        <svg class="fl-arw" viewBox="0 0 60 60" aria-hidden="true"><polyline points="5,8 23,30 5,52"/><polyline points="21,8 39,30 21,52"/><polyline points="37,8 55,30 37,52"/></svg>
+        <article class="fl-step"><span class="fl-no">4단계</span><h2>운영</h2><p class="fl-hook">완성된 10개를 올리기만 하면 돼요</p><ul><li><b>직접</b> SNS에 올려도 되고</li><li>올리고 관리하는 것까지 <b>맡겨도</b> 돼요 (비용 추가)</li></ul><div class="fl-end">운영 끝</div></article>
+      </div>
+      <div class="fl-price">
+        <div class="fl-p out"><small>외부 마케팅 대행</small><b>월 100~300만 원</b></div>
+        <div class="fl-vs">→</div>
+        <div class="fl-p in"><small>퍼플 유니버스 올인원 서비스</small><b>월 55만 원</b><span>부가세 포함</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="notice">
+      <h2>신청 전 꼭 읽어주세요</h2>
+      <ol>
+        <li>신청하시면 <b>1:1 미팅</b>에서 진행 방법을 자세히 안내해 드려요.</li>
+        <li>촬영은 <b>첫 1회</b>만 함께하고, 그 뒤에는 직접 찍어서 촬영본을 보내 주세요.</li>
+        <li>수정은 완성본 10개를 다 보신 뒤 <b>한 번에</b> 받아요.<span class="only">*기획안은 분기마다 한 번씩 업데이트 / 수정은 1회만 가능</span></li>
+      </ol>
+    </div>
+
+    <form id="applyForm" novalidate>
+
+      <div class="two">
+        <div class="field" data-req>
+          <label for="name">성함<span class="req">*</span></label>
+          <input type="text" id="name" name="name" autocomplete="name" placeholder="홍길동">
+          <p class="err">성함을 입력해주세요.</p>
+        </div>
+        <div class="field" data-req data-phone>
+          <label for="phone">연락처<span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="010-1234-5678" maxlength="13">
+          <p class="err">연락처를 정확히 입력해주세요.</p>
+        </div>
+      </div>
+
+      <div class="field" data-req>
+        <label for="biz">업체명 · 업종<span class="req">*</span></label>
+        <input type="text" id="biz" name="biz" placeholder="예) 퍼플 카페 · 요식업">
+        <p class="err">업체명과 업종을 입력해주세요.</p>
+      </div>
+
+      <div class="field" data-req>
+        <label for="area">주로 일하시는 곳<span class="req">*</span></label>
+        <p class="hint">첫 촬영 때 찾아뵐 곳이에요.</p>
+        <input type="text" id="area" name="area" placeholder="예) 서울 강남구 · 매장">
+        <p class="err">주로 일하시는 곳을 입력해주세요.</p>
+      </div>
+
+      <div class="field">
+        <label for="links">운영 중인 채널 주소 <span style="color:var(--text-faint); font-weight:400; font-size:14px;">(선택)</span></label>
+        <textarea id="links" name="links" rows="3" style="min-height:90px;" placeholder="인스타 · 유튜브 · 홈페이지"></textarea>
+      </div>
+
+      <div class="field" data-req data-radio="shoot">
+        <label>영상을 찍어 보신 적이 있나요?<span class="req">*</span></label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="shoot" value="한 번도 없어요"><span>한 번도 없어요</span></label>
+          <label class="opt"><input type="radio" name="shoot" value="몇 번 찍어 봤어요"><span>몇 번 찍어 봤어요</span></label>
+          <label class="opt"><input type="radio" name="shoot" value="꾸준히 찍고 있어요"><span>꾸준히 찍고 있어요</span></label>
+        </div>
+        <p class="err">하나를 골라주세요.</p>
+      </div>
+
+      <div class="field" data-req data-radio="manage">
+        <label>완성된 영상은 어떻게 올리고 싶으세요?<span class="req">*</span></label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="manage" value="직접 올릴게요"><span>완성본을 받아서 <b>직접</b> 올릴게요</span></label>
+          <label class="opt"><input type="radio" name="manage" value="운영까지 맡기고 싶어요 (비용 추가)"><span>올리고 관리하는 것까지 <b>맡기고</b> 싶어요 (비용 추가)</span></label>
+          <label class="opt"><input type="radio" name="manage" value="121에서 정할게요"><span>미팅에서 듣고 정할게요</span></label>
+        </div>
+        <p class="err">하나를 골라주세요.</p>
+      </div>
+
+      <div class="field" data-req>
+        <label for="concern">지금 가장 큰 마케팅 고민<span class="req">*</span></label>
+        <textarea id="concern" name="concern" rows="5" placeholder="예) 매장은 잘 되는데 온라인 문의가 거의 없어요."></textarea>
+        <p class="err">고민을 적어주세요.</p>
+      </div>
+
+      <div class="field">
+        <label for="when">미팅하기 편한 시간 <span style="color:var(--text-faint); font-weight:400; font-size:14px;">(선택)</span></label>
+        <input type="text" id="when" name="when" placeholder="예) 평일 오후 · 화/목 저녁">
+      </div>
+
+      <!-- 동의 -->
+      <div class="agree-box field" data-req data-check="agree">
+        <p>적어주신 내용은 <b style="color:var(--text-dim);">미팅 일정 안내와 서비스 상담</b>에만 쓰고, 운영진 외에는 공개하지 않아요. 상담이 끝난 뒤 6개월이 지나면 지워요.</p>
+        <label class="opt"><input type="checkbox" name="agree" value="동의"><span>개인정보 수집·이용에 동의합니다.<span class="req">*</span></span></label>
+        <p class="err">동의가 필요합니다.</p>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">신청하기</button>
+      <div class="form-err" id="formErr"></div>
+
+    </form>
+  </div>
+</div>
+
+<!-- ===== 완료 화면 ===== -->
+<div class="done" id="doneView">
+  <div class="wrap">
+    <div class="done-ico">✓</div>
+    <h2>신청이 접수됐어요</h2>
+    <p>적어주신 <b style="color:var(--text);">연락처</b>로 미팅 일정을 잡을게요.</p>
+    <div class="next">
+      <h3>다음 순서</h3>
+      <ul>
+        <li>운영진이 신청 내용을 읽어 봐요</li>
+        <li>연락처로 미팅 일정을 안내드려요</li>
+        <li>미팅에서 기획부터 같이 시작해요</li>
+      </ul>
+    </div>
+    <div class="done-btns">
+      <a href="/" class="btn btn-ghost">홈으로</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 Purple Universe · HYONSLAB &amp; JuInSEE FILM
+</footer>
+
+<script>
+/* ===== 신청 접수 주소 =====
+   apply.html 과 같은 구글 앱스 스크립트 웹 앱 주소입니다.
+   type:'allinone' 으로 보내면 시트의 '올인원신청' 탭에 따로 쌓이고 알림 메일이 갑니다. (2026-11-23) */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbwDzbGSI5X9JnZUXxdXcoDb7UVJRm4jUJ73qzACFs2hzzZDsNqGTtyiD9vEzhxB_-EP/exec";
+
+(function(){
+  const form   = document.getElementById('applyForm');
+  const btn    = document.getElementById('submitBtn');
+  const formErr= document.getElementById('formErr');
+  const applyV = document.getElementById('applyView');
+  const doneV  = document.getElementById('doneView');
+  const BTN_TEXT = '신청하기';
+
+  /* 연락처 자동 하이픈 */
+  const phone = document.getElementById('phone');
+  phone.addEventListener('input', function(){
+    const n = phone.value.replace(/\D/g,'').slice(0,11);
+    phone.value = n.length < 4 ? n
+      : n.length < 8 ? n.slice(0,3) + '-' + n.slice(3)
+      : n.slice(0,3) + '-' + n.slice(3,7) + '-' + n.slice(7);
+  });
+
+  /* 입력하면 오류 표시 해제 */
+  form.addEventListener('input', function(e){
+    const f = e.target.closest('.field');
+    if(f) f.classList.remove('bad');
+  });
+  form.addEventListener('change', function(e){
+    const f = e.target.closest('.field');
+    if(f) f.classList.remove('bad');
+  });
+
+  /* 검사 — 통과하면 true */
+  function validate(){
+    let firstBad = null;
+    form.querySelectorAll('.field[data-req]').forEach(function(f){
+      let ok = true;
+      if(f.dataset.radio){
+        ok = !!form.querySelector('input[name="' + f.dataset.radio + '"]:checked');
+      } else if(f.dataset.check){
+        const c = form.querySelector('input[name="' + f.dataset.check + '"]');
+        ok = !!(c && c.checked);
+      } else {
+        const el = f.querySelector('input, textarea');
+        ok = !!(el && el.value.trim());
+        if(ok && f.hasAttribute('data-phone')){
+          ok = /^01[016789]-\d{3,4}-\d{4}$/.test(el.value.trim());
+        }
+      }
+      f.classList.toggle('bad', !ok);
+      if(!ok && !firstBad) firstBad = f;
+    });
+    if(firstBad){
+      firstBad.scrollIntoView({ behavior:'smooth', block:'center' });
+      const el = firstBad.querySelector('input, textarea');
+      if(el) setTimeout(function(){ el.focus({ preventScroll:true }); }, 320);
+      return false;
+    }
+    return true;
+  }
+
+  function val(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  function pick(name){ const c = form.querySelector('input[name="' + name + '"]:checked'); return c ? c.value : ''; }
+
+  function collect(){
+    const ag = form.querySelector('input[name="agree"]');
+    const d = {
+      type: 'allinone',                       // Code.gs 의 allinoneApply 로 가서 '올인원신청' 탭에 쌓임
+      name: val('name'), phone: val('phone'), biz: val('biz'), chapter: '외부 신청', area: val('area'),
+      links: val('links'), shoot: pick('shoot'), manage: pick('manage'), concern: val('concern'), when: val('when'),
+      agree: (ag && ag.checked) ? '동의' : ''
+    };
+    return d;
+  }
+
+  function fail(msg){
+    formErr.textContent = msg;
+    formErr.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = BTN_TEXT;
+  }
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    formErr.classList.remove('show');
+    if(!validate()) return;
+    if(!ENDPOINT){
+      fail('신청 접수 주소가 아직 설정되지 않았습니다. 잠시 후 다시 시도해주시거나, 카카오톡으로 문의해주세요.');
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = '보내는 중…';
+
+    const body = JSON.stringify(collect());
+    let sent = false;
+    try{
+      const res = await fetch(ENDPOINT, {
+        method:'POST',
+        headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: body,
+        redirect:'follow'
+      });
+      const out = await res.json().catch(function(){ return null; });
+      if(out && out.ok === false) { fail('접수 중 문제가 생겼습니다: ' + (out.error || '알 수 없는 오류')); return; }
+      sent = true;
+    }catch(err){
+      try{
+        await fetch(ENDPOINT, { method:'POST', mode:'no-cors', body: body });
+        sent = true;
+      }catch(err2){
+        fail('전송에 실패했습니다. 인터넷 연결을 확인하시고 다시 시도해주세요. 계속 실패하면 카카오톡으로 문의해주세요.');
+        return;
+      }
+    }
+    if(sent){
+      applyV.style.display = 'none';
+      doneV.classList.add('show');
+      window.scrollTo(0, 0);
+    }
+  });
+})();
+</script>
+</body>
+</html>
