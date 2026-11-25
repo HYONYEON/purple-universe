@@ -667,6 +667,7 @@
     color:var(--text-faint); font-size:20px; cursor:pointer;
   }
 </style>
+<link rel="stylesheet" href="brain.css?v=1">
 </head>
 <body>
 
@@ -871,6 +872,19 @@
     </div>
   </section>
 
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <!-- ===== 콘텐츠 브레인 (멤버 전용 프로그램) =====
+       떠오른 단어 하나 → 4H 물결 → 콘텐츠 주제. 화면은 brain.js, 단어·문장 틀은 brain-data.js, 모양은 brain.css.
+       멤버가 아니면 brain.js 가 "멤버 전용 프로그램입니다" 안내만 보여 줍니다. -->
+  <section class="m-section" id="brainSec">
+    <div class="wrap">
+      <h2>콘텐츠 브레인</h2>
+      <p class="br-lead">지금 떠오른 단어 하나를 적으면, 네 겹의 물결을 따라 콘텐츠 주제가 나와요.</p>
+      <div id="brainApp"></div>
+    </div>
+  </section>
 
   <div class="wrap"><div class="m-divider"></div></div>
 
@@ -1813,5 +1827,7 @@
   draw();      // 처음부터 그려둠 (미리보기에서는 흐리게 보이고, 멤버는 탭을 누르면 바로 보임)
 })();
 </script>
+<script src="brain-data.js?v=1"></script>
+<script src="brain.js?v=1"></script>
 </body>
 </html>
