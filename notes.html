@@ -888,24 +888,25 @@ function copyLink(url, btn){
   }
 }
 
-/* 출처 — 관리 페이지 '출처' 칸 → 인스타 주소의 계정 → 요약 끝 'ㅣ계정' 순서로 찾음 */
+/* 출처 — 관리 페이지 '출처' 칸 → 인스타 주소의 계정 → 요약 끝 'ㅣ계정'(SNS 인사이트) · 'ㅣ채널 이름'(비즈니스 인사이트) 순서로 찾음 */
 function srcOf(n){
   if(n.src) return String(n.src).trim();
   const m = String(n.ig || '').match(/instagram\.com\/(?!p\/|reel\/|reels\/|tv\/|stories\/)([A-Za-z0-9._]+)/);
   if(m) return '@' + m[1];
-  if(n.cat === 'sns'){
-    const t = String(n.desc || n.title || '').split('ㅣ');
-    if(t.length > 1 && t[t.length-1].trim()) return '@' + t[t.length-1].trim().replace(/^@/, '');
-  }
+  const t = String(n.desc || n.title || '').split('ㅣ'), last = t.length > 1 ? t[t.length-1].trim() : '';
+  if(n.cat === 'sns' && last) return '@' + last.replace(/^@/, '');
+  if(n.cat === 'insight' && last) return last;      // 비즈니스 인사이트: 유튜브 채널 이름 그대로 (@ 없이)
   return '';
 }
+/* 출처를 누르면 갈 곳 — 인스타 원본, 없으면 비즈니스 인사이트의 유튜브 원본 영상 */
+function srcLink(n){ return n.ig || (n.cat === 'insight' && ytId(n.yt) ? n.yt : ''); }
 function openModal(n){
   if(!n) return;
   const cat = CATS.find(c => c.key === n.cat) || CATS[0];
   modalHead.innerHTML =
     '<span class="tag ' + n.cat + '">' + esc(cat.tagText) + '</span>' +
     '<span class="note-date">' + fmtDate(n.date) + '</span>' +
-    (srcOf(n) ? '<span class="m-src">출처 ' + (n.ig ? '<a href="' + esc(n.ig) + '" target="_blank" rel="noopener">' + esc(srcOf(n)) + '</a>' : esc(srcOf(n))) + '</span>' : '') +
+    (srcOf(n) ? '<span class="m-src">출처 ' + (srcLink(n) ? '<a href="' + esc(srcLink(n)) + '" target="_blank" rel="noopener">' + esc(srcOf(n)) + '</a>' : esc(srcOf(n))) + '</span>' : '') +
     (n.title ? '<h3 id="modalTitle">' + esc(n.title) + '</h3>' : '');
 
   let html = '';
