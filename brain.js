@@ -13,7 +13,6 @@
   let S = { basket: [], seeds: [] };          // 저장되는 것
   let k = '';                                 // 지금 적은 단어 (열 때마다 비어 있음)
   let sel = LAYERS[0].id;                     // 고른 물결
-  let flipped = false;                        // 순서 뒤집기
   let loaded = false;
 
   function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -69,7 +68,8 @@
   }
 
   /* ---------- 그리기 ---------- */
-  function order(){ const a = LAYERS.slice(); return flipped ? a.reverse() : a; }   // 안쪽 → 바깥쪽
+  /* 물결 순서는 고정 — 바깥부터 Hero → Hub → Human → Help (Help 가 단어 바로 곁) */
+  function order(){ return LAYERS.slice().reverse(); }   // 안쪽 → 바깥쪽
 
   function mapHTML(){
     const inner = order();                    // [가장 안쪽, …, 가장 바깥]
@@ -78,8 +78,7 @@
       const l = inner[i], size = 100 + i * 44;
       h += '<button type="button" class="br-ring' + (l.id === sel ? ' on' : '') + '" data-layer="' + l.id + '" style="width:' + size + 'px; height:' + size + 'px;" aria-label="' + l.name + ' 물결"><span>' + l.name + '</span></button>';
     }
-    return '<div class="br-map">' + h + '<div class="br-core">' + esc(k || '단어') + '</div></div>' +
-      '<button type="button" class="br-btn br-flip" id="brFlip">⇅ 순서 뒤집기</button>';
+    return '<div class="br-map">' + h + '<div class="br-core">' + esc(k || '단어') + '</div></div>';
   }
 
   function inBasket(layer, word){ return S.basket.some(function(b){ return b.k === k && b.layer === layer && b.word === word; }); }
@@ -181,7 +180,6 @@
     const t = e.target.closest('button'); const past = document.getElementById('brPast');
     if(!t){ if(past) past.classList.remove('show'); return; }
     if(t.dataset.layer){ sel = t.dataset.layer; part('brMap', mapHTML()); part('brSents', sentsHTML()); }
-    else if(t.id === 'brFlip'){ flipped = !flipped; part('brMap', mapHTML()); }
     else if(t.dataset.add != null){
       const l = layerOf(sel), w = l.words[Number(t.dataset.add)];
       if(k && w && !inBasket(l.id, w.w)){
