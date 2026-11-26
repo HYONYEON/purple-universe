@@ -470,7 +470,7 @@
   <div class="wrap">
     <h1>당신의 비즈니스 성장을<br class="mo-br"> 위한 지식 보관소</h1>
     <p>어떤 방향으로, 어떤 콘텐츠를 기획하고, 어떤 비즈니스를 설계해야 할지<br>매번 고민이신 사업가들을 위해 모든 인사이트를 여기에 모읍니다</p>
-    <div class="n-search"><input type="text" id="noteSearch" placeholder="제목·내용으로 검색"></div>
+    <div class="n-search"><input type="text" id="noteSearch" placeholder="키워드로 검색"></div>
   </div>
 </section>
 
@@ -604,6 +604,8 @@ function hasDetail(n){
   return (Array.isArray(n.body) && n.body.length) || n.embed || ytId(n.yt) || n.vid;
 }
 
+/* 카드에 보일 한 줄 요약 — 검색도 이 글로 걸립니다. (예전 글은 '제목' 칸에 적혀 있어서 그것도 읽음) */
+function sumOf(n){ return String(n.desc || n.title || '').trim(); }
 function cardHTML(n, isPick){
   const cat = CATS.find(c => c.key === n.cat) || CATS[0];
   const idx = NOTES.indexOf(n);
@@ -618,7 +620,7 @@ function cardHTML(n, isPick){
     '<div class="note-body">' +
       '<div class="note-meta"><span class="tag ' + n.cat + '">' + esc(cat.tagText) + '</span>' +
       '<span class="note-date">' + fmtDate(n.date) + '</span></div>' +
-      (n.title ? '<h3>' + esc(n.title) + '</h3>' : '') + (n.desc ? '<p>' + esc(n.desc) + '</p>' : '') + link +
+      (sumOf(n) ? '<p>' + esc(sumOf(n)) + '</p>' : '') + link +
     '</div></article>';
 }
 
@@ -627,7 +629,7 @@ const ARROW_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 
 function render(query){
   const q = (query || '').trim().toLowerCase();
-  const match = n => !q || (n.title + ' ' + n.desc).toLowerCase().includes(q);
+  const match = n => !q || ((n.desc || '') + ' ' + (n.title || '')).toLowerCase().includes(q);
 
   // 최신순 정렬
   const sorted = NOTES.slice().sort((a,b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
@@ -849,9 +851,9 @@ function fitGalleries(root){
 }
 
 /* ---------- 글마다 개별 주소 ---------- */
-function slugOf(n){
+function slugOf(n, text){
   // 날짜 + 제목 → 주소에 쓸 이름 (읽기 쉽게, 중복 없이)
-  const t = (n.title || '').trim()
+  const t = (text != null ? text : (n.title || '')).trim()
     .replace(/[\s]+/g, '-')
     .replace(/['"‘’“”·,.!?()\[\]/\\]/g, '')
     .slice(0, 24);
@@ -866,7 +868,9 @@ function findBySlug(slug){
     if(byNo) return byNo;
   }
   // 예전 방식(날짜-제목)도 계속 열리게
-  return NOTES.find(n => slugOf(n) === want) || null;
+  // (제목 칸을 없애면서 한 줄 요약으로 옮긴 글은, 옛 주소가 요약 첫 줄로 만든 이름과 같음)
+  return NOTES.find(n => slugOf(n) === want) ||
+         NOTES.find(n => !n.title && n.desc && slugOf(n, String(n.desc).split('\n')[0]) === want) || null;
 }
 function copyLink(url, btn){
   const done = () => {
@@ -924,7 +928,7 @@ function openModal(n){
   }
   if(id){
     html += '<div class="m-video"><iframe src="https://www.youtube.com/embed/' + id +
-            '" title="' + esc(n.title) + '" allowfullscreen ' +
+            '" title="' + esc(sumOf(n)) + '" allowfullscreen ' +
             'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
             'referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
   }
@@ -936,7 +940,7 @@ function openModal(n){
     html += '<p>' + esc(n.desc || '') + '</p>';
   }
   if(n.embed){
-    html += '<iframe class="m-embed" src="' + esc(n.embed) + '" title="' + esc(n.title) + '" loading="lazy"></iframe>' +
+    html += '<iframe class="m-embed" src="' + esc(n.embed) + '" title="' + esc(sumOf(n)) + '" loading="lazy"></iframe>' +
             '<p style="font-size:14px;color:var(--text-faint);margin-top:12px;">' +
             '화면이 비어 있다면 해당 사이트가 외부 삽입을 막아둔 경우예요. 아래 버튼으로 새 탭에서 열어주세요.</p>';
   }

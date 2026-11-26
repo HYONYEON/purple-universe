@@ -59,6 +59,7 @@
   }
   input:focus, textarea:focus, select:focus{outline:none; border-color:var(--purple-bright);}
   textarea{resize:vertical; min-height:96px; line-height:1.7;}
+  #blocks textarea{min-height:240px; overflow:hidden;}      /* 본문은 넓게 — 내용이 길면 칸이 따라 늘어남 */
   .row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
   @media(max-width:680px){ .row{grid-template-columns:1fr;} }
   .field{margin-bottom:18px;}
@@ -324,14 +325,10 @@
         </div>
       </div>
 
-      <div class="field">
-        <label>제목</label>
-        <input type="text" id="fTitle" placeholder="예: 숏폼 알고리즘 흐름 요약 (유튜브 영상이나 이미지가 있으면 비워도 돼요)">
-      </div>
-
       <div class="field" id="descField">
         <label>카드에 보일 한 줄 요약</label>
-        <textarea id="fDesc" rows="2" placeholder="목록 카드에 표시될 짧은 설명"></textarea>
+        <textarea id="fDesc" rows="2" placeholder="카드에 보이고, 노트 검색에 걸리는 글이에요 (예: 모델 대신 직원이 입었더니 한 주 판매 7배)"></textarea>
+        <p class="hint">검색창에서 이 글로 찾아져요. 사람들이 찾을 만한 말을 넣어 주세요.</p>
       </div>
 
       <div id="ytRow">
@@ -376,11 +373,6 @@
         <label>본문</label>
         <div class="blocks" id="blocks"></div>
         <div class="addbar">
-          <button class="btn btn-ghost btn-sm" data-add="p">+ 문단</button>
-          <button class="btn btn-ghost btn-sm" data-add="h">+ 소제목</button>
-          <button class="btn btn-ghost btn-sm" data-add="list">+ 목록</button>
-          <button class="btn btn-ghost btn-sm" data-add="quote">+ 인용</button>
-          <button class="btn btn-ghost btn-sm" data-add="img">+ 이미지</button>
           <button class="btn btn-primary btn-sm" id="addImgs">+ 이미지 여러 장</button>
           <input type="file" id="multiImgFile" accept="image/*" multiple style="display:none;">
         </div>
@@ -541,7 +533,9 @@ function addBlock(type, val, cap){
                + '<button class="bdel" title="삭제">✕</button>';
   wrap.appendChild(el);
 
-  el.querySelector('.bdel').onclick=()=>el.remove();
+  el.querySelector('.bdel').onclick=()=>{ el.remove(); if(!document.querySelector('#blocks .block:not([data-type="img"])')) addBlock('p'); };   // 글 칸은 늘 하나 남김
+  const ta = el.querySelector('textarea');
+  if(ta) ta.addEventListener('input', ()=>growArea(ta));
 
   if(type==='img'){
     const drop=el.querySelector('.bimg'), file=el.querySelector('input[type=file]'), prev=el.querySelector('img');
@@ -553,9 +547,12 @@ function addBlock(type, val, cap){
   } else if(val){
     const f=el.querySelector('textarea, input[type=text]');
     f.value = Array.isArray(val) ? val.join('\n') : val;
+    if(f.tagName === 'TEXTAREA') growArea(f);
   }
   return el;
 }
+/* 본문 칸 높이를 내용에 맞춤 — 스크롤 없이 다 보이게 */
+function growArea(ta){ ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 4) + 'px'; }
 function collectBlocks(){
   return Array.from(document.querySelectorAll('#blocks .block')).map(el=>{
     const t=el.dataset.type;
@@ -795,13 +792,14 @@ async function putOgPage(n, localDataUrl){
     const f = await gh('/contents/' + path + '?ref=' + BRANCH);
     sha = f.sha;
   }catch(e){ /* 없으면 새로 만듦 */ }
-  await putFile(path, b64encode(ogPageHTML(n)), sha, '공유 페이지: ' + (n.title || n.date));
+  await putFile(path, b64encode(ogPageHTML(n)), sha, '공유 페이지: ' + (n.title || String(n.desc||'').split('\n')[0] || n.date));
   n.ogv = OG_VER;                 // 이 판으로 만들어졌다는 표시 → 다음엔 건너뜀
 }
 
 async function save(){
   const btn=document.getElementById('saveBtn');
-  let title=document.getElementById('fTitle').value.trim();
+  const title='';                                    // 제목 칸은 없앰 — 카드 · 검색은 '한 줄 요약'(desc)을 씀
+  const sumText=document.getElementById('fDesc').value.trim();
   const date =document.getElementById('fDate').value;
   if(!loadOk){
     toast('기존 글 목록을 읽지 못한 상태예요. 새로고침 후 다시 시도해주세요.', false);
@@ -813,7 +811,7 @@ async function save(){
   if(document.getElementById('fCat').value === 'sns' && !hasVid){ toast('릴스 영상 파일을 넣어주세요.', false); return; }
   const hasImg = hasVid || !!thumbData || (editIndex > -1 && !!NOTES[editIndex].img) ||
                  !!document.querySelector('#blocks .thumb-prev[src], #blocks img[src]');
-  if(!title && !ytUrl && !hasImg){ toast('제목을 입력해주세요. (유튜브 영상이나 이미지가 있으면 비워도 돼요)', false); return; }
+  if(!sumText){ toast('카드에 보일 한 줄 요약을 적어주세요. 검색에 걸리는 글이에요.', false); return; }
   if(!date){  toast('날짜를 선택해주세요.', false); return; }
 
   btn.disabled=true; btn.textContent='올리는 중…';
@@ -857,7 +855,7 @@ async function save(){
       cat  : document.getElementById('fCat').value,
       date : date,
       title: title,
-      desc : document.getElementById('fDesc').value.trim(),
+      desc : sumText,
       yt   : document.getElementById('fYt').value.trim(),
       img  : imgPath,
       link : document.getElementById('fLink').value.trim(),
@@ -885,7 +883,7 @@ async function save(){
 
     btn.textContent='저장 중…';
     const res = await putFile(DATA_FILE, b64encode(dataFileText()), dataSha,
-                              (editIndex>-1?'글 수정: ':'글 등록: ')+title);
+                              (editIndex>-1?'글 수정: ':'글 등록: ')+(sumText.split('\n')[0] || date));
     dataSha = res.content.sha;
 
     toast('발행 완료 — 공유 주소: ' + SITE + '/n/' + item.no);
@@ -899,7 +897,7 @@ async function save(){
 
 async function removeItem(i){
   if(!confirm('"'+(NOTES[i].title||NOTES[i].desc||NOTES[i].date)+'" 글을 삭제할까요?')) return;
-  const t=NOTES[i].title;
+  const t=NOTES[i].title || String(NOTES[i].desc||'').split('\n')[0] || NOTES[i].date;
   NOTES.splice(i,1);
   try{
     const res = await putFile(DATA_FILE, b64encode(dataFileText()), dataSha, '글 삭제: '+t);
@@ -913,8 +911,7 @@ function editItem(i){
   document.getElementById('formTitle').textContent='글 수정';
   document.getElementById('fCat').value=n.cat;
   document.getElementById('fDate').value=n.date;
-  document.getElementById('fTitle').value=n.title;
-  document.getElementById('fDesc').value=n.desc||'';
+  document.getElementById('fDesc').value=n.desc||n.title||'';      // 예전 글은 제목 칸의 글을 한 줄 요약으로 가져옴
   document.getElementById('fYt').value=n.yt||'';
   document.getElementById('fLink').value=n.link||'';
   document.getElementById('fIg').value=n.ig||'';
@@ -947,7 +944,7 @@ document.getElementById('fCat').addEventListener('change', syncCat);
 function resetForm(){
   editIndex=-1; thumbData=null; vidData=null;
   document.getElementById('formTitle').textContent='새 글 쓰기';
-  ['fTitle','fDesc','fYt','fLink','fIg','fSrc'].forEach(id=>document.getElementById(id).value='');
+  ['fDesc','fYt','fLink','fIg','fSrc'].forEach(id=>document.getElementById(id).value='');
   const vp=document.getElementById('vidPrev'); vp.removeAttribute('src'); vp.style.display='none';
   document.getElementById('vidDrop').textContent='클릭하거나 영상 파일을 여기로 끌어다 놓으세요';
   document.getElementById('fDate').value=new Date().toISOString().slice(0,10);
@@ -970,7 +967,7 @@ function renderList(){
         '<span class="pill '+n.cat+'">'+(CATS[n.cat]||n.cat)+'</span>'+
         (n.no ? '<span class="li-no">/n/'+n.no+'</span>' : '')+
       '</div>'+
-      '<div class="t"><b>'+escapeHtml(n.title || ('(제목 없음) ' + (n.desc||'').split('\n')[0]))+'</b><span>'+n.date+'</span></div>'+
+      '<div class="t"><b>'+escapeHtml((n.desc||n.title||'(한 줄 요약 없음)').split('\n')[0])+'</b><span>'+n.date+'</span></div>'+
       '<div class="li-btns">'+
         '<button class="btn btn-ghost btn-sm" data-edit="'+i+'">수정</button>'+
         '<button class="btn btn-danger btn-sm" data-del="'+i+'">삭제</button>'+
