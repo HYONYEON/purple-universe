@@ -16,5 +16,7 @@ Disallow: /1on1-m4p8.html
 Disallow: /1on1-m4p8
 Disallow: /members.html
 Disallow: /members
+Disallow: /archive-data.js
+Disallow: /arc/
 
 Sitemap: https://purpleuniverse.net/sitemap.xml

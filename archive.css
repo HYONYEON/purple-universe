@@ -1,0 +1,79 @@
+/* 레퍼런스 아카이브 (멤버 전용) — members.html 에서 씀. 화면 코드는 archive.js, 자료는 archive-data.js */
+.ar-bar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+.ar-bar input{flex:1 1 260px; min-width:0; padding:13px 16px; border-radius:14px; border:1px solid var(--border-strong); background:var(--bg-alt); color:var(--text); font-size:16.5px; font-family:inherit;}
+.ar-bar input:focus{outline:none; border-color:var(--purple-bright);}
+.ar-bar input::placeholder{color:var(--text-faint);}
+.ar-chip{padding:8px 15px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text-dim); font-size:14.5px; font-family:inherit; cursor:pointer; white-space:nowrap;}
+.ar-chip:hover{border-color:var(--border-strong); color:var(--text);}
+.ar-chip.on{background:rgba(124,77,255,.2); border-color:var(--purple-bright); color:var(--text); font-weight:600;}
+.ar-chip small{color:var(--text-faint); font-size:13px; margin-left:3px;}
+.ar-groups{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px;}
+.ar-groups > span{font-size:14.5px; color:var(--text-faint); margin-right:2px;}
+.ar-tags{display:none; gap:7px; flex-wrap:wrap; padding:14px; margin-bottom:12px; border-radius:16px; background:var(--surface); border:1px solid var(--border);}
+.ar-tags.show{display:flex;}
+.ar-count{font-size:14.5px; color:var(--text-faint); margin:6px 0 14px;}
+.ar-count button{background:none; border:none; color:var(--purple-bright); font-size:14.5px; font-family:inherit; cursor:pointer; padding:0; margin-left:8px;}
+
+.ar-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:14px;}
+.ar-card{display:flex; flex-direction:column; text-align:left; padding:0; border-radius:18px; overflow:hidden; background:var(--surface); border:1px solid var(--border); color:var(--text); font-family:inherit; cursor:pointer; transition:border-color .18s ease, transform .18s ease;}
+.ar-card:hover{border-color:var(--purple-bright); transform:translateY(-2px);}
+.ar-thumb{position:relative; aspect-ratio:4 / 5; background:var(--bg-alt); overflow:hidden;}
+.ar-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+.ar-thumb .none{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:14px; color:var(--text-faint); font-size:14.5px; line-height:1.5;}
+.ar-plat{position:absolute; left:9px; top:9px; padding:3px 10px; border-radius:100px; background:rgba(8,5,15,.72); color:#fff; font-size:12.5px; font-weight:600;}
+.ar-body{padding:12px 13px 14px; display:flex; flex-direction:column; gap:6px;}
+.ar-body b{font-size:15.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.ar-body p{font-size:14.5px; color:var(--text-dim); line-height:1.5; margin:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.ar-body .wait{color:var(--text-faint);}
+.ar-mini{display:flex; gap:5px; flex-wrap:wrap;}
+.ar-mini span{font-size:12.5px; color:var(--purple-pale); background:rgba(124,77,255,.16); border-radius:100px; padding:2px 9px;}
+.ar-more{display:block; margin:18px auto 0; padding:11px 24px; border-radius:100px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-size:15px; font-weight:600; font-family:inherit; cursor:pointer;}
+.ar-more:hover{border-color:var(--purple-bright);}
+.ar-empty{padding:40px 0; text-align:center; color:var(--text-faint); font-size:15.5px; line-height:1.7;}
+
+/* 계정 화면 */
+.ar-modal{position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; padding:24px; background:rgba(4,2,10,.82); backdrop-filter:blur(6px);}
+.ar-modal.show{display:flex;}
+.ar-sheet{position:relative; width:min(1040px, 100%); max-height:100%; overflow-y:auto; border-radius:22px; background:#120C22; border:1px solid var(--border-strong); padding:26px;}
+.ar-close{position:sticky; top:0; float:right; z-index:2; width:38px; height:38px; border-radius:50%; border:1px solid var(--border-strong); background:#120C22; color:var(--text); font-size:17px; cursor:pointer; font-family:inherit;}
+.ar-detail{display:grid; grid-template-columns:300px 1fr; gap:26px; align-items:start; clear:both;}
+.ar-view{position:sticky; top:0;}
+.ar-shot{position:relative; display:block; border-radius:16px; overflow:hidden; background:var(--bg-alt); aspect-ratio:9 / 16;}
+.ar-shot img{width:100%; height:100%; object-fit:cover; display:block;}
+.ar-shot .go{position:absolute; left:50%; bottom:14px; transform:translateX(-50%); padding:10px 18px; border-radius:100px; background:linear-gradient(135deg,var(--purple),#9B6BFF); color:#fff; font-size:15px; font-weight:700; white-space:nowrap; box-shadow:0 10px 26px -8px rgba(0,0,0,.8);}
+.ar-nav{display:flex; align-items:center; justify-content:center; gap:12px; margin-top:10px; font-size:14.5px; color:var(--text-faint);}
+.ar-nav button{width:34px; height:34px; border-radius:50%; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-size:15px; cursor:pointer; font-family:inherit;}
+.ar-src{margin-top:12px; font-size:14.5px; color:var(--text-dim); line-height:1.6;}
+.ar-src a{color:var(--purple-bright);}
+.ar-cap{margin-top:8px; font-size:14.5px; color:var(--text-faint); line-height:1.6; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
+.ar-cap.open{display:block;}
+.ar-capbtn{background:none; border:none; color:var(--purple-bright); font-size:14px; font-family:inherit; cursor:pointer; padding:4px 0;}
+.ar-see{margin-top:10px; padding:11px 13px; border-radius:12px; background:rgba(124,77,255,.13); font-size:14.5px; line-height:1.55; color:var(--text);}
+.ar-see b{display:block; font-size:13px; color:var(--purple-bright); margin-bottom:2px;}
+.ar-text h3{font-size:23px; font-weight:700; margin-bottom:4px;}
+.ar-text .who{font-size:14.5px; color:var(--text-faint); margin-bottom:16px;}
+.ar-text h4{font-size:14.5px; font-weight:700; color:var(--purple-bright); margin:20px 0 7px;}
+.ar-text p{font-size:16px; line-height:1.7; color:var(--text); margin:0;}
+.ar-text .one{font-size:18px; font-weight:600; line-height:1.55;}
+.ar-text ul{margin:0; padding-left:19px; list-style:disc; font-size:16px; line-height:1.75; color:var(--text);}
+.ar-pt{display:grid; grid-template-columns:1fr; gap:12px; padding:14px; border-radius:16px; background:var(--surface); border:1px solid var(--border); margin-bottom:9px;}
+.ar-pt.has{grid-template-columns:104px 1fr;}
+.ar-pt .cap{position:relative; border-radius:10px; overflow:hidden; aspect-ratio:9 / 16; background:var(--bg-alt);}
+.ar-pt .cap img{width:100%; height:100%; object-fit:cover; display:block;}
+.ar-pt .cap i{position:absolute; width:22px; height:22px; margin:-11px 0 0 -11px; border-radius:50%; border:2.5px solid var(--purple-bright); box-shadow:0 0 0 3px rgba(8,5,15,.55), 0 0 14px var(--purple);}
+.ar-pt .cap small{position:absolute; left:5px; bottom:5px; padding:1px 7px; border-radius:100px; background:rgba(8,5,15,.75); color:#fff; font-size:12px;}
+.ar-pt b{display:block; font-size:16px; line-height:1.55; font-weight:600;}
+.ar-pt span{display:block; margin-top:7px; font-size:15px; line-height:1.6; color:var(--text-dim);}
+.ar-pt span em{font-style:normal; color:var(--purple-bright); font-weight:700; margin-right:6px;}
+.ar-wait{padding:16px; border-radius:14px; background:var(--surface); border:1px solid var(--border); color:var(--text-faint); font-size:15.5px;}
+.ar-links a{display:block; padding:11px 13px; border-radius:12px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-size:15px; margin-bottom:7px; word-break:break-all;}
+.ar-links a:hover{border-color:var(--purple-bright);}
+.ar-links a small{display:block; color:var(--text-faint); font-size:13.5px;}
+
+@media(max-width:1100px){ .ar-grid{grid-template-columns:repeat(4, 1fr);} }
+@media(max-width:860px){ .ar-grid{grid-template-columns:repeat(3, 1fr);} .ar-detail{grid-template-columns:1fr;} .ar-view{position:static; max-width:300px; margin:0 auto;} }
+@media(max-width:560px){
+  .ar-grid{grid-template-columns:1fr 1fr; gap:10px;}
+  .ar-modal{padding:0;} .ar-sheet{border-radius:0; height:100%; padding:18px 16px 30px; border:none;}
+  .ar-pt.has{grid-template-columns:84px 1fr;}
+}

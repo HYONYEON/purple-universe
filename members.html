@@ -668,6 +668,7 @@
   }
 </style>
 <link rel="stylesheet" href="brain.css?v=1">
+<link rel="stylesheet" href="archive.css?v=1">
 </head>
 <body>
 
@@ -883,6 +884,19 @@
       <h2>콘텐츠 브레인</h2>
       <p class="br-lead">지금 떠오른 단어 하나를 적으면, 네 겹의 물결을 따라 콘텐츠 주제가 나와요.</p>
       <div id="brainApp"></div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="m-divider"></div></div>
+
+  <!-- ===== 레퍼런스 아카이브 (멤버 전용 자료) =====
+       화면은 archive.js, 자료는 archive-data.js + arc/ 그림 (홈페이지 자료/레퍼런스 아카이브/_아카이브_가져오기.py 가 만듦).
+       영상 파일은 두지 않고 원본 글로 가는 링크만 둡니다. -->
+  <section class="m-section" id="archiveSec">
+    <div class="wrap">
+      <h2>레퍼런스 아카이브</h2>
+      <p class="br-lead">잘 만든 계정을 보고, 왜 잘되는지와 내 콘텐츠에 써 볼 점을 함께 읽어요.</p>
+      <div id="archiveApp"></div>
     </div>
   </section>
 
@@ -1829,5 +1843,7 @@
 </script>
 <script src="brain-data.js?v=1"></script>
 <script src="brain.js?v=2"></script>
+<script>document.write('<script src="archive-data.js?t=' + Date.now() + '"><\/script>');</script>
+<script src="archive.js?v=1"></script>
 </body>
 </html>
