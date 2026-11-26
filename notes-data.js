@@ -3,6 +3,198 @@
    ─ 직접 수정해도 되지만, 형식이 깨지면 목록이 안 보일 수 있어요. */
 window.NOTES = [
   {
+    "cat": "marketing",
+    "date": "2026-11-27",
+    "title": "",
+    "desc": "팔로워 안 따진 링크 500개가 신규 가입 13배",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1795737407061_yp0xg_1127_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737407065_w8bdc_1127_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737407069_to4mg_1127_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737407073_v3ze8_1127_B_04_news3.png"
+      }
+    ],
+    "no": 51,
+    "imgtop": 0.106,
+    "ogimg": "images/1795737407163_814oq_og-51.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
+    "date": "2026-11-25",
+    "title": "",
+    "desc": "크게 팔고 싶다면 쥐기 쉬운 것부터 퍼뜨리세요",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1795737406877_hl8n3_1125_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406882_9h4e6_1125_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406885_uwdev_1125_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406889_jhcmv_1125_B_04_news3.png"
+      }
+    ],
+    "no": 50,
+    "imgtop": 0.104,
+    "ogimg": "images/1795737406977_74q22_og-50.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
+    "date": "2026-11-23",
+    "title": "",
+    "desc": "우리 손님의 표시를 먼저 정한 브랜드에 줄이 섭니다",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1795737406695_ngy82_1123_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406699_n0hs5_1123_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406702_qom4e_1123_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406707_ltffg_1123_B_04_news3.png"
+      }
+    ],
+    "no": 49,
+    "imgtop": 0.106,
+    "ogimg": "images/1795737406795_zufbn_og-49.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
+    "date": "2026-11-21",
+    "title": "",
+    "desc": "이번 주 매출은 터진 영상이 아니라 매일 하던 일이었습니다",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1795737406508_14alj_1121_W_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406512_67wth_1121_W_02_cases.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406516_dhcf8_1121_W_03_why.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406520_mhg9k_1121_W_04_check.png"
+      }
+    ],
+    "no": 48,
+    "imgtop": 0.106,
+    "ogimg": "images/1795737406609_2nnhu_og-48.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
+    "date": "2026-11-18",
+    "title": "",
+    "desc": "첫 손님 25명은 광고가 아니라 전단지에서 왔습니다",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1795737406323_q6d8x_1118_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406328_atbb8_1118_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406332_qbcm4_1118_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406336_3n9cw_1118_B_04_news3.png"
+      }
+    ],
+    "no": 47,
+    "imgtop": 0.106,
+    "ogimg": "images/1795737406426_v53dw_og-47.jpg",
+    "ogv": 2
+  },
+  {
+    "cat": "marketing",
+    "date": "2026-11-16",
+    "title": "",
+    "desc": "제품을 설명했나요, 아니면 손님 눈앞에서 보여줬나요?",
+    "yt": "",
+    "img": "",
+    "link": "",
+    "embed": "",
+    "body": [
+      {
+        "t": "img",
+        "v": "images/1795737406123_4mro9_1116_B_01_cover.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406129_4kggq_1116_B_02_news1.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406132_udgcv_1116_B_03_news2.png"
+      },
+      {
+        "t": "img",
+        "v": "images/1795737406136_wka6g_1116_B_04_news3.png"
+      }
+    ],
+    "no": 46,
+    "imgtop": 0.104,
+    "ogimg": "images/1795737406232_rcfpb_og-46.jpg",
+    "ogv": 2
+  },
+  {
     "cat": "insight",
     "date": "2026-11-14",
     "title": "",
