@@ -358,7 +358,7 @@
           <div class="drop" id="vidDrop">클릭하거나 영상 파일을 여기로 끌어다 놓으세요</div>
           <input type="file" id="vidFile" accept="video/mp4,video/quicktime,video/webm" style="display:none;">
           <video id="vidPrev" muted loop playsinline controls style="display:none; width:180px; aspect-ratio:9/16; object-fit:cover; border-radius:12px; margin-top:10px; background:#000;"></video>
-          <p class="hint">카드에서는 소리 없이 자동 재생, 누르면 팝업에서 소리와 함께 재생돼요. 대표 이미지를 안 넣으면 영상 첫 장면을 표지로 자동으로 써요.</p>
+          <p class="hint">카드에서는 소리 없이 자동 재생, 누르면 팝업에서 소리와 함께 재생돼요. 표지는 영상 첫 장면으로 자동으로 정해져요.</p>
         </div>
         <div class="field">
           <label>원본 인스타그램 링크 <span style="color:var(--text-faint); font-weight:400;">(출처 · 권장)</span></label>
@@ -372,7 +372,7 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="field" id="thumbField">
         <label>대표 이미지 <span style="color:var(--text-faint); font-weight:400;">(선택 · 영상이 없을 때 카드에 표시)</span></label>
         <div class="drop" id="thumbDrop">클릭하거나 이미지를 여기로 끌어다 놓으세요</div>
         <input type="file" id="thumbFile" accept="image/*" style="display:none;">
@@ -948,6 +948,12 @@ function syncCat(){
   const mk = c === 'marketing', sns = c === 'sns';
   document.getElementById('ytRow').style.display  = (mk || sns) ? 'none' : '';
   document.getElementById('snsRow').style.display = sns ? '' : 'none';
+  /* 대표 이미지 칸은 웨비나에서만 — 나머지는 카드 그림이 자동으로 정해짐
+     (뉴스클리핑 = 본문 첫 장, 인사이트 · LIVE = 유튜브 썸네일, SNS 인사이트 = 영상 첫 장면)
+     칸을 숨겨도 이미 들어 있던 대표 이미지는 그대로 유지됨 */
+  const needThumb = c === 'webinar';
+  document.getElementById('thumbField').style.display = needThumb ? '' : 'none';
+  if(!needThumb) thumbData = null;
 }
 document.getElementById('fCat').addEventListener('change', syncCat);
 
