@@ -145,7 +145,7 @@
   .side{position:sticky; top:70px;}
   .side .card{margin-top:0;}
   .side-list{
-    max-height:min(700px, calc(100vh - 170px)); overflow-y:auto;      /* 글 여섯 개쯤 보이고, 나머지는 이 칸 안에서만 스크롤 */
+    max-height:min(752px, calc(100vh - 160px)); overflow-y:auto;      /* 글 여섯 개쯤 보이고, 나머지는 이 칸 안에서만 스크롤 */
     margin:0 -8px; padding:0 8px;
   }
   .side-list::-webkit-scrollbar{width:6px;}
@@ -177,6 +177,8 @@
   .side-r .list-item{position:relative; padding:10px 12px; margin-bottom:7px;}
   .side-r .li-top{margin-bottom:5px; padding-right:92px; min-height:24px;}
   .side-r .li-btns{position:absolute; top:8px; right:10px; margin:0; gap:4px;}
+  .side-r .li-no{position:absolute; right:12px; bottom:9px;}      /* 글 번호는 날짜 줄 오른쪽 끝으로 — 윗줄이 두 줄로 넘어가지 않게 */
+  .side-r .li-top{flex-wrap:nowrap;} .side-r .li-top .pill{white-space:nowrap;}
   .side-r .li-btns .btn{padding:3px 9px; font-size:12px;}
   .side-r .list-item .t b{font-size:14px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   /* 화면이 좁으면 글 목록을 왼쪽 칸 아래로 */
