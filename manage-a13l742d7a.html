@@ -80,7 +80,17 @@
   .err{color:var(--warn); font-size:14px; min-height:20px; margin-top:10px;}
 
   /* 본문 블록 편집기 */
-  .blocks{display:flex; flex-direction:column; gap:12px;}
+  .blocks{display:flex; flex-wrap:wrap; gap:12px;}
+  .blocks > .block{flex:1 1 100%; min-width:0;}
+  /* 본문 이미지는 가로로 네 장씩 — 카드뉴스가 한눈에 보이게 */
+  .blocks > .block[data-type="img"]{flex:0 0 calc((100% - 36px) / 4); position:relative; padding:36px 10px 10px;}
+  .block[data-type="img"] .btype{display:none;}
+  .block[data-type="img"] .bmain{display:flex; flex-direction:column; gap:8px; min-width:0;}
+  .block[data-type="img"] .thumb-prev{order:1; width:100%; max-width:none; max-height:none; height:auto; margin:0; border-radius:8px;}
+  .block[data-type="img"] .drop{order:2; padding:9px 6px; font-size:12.5px; line-height:1.4;}
+  .block[data-type="img"] .bcap{order:3; margin-top:0 !important; padding:8px 10px; font-size:13px;}
+  .block[data-type="img"] .bdel{position:absolute; top:4px; right:6px; z-index:2; width:28px; height:28px; padding:0; font-size:15px; line-height:28px;}
+  @media(max-width:900px){ .blocks > .block[data-type="img"]{flex-basis:calc((100% - 12px) / 2);} }
   .block{
     background:var(--bg-alt); border:1px solid var(--border); border-radius:12px; padding:14px;
     display:flex; gap:12px; align-items:flex-start;
